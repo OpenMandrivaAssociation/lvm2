@@ -58,7 +58,7 @@ BuildRequires:	glibc-static-devel
 %endif
 %if %{build_dmeventd}
 BuildRequires:	device-mapper-event-devel >= 1.02
-%endif%patch6 -p1 -b .types
+%endif
 
 %description
 LVM includes all of the support for handling read/write operations on
