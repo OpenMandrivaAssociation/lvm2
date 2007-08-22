@@ -1,5 +1,5 @@
 %define	name	lvm2
-%define	version	2.02.09
+%define	version	2.02.27
 %define	release	%mkrel 1
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
@@ -23,21 +23,24 @@
 
 %if %build_lvm2cmd
 %define	libname	%mklibname lvm2cmd 2
-%define dlibname %mklibname -d lvm2cmd 2
+%define develname %mklibname -d lvm2cmd
 %endif
 
 Summary:	Logical Volume Manager administration tools
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tar.bz2
+Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz
 Source1:	clvmd.init.bz2
-Patch0:		lvm2-alternatives.patch
-Patch1:		lvm2-2.02.09-diet.patch
+Patch0:		lvm2-2.02.27-alternatives.patch
+Patch1:		lvm2-2.02.27-diet.patch
 Patch2:		lvm2-2.01.15-stdint.patch
 Patch3:		lvm2-termcap.patch
 Patch4:		lvm2-ignorelock.patch
 Patch5:		lvm2-fdlog.patch
+# fixes a 'conflicting types for '__daddr_t'' error caused by it also
+# being declared in dietlibc - AdamW 2007/08
+Patch6:		lvm2-2.02.27-types.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -45,6 +48,7 @@ URL:		http://sources.redhat.com/lvm2/
 BuildRequires:	device-mapper-devel >= 1.02
 BuildRequires:	readline-devel
 BuildRequires:	termcap-devel
+BuildRequires:	autoconf
 Conflicts:	lvm
 Conflicts:	lvm1
 %if %{use_dietlibc}
@@ -52,6 +56,9 @@ BuildRequires:	dietlibc-devel
 %else
 BuildRequires:	glibc-static-devel
 %endif
+%if %{build_dmeventd}
+BuildRequires:	device-mapper-event-devel >= 1.02
+%endif%patch6 -p1 -b .types
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -70,15 +77,14 @@ Group:		System/Kernel and hardware
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 
-%package -n	%{dlibname}
+%package -n	%{develname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{libname} = %{version}-%{release}
-Provides:	%{libname}-devel = %{version}-%{release}
-Provides:	%{mklibname -d lvm2cmd} = %{version}-%{release}
 Provides:	lvm2cmd-devel = %{version}-%{release}
+Obsoletes:	%{mklibname lvm2cmd 2 -d}
 
-%description -n	%{dlibname}
+%description -n	%{develname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 This package contains the header files for building with lvm2cmd.
@@ -91,8 +97,8 @@ Group:		System/Kernel and hardware
 BuildRequires:	cluster-devel
 
 %description -n	clvmd
-clvmd  is  the  daemon  that  distributes LVM metadata updates around a
-cluster.  It must be running on all nodes in the cluster and will  give
+clvmd is the daemon that distributes LVM metadata updates around a
+cluster. It must be running on all nodes in the cluster and will give
 an error if a node in the cluster does not have this daemon running.
 %endif
 
@@ -102,6 +108,7 @@ an error if a node in the cluster does not have this daemon running.
 %if %{use_dietlibc}
 %patch1 -p1 -b .diet
 %patch2 -p1 -b .stdint
+%patch6 -p1 -b .types
 %endif
 %patch3 -p1 -b .termcap
 %patch4 -p1 -b .ignorelock
@@ -110,6 +117,7 @@ an error if a node in the cluster does not have this daemon running.
 %build
 autoconf # required by termcap patch
 export ac_cv_lib_dl_dlopen=no
+export CFLAGS="%{optflags} -fno-stack-protector"
 %configure --with-user=`id -un` --with-group=`id -gn` \
 	--enable-static_link --disable-readline \
 	--disable-selinux --with-cluster=none --with-pool=none
@@ -189,7 +197,7 @@ rm -rf %{buildroot}
 %defattr(644,root,root,755)
 %{_libdir}/liblvm2cmd.so*
 
-%files -n %{dlibname}
+%files -n %{develname}
 %defattr(644,root,root,755)
 %{_includedir}/lvm2cmd.h
 %attr(755,root,root) %{_libdir}/liblvm2cmd.so
