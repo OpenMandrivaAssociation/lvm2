@@ -117,7 +117,10 @@ an error if a node in the cluster does not have this daemon running.
 %build
 autoconf # required by termcap patch
 export ac_cv_lib_dl_dlopen=no
+%if %{use_dietlibc}
+# build fails with stack-protector enabled - 2007/08
 export CFLAGS="%{optflags} -fno-stack-protector"
+%endif
 %configure --with-user=`id -un` --with-group=`id -gn` \
 	--enable-static_link --disable-readline \
 	--disable-selinux --with-cluster=none --with-pool=none
