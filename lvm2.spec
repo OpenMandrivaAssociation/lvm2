@@ -43,6 +43,7 @@ Patch5:		lvm2-fdlog.patch
 Patch6:		lvm2-2.02.27-types.patch
 License:	GPL
 Group:		System/Kernel and hardware
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://sources.redhat.com/lvm2/
 BuildRequires:	device-mapper-devel >= 1.02.22
 BuildRequires:	readline-devel
