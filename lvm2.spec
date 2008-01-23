@@ -41,6 +41,7 @@ Patch5:		lvm2-fdlog.patch
 # fixes a 'conflicting types for '__daddr_t'' error caused by it also
 # being declared in dietlibc - AdamW 2007/08
 Patch6:		lvm2-2.02.27-types.patch
+Patch7:		LVM2.2.02.31-uint64_max.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -109,6 +110,7 @@ an error if a node in the cluster does not have this daemon running.
 %patch1 -p1 -b .diet
 %patch2 -p1 -b .stdint
 %patch6 -p1 -b .types
+%patch7 -p1 -b .uint64_max
 %endif
 %patch3 -p1 -b .termcap
 %patch4 -p1 -b .ignorelock
