@@ -45,7 +45,7 @@ License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://sources.redhat.com/lvm2/
-BuildRequires:	device-mapper-devel >= 1.02.22
+BuildRequires:	device-mapper-devel >= 1.02.23
 BuildRequires:	readline-devel
 BuildRequires:	termcap-devel
 BuildRequires:	autoconf
