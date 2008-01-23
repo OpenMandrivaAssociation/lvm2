@@ -160,7 +160,6 @@ rm -rf %{buildroot}
 %makeinstall sbindir=%{buildroot}/sbin confdir=%{buildroot}%{_sysconfdir}/lvm
 
 install tools/lvm-static %{buildroot}/sbin/lvm.static
-install tools/fsadm/fsadm %{buildroot}/sbin
 #compatibility links
 ln %{buildroot}/sbin/lvm %{buildroot}/sbin/lvm2
 ln %{buildroot}/sbin/lvm.static %{buildroot}/sbin/lvm2-static
