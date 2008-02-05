@@ -1,6 +1,6 @@
 %define	name	lvm2
 %define	version	2.02.31
-%define	release	%mkrel 1
+%define	release	%mkrel 2
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
 %define	use_dietlibc 1
@@ -35,7 +35,6 @@ Source1:	clvmd.init.bz2
 Patch0:		lvm2-2.02.27-alternatives.patch
 Patch1:		lvm2-2.02.27-diet.patch
 Patch2:		lvm2-2.01.15-stdint.patch
-Patch3:		lvm2-termcap.patch
 Patch4:		lvm2-ignorelock.patch
 Patch5:		lvm2-fdlog.patch
 # fixes a 'conflicting types for '__daddr_t'' error caused by it also
@@ -48,7 +47,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 URL:		http://sources.redhat.com/lvm2/
 BuildRequires:	device-mapper-devel >= 1.02.23
 BuildRequires:	readline-devel
-BuildRequires:	termcap-devel
+BuildRequires:	ncurses-devel
 BuildRequires:	autoconf
 Conflicts:	lvm
 Conflicts:	lvm1
@@ -112,12 +111,11 @@ an error if a node in the cluster does not have this daemon running.
 %patch6 -p1 -b .types
 %patch7 -p1 -b .uint64_max
 %endif
-%patch3 -p1 -b .termcap
 %patch4 -p1 -b .ignorelock
 %patch5 -p1 -b .fdlog
 
 %build
-autoconf # required by termcap patch
+autoconf # required by dietlibc patch
 export ac_cv_lib_dl_dlopen=no
 %if %{use_dietlibc}
 # build fails with stack-protector enabled - 2007/08
