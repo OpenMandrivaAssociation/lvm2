@@ -1,6 +1,6 @@
 %define	name	lvm2
-%define	version	2.02.31
-%define	release	%mkrel 2
+%define	version	2.02.33
+%define	release	%mkrel 1
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
 %define	use_dietlibc 1
