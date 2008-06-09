@@ -170,9 +170,13 @@ if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
 fi
 
 %if %build_lvm2cmd
+%if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun -n %{libname} -p /sbin/ldconfig
+%endif
 %endif
 
 %clean
