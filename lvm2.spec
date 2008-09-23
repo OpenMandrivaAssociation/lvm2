@@ -1,6 +1,6 @@
 %define	name	lvm2
 %define	version	2.02.33
-%define	release	%manbo_mkrel 3
+%define	release	%manbo_mkrel 4
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
 %define	use_dietlibc 1
@@ -41,6 +41,8 @@ Patch5:		lvm2-fdlog.patch
 # being declared in dietlibc - AdamW 2007/08
 Patch6:		lvm2-2.02.27-types.patch
 Patch7:		LVM2.2.02.31-uint64_max.patch
+Patch8:		lvm2-2.02.33-fix-clvmd-includes.patch
+Patch9:		lvm2-2.02.33-lvmconf-clvm-type3.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -94,7 +96,7 @@ This package contains the header files for building with lvm2cmd.
 %package -n	clvmd
 Summary:	cluster LVM daemon
 Group:		System/Kernel and hardware
-BuildRequires:	cluster-devel
+BuildRequires:	cluster-devel openais-devel
 
 %description -n	clvmd
 clvmd is the daemon that distributes LVM metadata updates around a
@@ -113,6 +115,8 @@ an error if a node in the cluster does not have this daemon running.
 %endif
 %patch4 -p1 -b .ignorelock
 %patch5 -p1 -b .fdlog
+%patch8 -p1 -b .fixclvmd
+%patch9 -p1 -b .fixlvmconf
 
 %build
 autoconf # required by dietlibc patch
@@ -137,6 +141,11 @@ cd tools
 $CC -o lvm-static lvm.o lvmcmdline.o vgchange.o vgscan.o toollib.o vgmknodes.o pvmove.o polldaemon.o -L ../lib $LVMLIBS
 cd ..
 %make clean
+
+%if %build_cluster
+export OPENAIS=yes
+LDFLAGS="$LDFLAGS -L%{_libdir}/openais/"
+%endif
 %configure --with-user=`id -un` --with-group=`id -gn` \
 	--disable-static_link --enable-readline \
 	--disable-selinux  --enable-fsadm \
@@ -145,7 +154,7 @@ cd ..
 	--enable-cmdlib \
 %endif
 %if %build_cluster
-	--with-clvmd=all --with-cluster=shared \
+	--with-clvmd=cman --with-cluster=internal \
 %endif
 %if %{build_dmeventd}
 	--enable-dmeventd \
@@ -156,6 +165,15 @@ cd ..
 %install
 rm -rf %{buildroot}
 %makeinstall sbindir=%{buildroot}/sbin confdir=%{buildroot}%{_sysconfdir}/lvm
+
+%if %build_cluster
+install -d %{buildroot}/%{_initrddir}
+install -d %{buildroot}/%{_sbindir}
+install scripts/clvmd_init_rhel4 %{buildroot}/%{_initrddir}/clvmd
+perl -pi -e 's,/usr/sbin/,/sbin/,g' %{buildroot}/%{_initrddir}/clvmd
+install -m 0755 scripts/lvmconf.sh $RPM_BUILD_ROOT/sbin/lvmconf
+mv %{buildroot}/sbin/clvmd %{buildroot}/%{_sbindir}/
+%endif
 
 install tools/lvm-static %{buildroot}/sbin/lvm.static
 #compatibility links
@@ -177,6 +195,18 @@ fi
 %if %mdkversion < 200900
 %postun -n %{libname} -p /sbin/ldconfig
 %endif
+%endif
+
+%if %build_cluster
+%post -n clvmd
+%_post_service clvmd
+/sbin/lvmconf --lockinglibdir %{_libdir}
+
+%preun -n clvmd
+%_preun_service clvmd
+if [ "$1" = 0 ]; then
+        /sbin/lvmconf --disable-cluster
+fi
 %endif
 
 %clean
@@ -213,7 +243,7 @@ rm -rf %{buildroot}
 %defattr(755, root,root)
 %config(noreplace) %{_initrddir}/clvmd
 %{_sbindir}/clvmd
-%{_libdir}/liblvm2clusterlock.so*
+/sbin/lvmconf
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 %endif
 
