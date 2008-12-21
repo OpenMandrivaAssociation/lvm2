@@ -106,10 +106,10 @@ an error if a node in the cluster does not have this daemon running.
 
 %prep
 %setup -q -n LVM2.%{version}
-%patch0 -p1 -b .alternatives
+%patch0 -p0 -b .alternatives
 %if %{use_dietlibc}
 %patch1 -p1 -b .diet
-%patch2 -p1 -b .stdint
+%patch2 -p0 -b .stdint
 %patch6 -p1 -b .types
 %patch7 -p1 -b .uint64_max
 %endif
