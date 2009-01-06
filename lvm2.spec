@@ -1,6 +1,6 @@
 %define	name	lvm2
 %define	version	2.02.33
-%define	release	%manbo_mkrel 4
+%define	release	%manbo_mkrel 5
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
 %define	use_dietlibc 1
@@ -9,7 +9,7 @@
 %endif
 
 %define	build_lvm2cmd 0
-%define	build_cluster 0
+%define	build_cluster 1
 %define	build_dmeventd 0
 
 %{?_with_lvm2cmd: %{expand: %%global build_lvm2cmd 1}}
