@@ -1,6 +1,6 @@
 %define	name	lvm2
 %define	version	2.02.33
-%define	release	%manbo_mkrel 6
+%define	release	%manbo_mkrel 7
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
 %define	use_dietlibc 1
@@ -238,12 +238,12 @@ rm -rf %{buildroot}
 %{_includedir}/lvm2cmd.h
 %attr(755,root,root) %{_libdir}/liblvm2cmd.so
 %endif
+
 %if %build_cluster
 %files -n clvmd
 %defattr(755, root,root)
 %config(noreplace) %{_initrddir}/clvmd
 %{_sbindir}/clvmd
-/sbin/lvmconf
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 %endif
 
