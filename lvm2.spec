@@ -1,6 +1,6 @@
 %define	name	lvm2
 %define	version	2.02.33
-%define	release	%manbo_mkrel 7
+%define	release	%manbo_mkrel 8
 
 %ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
 %define	use_dietlibc 1
@@ -31,7 +31,6 @@ Name:		%{name}
 Version:	%{version}
 Release:	%{release}
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz
-Source1:	clvmd.init.bz2
 Patch0:		lvm2-2.02.27-alternatives.patch
 Patch1:		lvm2-2.02.27-diet.patch
 Patch2:		lvm2-2.01.15-stdint.patch
@@ -43,6 +42,7 @@ Patch6:		lvm2-2.02.27-types.patch
 Patch7:		LVM2.2.02.31-uint64_max.patch
 Patch8:		lvm2-2.02.33-fix-clvmd-includes.patch
 Patch9:		lvm2-2.02.33-lvmconf-clvm-type3.patch
+Patch10:	clvmd-correct-lsb-headers.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -117,6 +117,7 @@ an error if a node in the cluster does not have this daemon running.
 %patch5 -p1 -b .fdlog
 %patch8 -p1 -b .fixclvmd
 %patch9 -p1 -b .fixlvmconf
+%patch10 -p1 -b .lsbinit
 
 %build
 autoconf # required by dietlibc patch
