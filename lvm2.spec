@@ -1,8 +1,8 @@
 %define	name	lvm2
 %define	version	2.02.33
-%define	release	%manbo_mkrel 8
+%define	release	%manbo_mkrel 9
 
-%ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc}
+%ifarch %{ix86} x86_64 ppc ppc64 %{sunsparc} %mips %arm
 %define	use_dietlibc 1
 %else
 %define	use_dietlibc 0
