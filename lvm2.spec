@@ -219,6 +219,7 @@ mv libdm/ioctl/libdevmapper.a .
 %configure %{common_configure_parameters} \
 	--disable-static_link --enable-readline \
 	--enable-fsadm --enable-pkgconfig \
+	--with-usrlibdir=%{_libdir} --libdir=/%{_lib} \
 	--enable-cmdlib \
 %if %build_lvm2app
 	--enable-applib \
@@ -239,7 +240,7 @@ mv libdm/ioctl/libdevmapper.a .
 
 %install
 rm -rf %{buildroot}
-%makeinstall sbindir=%{buildroot}/%{_sbindir} libdir=%{buildroot}/%{_lib} usrsbindir=%{buildroot}/%{_usrsbindir} confdir=%{buildroot}/etc/lvm/
+%makeinstall_std
 
 install -d %{buildroot}/etc/lvm/archive
 install -d %{buildroot}/etc/lvm/backup
@@ -258,6 +259,7 @@ install -m 0755 scripts/lvmconf.sh %{buildroot}/%{_usrsbindir}/lvmconf
 
 install lvm.static %{buildroot}/%{_sbindir}/lvm.static
 install dmsetup.static %{buildroot}/%{_sbindir}/dmsetup.static
+#install -d %{buildroot}/%{_libdir}/
 install -m 644 libdevmapper.a %{buildroot}/%{_libdir}
 #compatibility links
 ln %{buildroot}/%{_sbindir}/lvm %{buildroot}/%{_sbindir}/lvm2
