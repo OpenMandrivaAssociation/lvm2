@@ -1,5 +1,6 @@
 %define	name	lvm2
 %define	lvmversion	2.02.53
+# grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.38
 %define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
@@ -55,6 +56,7 @@ BuildRequires:	glibc-static-devel
 %if %build_dmeventd
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
+Requires:	%{dmlibname} >= %{dmversion}
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -109,10 +111,10 @@ This package contains the header files for building with lvm2app.
 %package -n	clvmd
 Summary:	cluster LVM daemon
 Group:		System/Kernel and hardware
-BuildRequires:	cluster-devel
+BuildRequires:	cluster-devel >= 3.0.3
 #bluca 200909 openais support requires 1.0 openais/corosync
-#BuildRequires:	openais-devel > 1.0
-#BuildRequires:	corosync-devel > 1.0
+BuildRequires:	openais-devel >= 1.1.0
+BuildRequires:	corosync-devel >= 1.1.0
 
 %description -n	clvmd
 clvmd is the daemon that distributes LVM metadata updates around a
@@ -225,7 +227,7 @@ mv libdm/ioctl/libdevmapper.a .
 	--enable-applib \
 %endif
 %if %build_cluster
-	--with-clvmd=cman \
+	--with-clvmd=cman,corosync \
 %else
 	--with-cluster=none \
 	--with-pool=none \
