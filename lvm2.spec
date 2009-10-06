@@ -72,7 +72,7 @@ Group:		System/Kernel and hardware
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
 %define _exclude_files_from_autoreq libdevmapper-event-lvm2mirror.so\\|libdevmapper-event-lvm2snapshot.so
 # Put back explicitly as _exclude_files_from_autoreq above prevents the autoreq
-Requires:	%{dmlibname} = %{version}-%{release}
+Requires:	%{dmlibname} >= %{dmversion}-%{release}
 
 %description -n	%{cmdlibname}
 The lvm2 command line library allows building programs that manage
