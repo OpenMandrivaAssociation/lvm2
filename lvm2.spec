@@ -2,7 +2,7 @@
 %define	lvmversion	2.02.53
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.38
-%define	release	%manbo_mkrel 1
+%define	release	%manbo_mkrel 2
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	dmmajor		1.02
@@ -168,6 +168,8 @@ This package contains the header files and development libraries
 for building programs which use device-mapper.
 
 %if %{build_dmeventd}
+%define _exclude_files_from_autoreq libdevmapper-event-lvm2mirror.so\\|libdevmapper-event-lvm2snapshot.so
+
 %package -n	%{event_libname}
 Summary:	Device mapper event library
 Version:	%{dmversion}
