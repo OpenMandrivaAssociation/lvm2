@@ -2,7 +2,7 @@
 %define	lvmversion	2.02.53
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.38
-%define	release	%manbo_mkrel 2
+%define	release	%manbo_mkrel 3
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	dmmajor		1.02
