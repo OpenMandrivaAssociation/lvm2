@@ -69,6 +69,10 @@ in volume groups.
 %package -n	%{cmdlibname}
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
+# Avoid devel deps on library due to autoreq picking these plugins up as devel libs
+%define _exclude_files_from_autoreq libdevmapper-event-lvm2mirror.so\\|libdevmapper-event-lvm2snapshot.so
+# Put back explicitly as _exclude_files_from_autoreq above prevents the autoreq
+Requires:	%{dmlibname} = %{version}-%{release}
 
 %description -n	%{cmdlibname}
 The lvm2 command line library allows building programs that manage
@@ -168,7 +172,6 @@ This package contains the header files and development libraries
 for building programs which use device-mapper.
 
 %if %{build_dmeventd}
-%define _exclude_files_from_autoreq libdevmapper-event-lvm2mirror.so\\|libdevmapper-event-lvm2snapshot.so
 
 %package -n	%{event_libname}
 Summary:	Device mapper event library
