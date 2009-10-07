@@ -2,7 +2,7 @@
 %define	lvmversion	2.02.53
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.38
-%define	release	%manbo_mkrel 3
+%define	release	%manbo_mkrel 4
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	dmmajor		1.02
@@ -70,9 +70,7 @@ in volume groups.
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
-%define _exclude_files_from_autoreq libdevmapper-event-lvm2mirror.so\\|libdevmapper-event-lvm2snapshot.so
-# Put back explicitly as _exclude_files_from_autoreq above prevents the autoreq
-Requires:	%{dmlibname} >= %{dmversion}-%{release}
+%define _exclude_files_from_autoreq libdevmapper-event-.\\+\\.so$
 
 %description -n	%{cmdlibname}
 The lvm2 command line library allows building programs that manage
