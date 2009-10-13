@@ -2,7 +2,7 @@
 %define	lvmversion	2.02.53
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.38
-%define	release	%manbo_mkrel 4
+%define	release	%manbo_mkrel 5
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	dmmajor		1.02
@@ -42,6 +42,7 @@ Patch0:		lvm2-2.02.53-alternatives.patch
 Patch1:		lvm2-2.02.53-pkgconfig.patch
 Patch2:		lvm2-2.02.53-vgmknodes-man.patch
 Patch3:		lvm2-2.02.33-lvmconf-clvm-type3.patch
+Patch4:		clvmd-correct-lsb-headers.path
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{lvmversion}-%{release}-buildroot
@@ -207,6 +208,7 @@ for building programs which use device-mapper-event.
 %patch1 -p1 -b .pkgconfig
 %patch2 -p1 -b .vgmknodes-man
 %patch3 -p1 -b .fixlvmconf
+%patch4 -p1 -b .lsbinit
 
 %build
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
