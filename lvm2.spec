@@ -2,7 +2,7 @@
 %define	lvmversion	2.02.53
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.38
-%define	release	%manbo_mkrel 5
+%define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	dmmajor		1.02
@@ -34,7 +34,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		%{name}
-Version:	%{lvmversion}
+Version:	2.02.54
 Release:	%{release}
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
