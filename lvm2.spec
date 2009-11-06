@@ -1,7 +1,7 @@
 %define	name	lvm2
-%define	lvmversion	2.02.53
+%define	lvmversion	2.02.54
 # grep ^Version libdm/libdevmapper.pc
-%define dmversion 1.02.38
+%define dmversion 1.02.39
 %define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
