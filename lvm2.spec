@@ -43,6 +43,7 @@ Patch1:		lvm2-2.02.53-pkgconfig.patch
 Patch2:		lvm2-2.02.53-vgmknodes-man.patch
 Patch3:		lvm2-2.02.33-lvmconf-clvm-type3.patch
 Patch4:		clvmd-correct-lsb-headers.path
+Patch5:		lvm2-2.02.54-interfacedir-should-be-builddir.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{lvmversion}-%{release}-buildroot
@@ -209,6 +210,7 @@ for building programs which use device-mapper-event.
 %patch2 -p1 -b .vgmknodes-man
 %patch3 -p1 -b .fixlvmconf
 %patch4 -p1 -b .lsbinit
+%patch5 -p1 -b .builddir~
 
 %build
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
