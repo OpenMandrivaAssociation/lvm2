@@ -215,16 +215,19 @@ for building programs which use device-mapper-event.
 %build
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
 export ac_cv_lib_dl_dlopen=no
+export CONFIGURE_TOP=".."
+
+mkdir -p static
+cd static
 %configure %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
 unset ac_cv_lib_dl_dlopen
 %make
-mv tools/dmsetup.static .
-mv tools/lvm.static .
-mv libdm/ioctl/libdevmapper.a .
-%make clean
+cd ..
 
+mkdir -p shared
+cd shared
 %configure %{common_configure_parameters} \
 	--disable-static_link --enable-readline \
 	--enable-fsadm --enable-pkgconfig \
@@ -246,10 +249,13 @@ mv libdm/ioctl/libdevmapper.a .
 # 20090926 disabled for now: --enable-udev_sync --enable-udev_rules
 # end of configure options
 %make
+cd ..
 
 %install
 rm -rf %{buildroot}
+cd shared
 %makeinstall_std
+cd ..
 
 install -d %{buildroot}/etc/lvm/archive
 install -d %{buildroot}/etc/lvm/backup
@@ -260,16 +266,16 @@ install -d %{buildroot}/var/lock/lvm
 
 install -d %{buildroot}/%{_initrddir}
 
-install scripts/lvm2_monitoring_init_red_hat %{buildroot}/%{_initrddir}/lvm2-monitor
+install shared/scripts/lvm2_monitoring_init_red_hat %{buildroot}/%{_initrddir}/lvm2-monitor
 %if %build_cluster
-install scripts/clvmd_init_red_hat %{buildroot}/%{_initrddir}/clvmd
+install shared/scripts/clvmd_init_red_hat %{buildroot}/%{_initrddir}/clvmd
 install -m 0755 scripts/lvmconf.sh %{buildroot}/%{_usrsbindir}/lvmconf
 %endif
 
-install lvm.static %{buildroot}/%{_sbindir}/lvm.static
-install dmsetup.static %{buildroot}/%{_sbindir}/dmsetup.static
+install static/tools/lvm.static %{buildroot}/%{_sbindir}/lvm.static
+install static/tools/dmsetup.static %{buildroot}/%{_sbindir}/dmsetup.static
 #install -d %{buildroot}/%{_libdir}/
-install -m 644 libdevmapper.a %{buildroot}/%{_libdir}
+install -m 644 static/libdm/ioctl/libdevmapper.a %{buildroot}/%{_libdir}
 #compatibility links
 ln %{buildroot}/%{_sbindir}/lvm %{buildroot}/%{_sbindir}/lvm2
 ln %{buildroot}/%{_sbindir}/lvm.static %{buildroot}/%{_sbindir}/lvm2-static
