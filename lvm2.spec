@@ -27,6 +27,8 @@
 %{?_with_cluster: %{expand: %%global build_cluster 1}}
 %{?_without_cluster: %{expand: %%global build_cluster 0}}
 
+%bcond_without	uclibc
+
 %if %build_lvm2app
 %define	applibname	%mklibname lvm2app 2.1
 %define appdevelname	%mklibname -d lvm2
@@ -55,6 +57,9 @@ BuildRequires:	ncurses-devel
 Conflicts:	lvm
 Conflicts:	lvm1
 BuildRequires:	glibc-static-devel
+%if %{with uclibc}
+BuildRequires:	uClibc-devel
+%endif
 %if %build_dmeventd
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
@@ -222,9 +227,20 @@ cd static
 %configure %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
-unset ac_cv_lib_dl_dlopen
 %make
 cd ..
+
+%if %{with uclibc}
+mkdir -p uclibc
+cd uclibc
+%configure CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" %{common_configure_parameters} \
+	--enable-static_link --disable-readline \
+	--with-cluster=none --with-pool=none
+%make
+cd ..
+%endif
+
+unset ac_cv_lib_dl_dlopen
 
 mkdir -p shared
 cd shared
@@ -272,8 +288,15 @@ install shared/scripts/clvmd_init_red_hat %{buildroot}/%{_initrddir}/clvmd
 install -m 0755 scripts/lvmconf.sh %{buildroot}/%{_usrsbindir}/lvmconf
 %endif
 
+%if %{with uclibc}
+install uclibc/tools/lvm.static %{buildroot}%{_sbindir}/lvm.static
+install uclibc/tools/dmsetup.static %{buildroot}%{_sbindir}/dmsetup.static
+install -m644 uclibc/libdm/ioctl/libdevmapper.a -D %{buildroot}%{uclibc_root}%{_libdir}/libdevmapper.a
+%else
 install static/tools/lvm.static %{buildroot}/%{_sbindir}/lvm.static
 install static/tools/dmsetup.static %{buildroot}/%{_sbindir}/dmsetup.static
+%endif
+
 #install -d %{buildroot}/%{_libdir}/
 install -m 644 static/libdm/ioctl/libdevmapper.a %{buildroot}/%{_libdir}
 #compatibility links
@@ -404,6 +427,9 @@ rm -rf %{buildroot}
 %defattr(644,root,root,755)
 %{_libdir}/libdevmapper.so
 %{_libdir}/libdevmapper.a*
+%if %{with uclibc}
+%{uclibc_root}%{_libdir}/libdevmapper.a
+%endif
 %{_includedir}/libdevmapper.h
 %{_libdir}/pkgconfig/devmapper.pc
 
