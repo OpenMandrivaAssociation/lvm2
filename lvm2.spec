@@ -1,7 +1,7 @@
 %define	name	lvm2
-%define	lvmversion	2.02.54
+%define	lvmversion	2.02.60
 # grep ^Version libdm/libdevmapper.pc
-%define dmversion 1.02.39
+%define dmversion 1.02.43
 %define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
@@ -20,6 +20,12 @@
 %define	build_cluster 1
 %define	build_dmeventd 1
 
+#requirements for cluster
+%define corosync_version 1.2.0
+%define openais_version 1.1.1
+%define cluster_version 3.0.6
+
+
 %{?_with_dmeventd: %{expand: %%global build_dmeventd 1}}
 %{?_without_dmeventd: %{expand: %%global build_dmeventd 0}}
 %{?_with_lvm2app: %{expand: %%global build_lvm2app 1}}
@@ -36,16 +42,16 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		%{name}
-Version:	2.02.54
+Version:	%{lvmversion}
 Release:	%{release}
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Patch0:		lvm2-2.02.53-alternatives.patch
 Patch1:		lvm2-2.02.53-pkgconfig.patch
 Patch2:		lvm2-2.02.53-vgmknodes-man.patch
-Patch3:		lvm2-2.02.33-lvmconf-clvm-type3.patch
+Patch3:		lvm2-2.02.60-srcdir.patch
 Patch4:		clvmd-correct-lsb-headers.path
-Patch5:		lvm2-2.02.54-interfacedir-should-be-builddir.patch
+Patch5:		lvm2-set-default-preferred_names.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{lvmversion}-%{release}-buildroot
@@ -120,15 +126,26 @@ This package contains the header files for building with lvm2app.
 %package -n	clvmd
 Summary:	cluster LVM daemon
 Group:		System/Kernel and hardware
-BuildRequires:	cluster-devel >= 3.0.3
-#bluca 200909 openais support requires 1.0 openais/corosync
-BuildRequires:	openais-devel >= 1.1.0
-BuildRequires:	corosync-devel >= 1.1.0
+BuildRequires:	cluster-devel >= %{cluster_version}
+BuildRequires:	openais-devel >= %{openais_version}
+BuildRequires:	corosync-devel >= %{corosync_version}
+Requires:	cman >= %{cluster_version}
 
 %description -n	clvmd
 clvmd is the daemon that distributes LVM metadata updates around a
 cluster. It must be running on all nodes in the cluster and will give
 an error if a node in the cluster does not have this daemon running.
+
+%package -n	cmirror
+Summary: Daemon for device-mapper-based clustered mirrors
+Group:		System/Kernel and hardware
+BuildRequires:	cluster-devel >= %{cluster_version}
+BuildRequires:	openais-devel >= %{openais_version}
+BuildRequires:	corosync-devel >= %{corosync_version}
+Requires:	cman >= %{cluster_version}
+
+%description -n	cmirror
+Daemon providing device-mapper-based mirrors in a shared-storage cluster.
 %endif
 
 %package -n	dmsetup
@@ -138,6 +155,7 @@ Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
 Provides:	dmeventd = %{dmversion}-%{release}
 Requires:	%{dmlibname} = %{dmversion}-%{release}
+Buildrequires:	udev-devel
 
 %description -n	dmsetup
 Dmsetup manages logical devices that use the device-mapper driver.  
@@ -213,9 +231,9 @@ for building programs which use device-mapper-event.
 %patch0 -p1 -b .alternatives
 %patch1 -p1 -b .pkgconfig
 %patch2 -p1 -b .vgmknodes-man
-%patch3 -p1 -b .fixlvmconf
+%patch3 -p1 -b .srcdir
 %patch4 -p1 -b .lsbinit
-%patch5 -p1 -b .builddir~
+%patch5 -p1 -b .preferred
 
 %build
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
@@ -253,7 +271,8 @@ cd shared
 	--enable-applib \
 %endif
 %if %build_cluster
-	--with-clvmd=cman,corosync \
+	--with-clvmd=cman,openais,corosync \
+	--enable-cmirrord \
 %else
 	--with-cluster=none \
 	--with-pool=none \
@@ -261,8 +280,9 @@ cd shared
 %if %{build_dmeventd}
 	--enable-dmeventd \
 %endif
+	--enable-udev_sync --enable-udev_rules \
+	--with-udevdir=/lib/udev/rules.d \
 # 20090926 no translations yet:	--enable-nls
-# 20090926 disabled for now: --enable-udev_sync --enable-udev_rules
 # end of configure options
 %make
 cd ..
@@ -285,6 +305,7 @@ install -d %{buildroot}/%{_initrddir}
 install shared/scripts/lvm2_monitoring_init_red_hat %{buildroot}/%{_initrddir}/lvm2-monitor
 %if %build_cluster
 install shared/scripts/clvmd_init_red_hat %{buildroot}/%{_initrddir}/clvmd
+install shared/scripts/cmirrord_init_red_hat %{buildroot}/%{_initrddir}/cmirrord
 install -m 0755 scripts/lvmconf.sh %{buildroot}/%{_usrsbindir}/lvmconf
 %endif
 
@@ -351,6 +372,12 @@ fi
 if [ "$1" = 0 ]; then
         %{_usrsbindir}/lvmconf --disable-cluster
 fi
+
+%post -n cmirror
+%_post_service cmirror
+
+%preun -n cmirror
+%_preun_service cmirror
 %endif
 
 %clean
@@ -373,11 +400,13 @@ rm -rf %{buildroot}
 %attr(700,root,root) %dir /var/lock/lvm
 %{_mandir}/man5/*
 %{_mandir}/man8/*
+/lib/udev/rules.d/11-dm-lvm.rules
 
 %files -n %{cmdlibname}
 %defattr(644,root,root,755)
 /%{_lib}/liblvm2cmd.so.*
 %if %{build_dmeventd}
+/%{_lib}/libdevmapper-event-lvm2.so*
 /%{_lib}/libdevmapper-event-lvm2mirror.so*
 /%{_lib}/libdevmapper-event-lvm2snapshot.so*
 %endif
@@ -406,6 +435,12 @@ rm -rf %{buildroot}
 %{_usrsbindir}/clvmd
 %{_usrsbindir}/lvmconf
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
+
+%files -n cmirror
+%defattr(755root,root,-)
+%config(noreplace) %{_initrddir}/cmirrord
+%{_usrsbindir}/cmirrord
+%attr(644,root,root) %{_mandir}/man8/cmirrord.8*
 %endif
 
 %files -n dmsetup
@@ -418,6 +453,9 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_sbindir}/dmeventd
 %endif
 %{_mandir}/man8/dmsetup.8*
+/lib/udev/rules.d/10-dm.rules
+/lib/udev/rules.d/13-dm-disk.rules
+/lib/udev/rules.d/95-dm-notify.rules
 
 %files -n %{dmlibname}
 %defattr(755,root,root)
