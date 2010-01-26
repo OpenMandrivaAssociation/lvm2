@@ -5,6 +5,7 @@
 %define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
+%define	_udevdir	/lib/udev/rules.d
 %define	dmmajor		1.02
 %define	cmdmajor	2.02
 %define	appmajor	2.1
@@ -60,6 +61,7 @@ BuildConflicts:	device-mapper-devel >= %{dmversion}
 BuildRequires:	readline-devel
 BuildRequires:	ncurses-devel
 #BuildRequires:	autoconf
+BuildRequires:	sed
 Conflicts:	lvm
 Conflicts:	lvm1
 BuildRequires:	glibc-static-devel
@@ -155,7 +157,8 @@ Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
 Provides:	dmeventd = %{dmversion}-%{release}
 Requires:	%{dmlibname} = %{dmversion}-%{release}
-Buildrequires:	udev-devel
+BuildRequires:	udev-devel
+Requires:	udev
 
 %description -n	dmsetup
 Dmsetup manages logical devices that use the device-mapper driver.  
@@ -245,18 +248,19 @@ cd static
 %configure %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
-%make
+sed -ie 's/\ -static/ -static -Wl,--no-export-dynamic/' tools/Makefile
+%if %{with uclibc}
+%make libdm.device-mapper
 cd ..
 
-%if %{with uclibc}
 mkdir -p uclibc
 cd uclibc
 %configure CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
+%endif
 %make
 cd ..
-%endif
 
 unset ac_cv_lib_dl_dlopen
 
@@ -279,9 +283,10 @@ cd shared
 %endif
 %if %{build_dmeventd}
 	--enable-dmeventd \
+	--with-dmeventd-path=/sbin/dmeventd \
 %endif
 	--enable-udev_sync --enable-udev_rules \
-	--with-udevdir=/lib/udev/rules.d \
+	--with-udevdir=%{_udevdir} \
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
 %make
@@ -400,7 +405,7 @@ rm -rf %{buildroot}
 %attr(700,root,root) %dir /var/lock/lvm
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-/lib/udev/rules.d/11-dm-lvm.rules
+%{_udevdir}/11-dm-lvm.rules
 
 %files -n %{cmdlibname}
 %defattr(644,root,root,755)
@@ -453,9 +458,9 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_sbindir}/dmeventd
 %endif
 %{_mandir}/man8/dmsetup.8*
-/lib/udev/rules.d/10-dm.rules
-/lib/udev/rules.d/13-dm-disk.rules
-/lib/udev/rules.d/95-dm-notify.rules
+%{_udevdir}/10-dm.rules
+%{_udevdir}/13-dm-disk.rules
+%{_udevdir}/95-dm-notify.rules
 
 %files -n %{dmlibname}
 %defattr(755,root,root)
