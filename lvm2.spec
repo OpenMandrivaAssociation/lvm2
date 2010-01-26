@@ -239,6 +239,9 @@ for building programs which use device-mapper-event.
 %patch5 -p1 -b .preferred
 
 %build
+%if %{build_dmeventd}
+%define _disable_ld_as_needed 1
+%endif
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
 export ac_cv_lib_dl_dlopen=no
 export CONFIGURE_TOP=".."
