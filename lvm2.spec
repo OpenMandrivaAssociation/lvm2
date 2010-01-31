@@ -155,8 +155,11 @@ Summary:	Device mapper setup tool
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
-Provides:	dmeventd = %{dmversion}-%{release}
 Requires:	%{dmlibname} = %{dmversion}-%{release}
+%if %{build_dmeventd}
+Provides:	dmeventd = %{dmversion}-%{release}
+Requires:	%{event_libname} = %{dmversion}-%{release}
+%endif
 BuildRequires:	udev-devel
 Requires:	udev
 
