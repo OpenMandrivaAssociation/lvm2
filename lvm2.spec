@@ -402,7 +402,7 @@ rm -rf %{buildroot}
 %attr(755,root,root) %{_sbindir}/lv*
 %attr(755,root,root) %{_sbindir}/pv*
 %attr(755,root,root) %{_sbindir}/vg*
-%config(noreplace) %{_initrddir}/lvm2-monitor
+%config(noreplace) %attr(755,root,root) %{_initrddir}/lvm2-monitor
 %dir %{_sysconfdir}/lvm
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
