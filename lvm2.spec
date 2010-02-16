@@ -1,5 +1,5 @@
 %define	name	lvm2
-%define	lvmversion	2.02.60
+%define	lvmversion	2.02.61
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.43
 %define	release	%manbo_mkrel 1
@@ -252,7 +252,7 @@ export CONFIGURE_TOP=".."
 
 mkdir -p static
 cd static
-%configure %{common_configure_parameters} \
+%configure2_5x %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
 sed -ie 's/\ -static/ -static -Wl,--no-export-dynamic/' tools/Makefile
@@ -262,7 +262,7 @@ cd ..
 
 mkdir -p uclibc
 cd uclibc
-%configure CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" %{common_configure_parameters} \
+%configure2_5x CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
 %endif
@@ -273,7 +273,7 @@ unset ac_cv_lib_dl_dlopen
 
 mkdir -p shared
 cd shared
-%configure %{common_configure_parameters} \
+%configure2_5x %{common_configure_parameters} \
 	--disable-static_link --enable-readline \
 	--enable-fsadm --enable-pkgconfig \
 	--with-usrlibdir=%{_libdir} --libdir=/%{_lib} \
