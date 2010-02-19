@@ -2,7 +2,7 @@
 %define	lvmversion	2.02.61
 # grep ^Version libdm/libdevmapper.pc
 %define dmversion 1.02.43
-%define	release	%manbo_mkrel 1
+%define	release	%manbo_mkrel 2
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -206,6 +206,8 @@ for building programs which use device-mapper.
 Summary:	Device mapper event library
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
+Provides:	device-mapper-event = %{dmversion}-%{release}
+Provides:	libdevmapper-event = %{dmversion}-%{release}
 
 %description -n	%{event_libname}
 The device-mapper-event library allows monitoring of active mapped devices.
