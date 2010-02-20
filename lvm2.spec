@@ -1,8 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.61
-# grep ^Version libdm/libdevmapper.pc
-%define dmversion 1.02.43
-%define	release	%manbo_mkrel 2
+%define	dmversion	1.02.44
+%define	release	%manbo_mkrel 3
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -244,6 +243,15 @@ for building programs which use device-mapper-event.
 %patch5 -p1 -b .preferred
 
 %build
+datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
+datedm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM`
+if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
+ "%{release}" = "%{manbo_mkrel 1}" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
+	echo "ERROR:	you should not be touching this package" 1>&2
+	echo "	without full understanding of relationship between device-mapper" 1>&2
+	echo "	and lvm2 versions" 1>&2
+	exit 1
+fi
 %if %{build_dmeventd}
 %define _disable_ld_as_needed 1
 %endif
