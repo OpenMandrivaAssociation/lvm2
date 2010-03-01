@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.61
 %define	dmversion	1.02.44
-%define	release	%manbo_mkrel 4
+%define	release	%manbo_mkrel 5
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -52,6 +52,7 @@ Patch2:		lvm2-2.02.53-vgmknodes-man.patch
 Patch3:		lvm2-2.02.60-srcdir.patch
 Patch4:		clvmd-correct-lsb-headers.path
 Patch5:		lvm2-set-default-preferred_names.patch
+Patch6:		lvm2-2.02.61-dev-mapper-udev-rule-fix.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{lvmversion}-%{release}-buildroot
@@ -241,6 +242,7 @@ for building programs which use device-mapper-event.
 %patch3 -p1 -b .srcdir
 %patch4 -p1 -b .lsbinit
 %patch5 -p1 -b .preferred
+%patch6 -p1 -b .udev
 
 %build
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
