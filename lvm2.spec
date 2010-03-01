@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.61
 %define	dmversion	1.02.44
-%define	release	%manbo_mkrel 3
+%define	release	%manbo_mkrel 4
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -16,7 +16,7 @@
 %define cmdlibname	%mklibname lvm2cmd %cmdmajor
 %define cmddevelname	%mklibname lvm2cmd -d
 
-%define	build_lvm2app 0
+%define	build_lvm2app 1
 %define	build_cluster 1
 %define	build_dmeventd 1
 
@@ -56,7 +56,7 @@ License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{lvmversion}-%{release}-buildroot
 URL:		http://sources.redhat.com/lvm2/
-BuildConflicts:	device-mapper-devel >= %{dmversion}
+BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
 BuildRequires:	ncurses-devel
 #BuildRequires:	autoconf
