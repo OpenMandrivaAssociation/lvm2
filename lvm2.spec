@@ -463,7 +463,7 @@ rm -rf %{buildroot}
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 
 %files -n cmirror
-%defattr(755root,root,-)
+%defattr(755,root,root,-)
 %config(noreplace) %{_initrddir}/cmirrord
 %{_usrsbindir}/cmirrord
 %attr(644,root,root) %{_mandir}/man8/cmirrord.8*
