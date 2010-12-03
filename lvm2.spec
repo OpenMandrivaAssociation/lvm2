@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.61
 %define	dmversion	1.02.44
-%define	release	%manbo_mkrel 6
+%define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -42,7 +42,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		%{name}
-Version:	%{lvmversion}
+Version:	2.02.77
 Release:	%{release}
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
