@@ -1,13 +1,13 @@
 %define	name	lvm2
-%define	lvmversion	2.02.61
-%define	dmversion	1.02.44
+%define	lvmversion	2.02.77
+%define	dmversion	1.02.58
 %define	release	%manbo_mkrel 1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
 %define	dmmajor		1.02
 %define	cmdmajor	2.02
-%define	appmajor	2.1
+%define	appmajor	2.2
 
 %define	dmlibname	%mklibname devmapper %dmmajor
 %define	dmdevelname	%mklibname devmapper -d
@@ -36,24 +36,20 @@
 %bcond_without	uclibc
 
 %if %build_lvm2app
-%define	applibname	%mklibname lvm2app 2.1
+%define	applibname	%mklibname lvm2app %{appmajor}
 %define appdevelname	%mklibname -d lvm2
 %endif
 
 Summary:	Logical Volume Manager administration tools
 Name:		%{name}
-Version:	2.02.77
+Version:	%{lvmversion}
 Release:	%{release}
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Patch0:		lvm2-2.02.53-alternatives.patch
-Patch1:		lvm2-2.02.53-pkgconfig.patch
+Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.53-vgmknodes-man.patch
-Patch3:		lvm2-2.02.60-srcdir.patch
-Patch4:		clvmd-correct-lsb-headers.path
-Patch5:		lvm2-set-default-preferred_names.patch
-Patch6:		lvm2-2.02.61-dev-mapper-udev-rule-fix.patch
-Patch7:		LVM2.2.02.61-CVE-2010-2526.diff
+Patch5:		lvm2-2.02.77-preferred_names.patch
 License:	GPL
 Group:		System/Kernel and hardware
 BuildRoot:	%{_tmppath}/%{name}-%{lvmversion}-%{release}-buildroot
@@ -146,6 +142,8 @@ BuildRequires:	cluster-devel >= %{cluster_version}
 BuildRequires:	openais-devel >= %{openais_version}
 BuildRequires:	corosync-devel >= %{corosync_version}
 Requires:	cman >= %{cluster_version}
+Requires:	openais >= %{openais_version}
+Requires:	corosync >= %{corosync_version}
 
 %description -n	cmirror
 Daemon providing device-mapper-based mirrors in a shared-storage cluster.
@@ -238,13 +236,9 @@ for building programs which use device-mapper-event.
 %prep
 %setup -q -n LVM2.%{lvmversion}
 %patch0 -p1 -b .alternatives
-%patch1 -p1 -b .pkgconfig
+%patch1 -p1 -b .qdiskd
 %patch2 -p1 -b .vgmknodes-man
-%patch3 -p1 -b .srcdir
-%patch4 -p1 -b .lsbinit
 %patch5 -p1 -b .preferred
-%patch6 -p1 -b .udev
-%patch7 -p1 -b .CVE-2010-2526
 
 %build
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
@@ -280,6 +274,7 @@ cd uclibc
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
 %endif
+sed -ie 's/\ -static/ -static -Wl,--no-export-dynamic/' tools/Makefile
 %make
 cd ..
 
@@ -432,9 +427,12 @@ rm -rf %{buildroot}
 %defattr(644,root,root,755)
 /%{_lib}/liblvm2cmd.so.*
 %if %{build_dmeventd}
-/%{_lib}/libdevmapper-event-lvm2.so*
-/%{_lib}/libdevmapper-event-lvm2mirror.so*
-/%{_lib}/libdevmapper-event-lvm2snapshot.so*
+%dir /%{_lib}/device-mapper
+/%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
+/%{_lib}/device-mapper/libdevmapper-event-lvm2snapshot.so
+/%{_lib}/libdevmapper-event-lvm2.so.*
+/%{_lib}/libdevmapper-event-lvm2mirror.so
+/%{_lib}/libdevmapper-event-lvm2snapshot.so
 %endif
 
 %files -n %{cmddevelname}
@@ -506,6 +504,6 @@ rm -rf %{buildroot}
 %defattr(644,root,root,755)
 %{_includedir}/libdevmapper-event.h
 %{_libdir}/libdevmapper-event.so
+%{_libdir}/libdevmapper-event-lvm2.so
 %{_libdir}/pkgconfig/devmapper-event.pc
 %endif
-
