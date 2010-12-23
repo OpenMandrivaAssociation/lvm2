@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.78
 %define	dmversion	1.02.59
-%define	release	%manbo_mkrel 1
+%define	release	%manbo_mkrel 2
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -25,7 +25,6 @@
 %define openais_version 1.1.1
 %define cluster_version 3.0.6
 
-
 %{?_with_dmeventd: %{expand: %%global build_dmeventd 1}}
 %{?_without_dmeventd: %{expand: %%global build_dmeventd 0}}
 %{?_with_lvm2app: %{expand: %%global build_lvm2app 1}}
@@ -38,6 +37,14 @@
 %if %build_lvm2app
 %define	applibname	%mklibname lvm2app %{appmajor}
 %define appdevelname	%mklibname -d lvm2
+%endif
+
+%if %build_dmeventd
+%define dm_req	%{event_libname}
+%define dm_req_d	%{event_develname}
+%else
+%define dm_req	%{dmlibname}
+%define dm_req_d	%{dmdevelname}
 %endif
 
 Summary:	Logical Volume Manager administration tools
@@ -66,9 +73,10 @@ BuildRequires:	glibc-static-devel
 BuildRequires:	uClibc-devel
 %endif
 %if %build_dmeventd
+# install plugins as well
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
-Requires:	%{dmlibname} >= %{dmversion}
+Requires:	%{dm_req} >= %{dmversion}
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -81,6 +89,7 @@ in volume groups.
 %package -n	%{cmdlibname}
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
+Requires:	%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
 %define _exclude_files_from_autoreq libdevmapper-event-.\\+\\.so$
 
@@ -91,8 +100,9 @@ lvm devices without invoking a separate program.
 %package -n	%{cmddevelname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
-Requires:	%{cmdlibname} = %{version}-%{release}
-Provides:	liblvm2cmd-devel = %{version}-%{release}
+Requires:	%{cmdlibname} = %{lvmversion}-%{release}
+Requires:	%{dm_req_d} = %{dmversion}-%{release}
+Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d}
 
 %description -n	%{cmddevelname}
@@ -104,6 +114,7 @@ This package contains the header files for building with lvm2cmd and lvm2app.
 %package -n	%{applibname}
 Summary:	LVM2 application api library
 Group:		System/Kernel and hardware
+Requires:	%{dm_req} >= %{dmversion}
 
 %description -n	%{applibname}
 LVM2 application API
@@ -112,8 +123,9 @@ LVM2 application API
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	pkgconfig
-Requires:	%{applibname} = %{version}-%{release}
-Provides:	liblvm2app-devel = %{version}-%{release}
+Requires:	%{applibname} = %{lvmversion}-%{release}
+Requires:	%{dm_req_d} = %{dmversion}-%{release}
+Provides:	liblvm2app-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2app %appmajor -d}
 
 %description -n	%{appdevelname}
@@ -129,6 +141,7 @@ BuildRequires:	cluster-devel >= %{cluster_version}
 BuildRequires:	openais-devel >= %{openais_version}
 BuildRequires:	corosync-devel >= %{corosync_version}
 Requires:	cman >= %{cluster_version}
+Requires:	%{dm_req} >= %{dmversion}
 
 %description -n	clvmd
 clvmd is the daemon that distributes LVM metadata updates around a
@@ -144,6 +157,7 @@ BuildRequires:	corosync-devel >= %{corosync_version}
 Requires:	cman >= %{cluster_version}
 Requires:	openais >= %{openais_version}
 Requires:	corosync >= %{corosync_version}
+Requires:	%{dmlibname} >= %{dmversion}
 
 %description -n	cmirror
 Daemon providing device-mapper-based mirrors in a shared-storage cluster.
@@ -154,11 +168,10 @@ Summary:	Device mapper setup tool
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
-Requires:	%{dmlibname} = %{dmversion}-%{release}
 %if %{build_dmeventd}
 Provides:	dmeventd = %{dmversion}-%{release}
-Requires:	%{event_libname} = %{dmversion}-%{release}
 %endif
+Requires:	%{dm_req} = %{dmversion}-%{release}
 BuildRequires:	udev-devel
 Requires:	udev
 
@@ -207,6 +220,7 @@ Version:	%{dmversion}
 Group:		System/Kernel and hardware
 Provides:	device-mapper-event = %{dmversion}-%{release}
 Provides:	libdevmapper-event = %{dmversion}-%{release}
+Requires:	%{dmlibname} >= %{dmversion}
 
 %description -n	%{event_libname}
 The device-mapper-event library allows monitoring of active mapped devices.
