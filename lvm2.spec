@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.85
 %define	dmversion	1.02.64
-%define	release		2
+%define	release		3
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -357,10 +357,12 @@ install static/tools/dmsetup.static %{buildroot}/%{_sbindir}/dmsetup.static
 #install -d %{buildroot}/%{_libdir}/
 install -m 644 static/libdm/ioctl/libdevmapper.a %{buildroot}/%{_libdir}
 #compatibility links
-ln %{buildroot}/%{_sbindir}/lvm %{buildroot}/%{_sbindir}/lvm2
 ln %{buildroot}/%{_sbindir}/lvm.static %{buildroot}/%{_sbindir}/lvm2-static
 ln %{buildroot}/%{_sbindir}/dmsetup.static %{buildroot}/%{_sbindir}/dmsetup-static
 %endif
+
+#compatibility links
+ln %{buildroot}/%{_sbindir}/lvm %{buildroot}/%{_sbindir}/lvm2
 
 #move .so links in /usr/lib
 for solink in %{buildroot}/%{_lib}/*.so; do
