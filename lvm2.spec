@@ -1,5 +1,5 @@
 %define	name	lvm2
-%define	lvmversion	2.02.95
+%define	lvmversion	2.02.96
 %define	dmversion	1.02.74
 %define	release	%mkrel  1
 %define	_usrsbindir	%{_prefix}/sbin
