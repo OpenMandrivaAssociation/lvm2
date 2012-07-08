@@ -1,6 +1,6 @@
 %define	name	lvm2
 %define	lvmversion	2.02.96
-%define	dmversion	1.02.74
+%define	dmversion	1.02.75
 %define	release	%mkrel  1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
@@ -171,7 +171,11 @@ Provides:	device-mapper = %{dmversion}-%{release}
 Provides:	dmeventd = %{dmversion}-%{release}
 %endif
 Requires:	%{dm_req} = %{dmversion}-%{release}
-BuildRequires:	udev-devel
+%if %mdvver >= 201200
+BuildRequires:	pkgconfig(udev) >= 186
+%else
+BuildRequires:	pkgconfig(udev)
+%endif
 Requires:	udev
 Requires(pre):	rpm-helper
 
