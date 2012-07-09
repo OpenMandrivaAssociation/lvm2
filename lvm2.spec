@@ -255,7 +255,7 @@ for building programs which use device-mapper-event.
 %setup -q -n LVM2.%{lvmversion}
 %patch0 -p1 -b .alternatives
 %patch1 -p1 -b .qdiskd
-%patch2 -p1 -b .vgmknodes-man
+#patch2 -p1 -b .vgmknodes-man
 %patch5 -p1 -b .preferred
 
 %build
@@ -379,7 +379,6 @@ chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/%{_sbindir}/*
 chmod u+w  %{buildroot}/%{_usrsbindir}/*
 %endif
 
-%find_lang %name
 
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
@@ -410,7 +409,7 @@ fi
 %clean
 rm -rf %{buildroot}
 
-%files -f %name.lang
+%files
 %defattr(644,root,root,755)
 %doc INSTALL README VERSION WHATS_NEW
 %attr(755,root,root) %{_sbindir}/fsadm
