@@ -483,7 +483,6 @@ rm -rf %{buildroot}
 %if %{build_dmeventd}
 %attr(755,root,root) %{_sbindir}/dmeventd
 %endif
-%{_mandir}/man8/dmsetup.8*
 %{_udevdir}/10-dm.rules
 %{_udevdir}/13-dm-disk.rules
 %{_udevdir}/95-dm-notify.rules
