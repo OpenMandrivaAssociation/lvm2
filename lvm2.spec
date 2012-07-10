@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.96
 %define	dmversion	1.02.75
-%define	release	%mkrel  1
+%define	release	%mkrel  2
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -271,7 +271,7 @@ fi
 %if %{build_dmeventd}
 %define _disable_ld_as_needed 1
 %endif
-%define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
+%define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --with-default-locking-dir=/run/lock/lvm
 export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP=".."
@@ -337,7 +337,7 @@ install -d %{buildroot}/etc/lvm/backup
 install -d %{buildroot}/etc/lvm/cache
 touch %{buildroot}/etc/lvm/cache/.cache
 
-install -d %{buildroot}/var/lock/lvm
+install -d %{buildroot}/run/lock/lvm
 
 install -d %{buildroot}/%{_initrddir}
 
@@ -423,7 +423,7 @@ rm -rf %{buildroot}
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/cache
 %attr(600,root,root) %ghost %{_sysconfdir}/lvm/cache/.cache
-%attr(700,root,root) %dir /var/lock/lvm
+%attr(700,root,root) %dir /run/lock/lvm
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
