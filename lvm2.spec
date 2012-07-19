@@ -1,7 +1,7 @@
 %define	name	lvm2
 %define	lvmversion	2.02.96
 %define	dmversion	1.02.75
-%define	release	%mkrel  2
+%define	release	%mkrel  3
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
@@ -114,6 +114,7 @@ This package contains the header files for building with lvm2cmd and lvm2app.
 Summary:	LVM2 application api library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
+Obsoletes:	%{mklibname lvm2app 2.1}
 
 %description -n	%{applibname}
 LVM2 application API
