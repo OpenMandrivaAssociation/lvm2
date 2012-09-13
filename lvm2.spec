@@ -1,7 +1,7 @@
 %define	name	lvm2
-%define	lvmversion	2.02.96
-%define	dmversion	1.02.75
-%define	release	%mkrel  3
+%define	lvmversion	2.02.97
+%define	dmversion	1.02.76
+%define	release	%mkrel  1
 %define	_usrsbindir	%{_prefix}/sbin
 %define	_sbindir	/sbin
 %define	_udevdir	/lib/udev/rules.d
