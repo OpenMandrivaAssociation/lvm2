@@ -411,7 +411,7 @@ fi
 %preun -n clvmd
 %_preun_service clvmd
 if [ "$1" = 0 ]; then
-        %{_usrsbindir}/lvmconf --disable-cluster
+	%{_usrsbindir}/lvmconf --disable-cluster
 fi
 
 %post -n cmirror
