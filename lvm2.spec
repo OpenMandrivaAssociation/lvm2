@@ -95,7 +95,7 @@ Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
-%define _exclude_files_from_autoreq libdevmapper-event-.\\+\\.so$
+%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot).so'
 
 %description -n	%{cmdlibname}
 The lvm2 command line library allows building programs that manage
