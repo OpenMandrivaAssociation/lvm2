@@ -443,7 +443,7 @@ fi
 %{_udevdir}/11-dm-lvm.rules
 
 %files -n %{cmdlibname}
-%defattr(644,root,root,755)
+%defattr(755,root,root,755)
 /%{_lib}/liblvm2cmd.so.*
 %if %{build_dmeventd}
 %dir /%{_lib}/device-mapper
@@ -463,7 +463,6 @@ fi
 
 %if %build_lvm2app
 %files -n %{applibname}
-%defattr(644,root,root,755)
 /%{_lib}/liblvm2app.so.*
 
 %files -n %{appdevelname}
