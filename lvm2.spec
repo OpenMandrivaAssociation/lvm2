@@ -437,6 +437,7 @@ fi
 %if %mdvver >= 201200
 %{_unitdir}/lvm2-monitor.service
 %endif
+%{_prefix}/lib/tmpfiles.d/%{name}.conf
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
