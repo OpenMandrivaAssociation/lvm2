@@ -326,6 +326,7 @@ pushd shared
 %endif
 	--enable-udev_sync --enable-udev_rules \
 	--with-udevdir=%{_udevdir} \
+	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
 %make
