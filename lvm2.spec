@@ -56,6 +56,7 @@ Patch0:		lvm2-2.02.53-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
+Patch6:		lvm2-2.02.97-make-sure-variable-gets-set.patch
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 URL:		http://sources.redhat.com/lvm2/
@@ -106,15 +107,25 @@ Requires:	%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
 %define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot).so'
 
-%description -n	%{cmdlibname}
+%package -n	uclibc-%{cmdlibname}
+Summary:	LVM2 command line library (uClibc linked)
+Group:		System/Kernel and hardware
+Requires:	uclibc-%{dm_req} >= %{dmversion}
+# Avoid devel deps on library due to autoreq picking these plugins up as devel libs
+%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot).so'
+
+%description -n	uclibc-%{cmdlibname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 
-%package -n %{cmddevelname}
+%package -n	%{cmddevelname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
+%if %{with uclibc}
+Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
+%endif
 Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d}
 
@@ -275,6 +286,18 @@ The device-mapper-event library allows monitoring of active mapped devices.
 This package contains the shared libraries required for running
 programs which use device-mapper-event.
 
+%package -n	uclibc-%{event_libname}
+Summary:	Device mapper event library (uClibc linked)
+Version:	%{dmversion}
+Group:		System/Kernel and hardware
+Requires:	uclibc-%{dmlibname} = %{EVRD}
+
+%description -n	uclibc-%{event_libname}
+The device-mapper-event library allows monitoring of active mapped devices.
+
+This package contains the shared libraries required for running
+programs which use device-mapper-event.
+
 %package -n %{event_develname}
 Summary:	Device mapper event development library
 Version:	%{dmversion}
@@ -283,6 +306,10 @@ Provides:	device-mapper-event-devel = %{dmversion}-%{release}
 Provides:	libdevmapper-event-devel = %{dmversion}-%{release}
 Requires:	%{event_libname} = %{dmversion}-%{release}
 Requires:	%{dmdevelname} = %{dmversion}-%{release}
+%if %{with uclibc}
+Requires:	%{event_libname} = %{dmversion}-%{release}
+Requires:	%{dmdevelname} = %{dmversion}-%{release}
+%endif
 Requires:	pkgconfig
 Conflicts:	device-mapper-event-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper-event %dmmajor -d}
@@ -300,6 +327,7 @@ for building programs which use device-mapper-event.
 %patch1 -p1 -b .qdiskd
 %patch2 -p1 -b .vgmknodes-man
 %patch5 -p1 -b .preferred
+%patch6 -p1 -b .cc~
 
 %build
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
@@ -319,21 +347,32 @@ export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP=".."
 
+unset ac_cv_lib_dl_dlopen
+
 %if %{with uclibc}
 mkdir -p uclibc
 pushd uclibc
-%configure2_5x	CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" \
+%configure2_5x	CC="%{uclibc_cc}" \
+		CFLAGS="%{uclibc_cflags}" \
+		--with-optimisation="" \
 		%{common_configure_parameters} \
 		--libdir=%{uclibc_root}/%{_lib} \
 		--with-usrlibdir=%{uclibc_root}%{_libdir} \
-		--bindir=%{uclibc_root}%{_bindir} \
 		--sbindir=%{uclibc_root}/sbin \
 		--enable-static_link \
 		--disable-readline \
 		--with-cluster=none \
-		--with-pool=none
-sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
-%make CC=%{uclibc_cc} CFLAGS="%{uclibc_cflags}" LDFLAGS="-L$PWD/lib -L$PWD/libdm %{ldflags}"
+		--with-pool=none \
+%if %{build_dmeventd}
+		--enable-cmdlib \
+		--enable-dmeventd \
+		--with-dmeventd-path=/sbin/dmeventd \
+%endif
+		--enable-udev_sync \
+		--enable-udev_rules \
+		--with-udevdir=%{_udevdir} \
+		--with-systemdsystemunitdir=%{_unitdir}
+%make V=1
 popd
 
 %else
@@ -346,8 +385,6 @@ sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make
 popd
 %endif
-
-unset ac_cv_lib_dl_dlopen
 
 mkdir -p shared
 pushd shared
@@ -382,6 +419,7 @@ popd
 %install
 %if %{with uclibc}
 %makeinstall_std -C uclibc
+rm -f %{buildroot}%{uclibc_root}%{_libdir}/{liblvm2cmd,libdevmapper-event*}.a
 %endif
 
 %makeinstall_std -C shared
@@ -439,7 +477,7 @@ chmod u+w  %{buildroot}/sbin/*
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
 
-rm -f %{buildroot}%{_sbindir}/{dmsetup,lvm}.static
+rm -f %{buildroot}%{_sbindir}/{dmeventd,dmsetup,lvm}.static
 
 %pre
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
@@ -494,22 +532,41 @@ fi
 
 %files -n %{cmdlibname}
 %defattr(755,root,root,755)
-/%{_lib}/liblvm2cmd.so.*
+/%{_lib}/liblvm2cmd.so.%{cmdmajor}
 %if %{build_dmeventd}
 %dir /%{_lib}/device-mapper
 /%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
 /%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
 /%{_lib}/device-mapper/libdevmapper-event-lvm2snapshot.so
-/%{_lib}/libdevmapper-event-lvm2.so.*
+/%{_lib}/libdevmapper-event-lvm2.so.%{cmdmajor}
 /%{_lib}/libdevmapper-event-lvm2mirror.so
 /%{_lib}/libdevmapper-event-lvm2raid.so
 /%{_lib}/libdevmapper-event-lvm2snapshot.so
+%endif
+
+%if %{with uclibc}
+%files -n uclibc-%{cmdlibname}
+%defattr(755,root,root,755)
+%{uclibc_root}/%{_lib}/liblvm2cmd.so.%{cmdmajor}
+%if %{build_dmeventd}
+%dir %{uclibc_root}/%{_lib}/device-mapper
+%{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
+%{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
+%{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2snapshot.so
+%{uclibc_root}/%{_lib}/libdevmapper-event-lvm2.so.%{cmdmajor}
+%{uclibc_root}/%{_lib}/libdevmapper-event-lvm2mirror.so
+%{uclibc_root}/%{_lib}/libdevmapper-event-lvm2raid.so
+%{uclibc_root}/%{_lib}/libdevmapper-event-lvm2snapshot.so
+%endif
 %endif
 
 %files -n %{cmddevelname}
 %defattr(644,root,root,755)
 %{_includedir}/lvm2cmd.h
 %attr(755,root,root) %{_libdir}/liblvm2cmd.so
+%if %{with uclibc}
+%{uclibc_root}%{_libdir}/liblvm2cmd.so
+%endif
 
 %if %build_lvm2app
 %files -n %{applibname}
@@ -562,6 +619,9 @@ fi
 %files -n uclibc-dmsetup
 %defattr(755,root,root)
 %{uclibc_root}/sbin/dmsetup
+%if %{build_dmeventd}
+%{uclibc_root}/sbin/dmeventd
+%endif
 %endif
 
 %files -n %{dmlibname}
@@ -584,14 +644,20 @@ fi
 %{_libdir}/pkgconfig/devmapper.pc
 
 %if %{build_dmeventd}
-%defattr(755,root,root)
 %files -n %{event_libname}
 /%{_lib}/libdevmapper-event.so.*
+
+%files -n uclibc-%{event_libname}
+%{uclibc_root}/%{_lib}/libdevmapper-event.so.*
 
 %files -n %{event_develname}
 %defattr(644,root,root,755)
 %{_includedir}/libdevmapper-event.h
 %{_libdir}/libdevmapper-event.so
 %{_libdir}/libdevmapper-event-lvm2.so
+%if %{with uclibc}
+%{uclibc_root}%{_libdir}/libdevmapper-event.so
+%{uclibc_root}%{_libdir}/libdevmapper-event-lvm2.so
+%endif
 %{_libdir}/pkgconfig/devmapper-event.pc
 %endif
