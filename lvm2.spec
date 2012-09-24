@@ -429,10 +429,6 @@ ln %{buildroot}/sbin/dmsetup.static %{buildroot}/sbin/dmsetup-static
 ln %{buildroot}%{uclibc_root}/sbin/lvm %{buildroot}%{uclibc_root}/sbin/lvm2
 %endif
 
-#move .so links in /usr/lib
-%if %{with uclibc}
-%endif
-
 #hack permissions of libs
 chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
 %if %build_cluster
