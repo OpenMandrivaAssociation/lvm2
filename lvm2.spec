@@ -1,9 +1,7 @@
 %define name lvm2
 %define lvmversion 2.02.97
 %define dmversion 1.02.76
-%define release %mkrel 1
-%define _usrsbindir %{_prefix}/sbin
-%define _sbindir /sbin
+%define release 2
 %define _udevdir /lib/udev/rules.d
 %define dmmajor 1.02
 %define cmdmajor 2.02
@@ -68,7 +66,6 @@ BuildRequires:	ncurses-devel
 BuildRequires:	sed
 Conflicts:	lvm
 Conflicts:	lvm1
-BuildRequires:	glibc-static-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel
 %endif
@@ -83,6 +80,18 @@ Requires(post): systemd
 %endif
 
 %description
+LVM includes all of the support for handling read/write operations on
+physical volumes (hard disks, RAID-Systems, magneto optical, etc.,
+multiple devices (MD), see mdadm(8) or even loop devices, see losetup(8)),
+creating volume groups (kind of virtual disks) from one or more physical
+volumes and creating one or more logical volumes (kind of logical partitions)
+in volume groups.
+
+%package -n	uclibc-%{name}
+Summary:	Logical Volume Manager administration tools (uClibc linked)
+Group:		System/Kernel and hardware
+
+%description -n	uclibc-%{name}
 LVM includes all of the support for handling read/write operations on
 physical volumes (hard disks, RAID-Systems, magneto optical, etc.,
 multiple devices (MD), see mdadm(8) or even loop devices, see losetup(8)),
@@ -195,7 +204,33 @@ Summary:	Device mapper library
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
 
+%if %{with uclibc}
+%package -n	uclibc-dmsetup
+Summary:	Device mapper setup tool (uClibc linked)
+Version:	%{dmversion}
+Group:		System/Kernel and hardware
+Requires:	udev
+
+%description -n	uclibc-dmsetup
+Dmsetup manages logical devices that use the device-mapper driver.  
+Devices are created by loading a table that specifies a target for
+each sector (512 bytes) in the logical device.
+%endif
+
 %description -n	%{dmlibname}
+The device-mapper driver enables the definition of new block
+devices composed of ranges of sectors of existing devices.  This
+can be used to define disk partitions - or logical volumes.
+
+This package contains the shared libraries required for running
+programs which use device-mapper.
+
+%package -n	uclibc-%{dmlibname}
+Summary:	Device mapper library (uClibc linked)
+Version:	%{dmversion}
+Group:		System/Kernel and hardware
+
+%description -n	uclibc-%{dmlibname}
 The device-mapper driver enables the definition of new block
 devices composed of ranges of sectors of existing devices.  This
 can be used to define disk partitions - or logical volumes.
@@ -210,6 +245,9 @@ Group:		Development/C
 Provides:	device-mapper-devel = %{dmversion}-%{release}
 Provides:	libdevmapper-devel = %{dmversion}-%{release}
 Requires:	%{dmlibname} = %{dmversion}-%{release}
+%if %{with uclibc}
+Requires:	uclibc-%{dmlibname} = %{dmversion}-%{release}
+%endif
 Requires:	pkgconfig
 Conflicts:	device-mapper-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper %dmmajor -d}
@@ -281,31 +319,40 @@ export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP=".."
 
+%if %{with uclibc}
+mkdir -p uclibc
+pushd uclibc
+%configure2_5x	CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" \
+		%{common_configure_parameters} \
+		--libdir=%{uclibc_root}/%{_lib} \
+		--with-usrlibdir=%{uclibc_root}%{_libdir} \
+		--bindir=%{uclibc_root}%{_bindir} \
+		--sbindir=%{uclibc_root}/sbin \
+		--enable-static_link \
+		--disable-readline \
+		--with-cluster=none \
+		--with-pool=none
+sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
+%make CC=%{uclibc_cc} CFLAGS="%{uclibc_cflags}" LDFLAGS="-L$PWD/lib -L$PWD/libdm %{ldflags}"
+popd
+
+%else
 mkdir -p static
 pushd static
 %configure2_5x %{common_configure_parameters} \
 	--enable-static_link --disable-readline \
 	--with-cluster=none --with-pool=none
-sed -ie 's/\ -static/ -static -Wl,--no-export-dynamic/' tools/Makefile
-%if %{with uclibc}
-%make libdm.device-mapper
-popd
-
-mkdir -p uclibc
-pushd uclibc
-%configure2_5x CFLAGS="%{uclibc_cflags}" CC="%{uclibc_cc}" %{common_configure_parameters} \
-	--enable-static_link --disable-readline \
-	--with-cluster=none --with-pool=none
-%endif
-sed -ie 's/\ -static/ -static -Wl,--no-export-dynamic/' tools/Makefile
+sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make
 popd
+%endif
 
 unset ac_cv_lib_dl_dlopen
 
 mkdir -p shared
 pushd shared
 %configure2_5x %{common_configure_parameters} \
+	--sbindir=/sbin \
 	--disable-static_link --enable-readline \
 	--enable-fsadm --enable-pkgconfig \
 	--with-usrlibdir=%{_libdir} --libdir=/%{_lib} \
@@ -333,13 +380,15 @@ pushd shared
 popd
 
 %install
-pushd shared
-%makeinstall_std
-%if %mdvver >= 201200
-make install_systemd_units DESTDIR=%{buildroot}
-make install_tmpfiles_configuration DESTDIR=%{buildroot}
+%if %{with uclibc}
+%makeinstall_std -C uclibc
 %endif
-popd
+
+%makeinstall_std -C shared
+%if %mdvver >= 201200
+make -C shared install_systemd_units DESTDIR=%{buildroot}
+make -C shared install_tmpfiles_configuration DESTDIR=%{buildroot}
+%endif
 
 install -m644 %{SOURCE2} -D %{buildroot}%{_prefix}/lib/tmpfiles.d/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
@@ -351,52 +400,50 @@ install -d %{buildroot}/run/lock/lvm
 
 %if %mdvver >= 201200
 %else
-install -d %{buildroot}/%{_initrddir}
-install shared/scripts/lvm2_monitoring_init_red_hat %{buildroot}/%{_initrddir}/lvm2-monitor
+install shared/scripts/lvm2_monitoring_init_red_hat -E %{buildroot}%{_initrddir}/lvm2-monitor
 %if %build_cluster
-install shared/scripts/clvmd_init_red_hat %{buildroot}/%{_initrddir}/clvmd
-install shared/scripts/cmirrord_init_red_hat %{buildroot}/%{_initrddir}/cmirrord
+install shared/scripts/clvmd_init_red_hat %{buildroot}%{_initrddir}/clvmd
+install shared/scripts/cmirrord_init_red_hat %{buildroot}%{_initrddir}/cmirrord
 %endif
 %endif
 
 %if %build_cluster
-install -m 0755 scripts/lvmconf.sh %{buildroot}/%{_usrsbindir}/lvmconf
+install -m 0755 scripts/lvmconf.sh %{buildroot}/sbin/lvmconf
 %endif
 
 %if %{with uclibc}
-install uclibc/tools/lvm.static %{buildroot}%{_sbindir}/lvm.static
-install uclibc/tools/dmsetup.static %{buildroot}%{_sbindir}/dmsetup.static
-install -m644 uclibc/libdm/ioctl/libdevmapper.a -D %{buildroot}%{uclibc_root}%{_libdir}/libdevmapper.a
+install uclibc/tools/lvm.static -D %{buildroot}/sbin/lvm.static
+install uclibc/tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
 %else
-install static/tools/lvm.static %{buildroot}/%{_sbindir}/lvm.static
-install static/tools/dmsetup.static %{buildroot}/%{_sbindir}/dmsetup.static
+install static/tools/lvm.static -D %{buildroot}/sbin/lvm.static
+install static/tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
 %endif
 
 #install -d %{buildroot}/%{_libdir}/
-install -m 644 static/libdm/ioctl/libdevmapper.a %{buildroot}/%{_libdir}
 #compatibility links
-ln %{buildroot}/%{_sbindir}/lvm %{buildroot}/%{_sbindir}/lvm2
-ln %{buildroot}/%{_sbindir}/lvm.static %{buildroot}/%{_sbindir}/lvm2-static
-ln %{buildroot}/%{_sbindir}/dmsetup.static %{buildroot}/%{_sbindir}/dmsetup-static
+ln %{buildroot}/sbin/lvm %{buildroot}/sbin/lvm2
+ln %{buildroot}/sbin/lvm.static %{buildroot}/sbin/lvm2-static
+ln %{buildroot}/sbin/dmsetup.static %{buildroot}/sbin/dmsetup-static
+
+%if %{with uclibc}
+ln %{buildroot}%{uclibc_root}/sbin/lvm %{buildroot}%{uclibc_root}/sbin/lvm2
+%endif
 
 #move .so links in /usr/lib
-for solink in %{buildroot}/%{_lib}/*.so; do
-	if [ "${solink%%libdevmapper-event-lvm2*.so}" == "${solink}" ]; then
-		_target=`readlink ${solink}`
-		ln -s ../../%{_lib}/${_target##*/} %{buildroot}/%{_libdir}/${solink##*/}
-		rm ${solink}
-	fi
-done
+%if %{with uclibc}
+%endif
 
 #hack permissions of libs
-chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/%{_sbindir}/*
+chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
 %if %build_cluster
-chmod u+w  %{buildroot}/%{_usrsbindir}/*
+chmod u+w  %{buildroot}/sbin/*
 %endif
 
 
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
+
+rm -f %{buildroot}%{_sbindir}/{dmsetup,lvm}.static
 
 %pre
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
@@ -406,12 +453,12 @@ fi
 %if %build_cluster
 %post -n clvmd
 %_post_service clvmd
-%{_usrsbindir}/lvmconf --lockinglibdir %{_libdir}
+/sbin/lvmconf --lockinglibdir %{_libdir}
 
 %preun -n clvmd
 %_preun_service clvmd
 if [ "$1" = 0 ]; then
-	%{_usrsbindir}/lvmconf --disable-cluster
+	/sbin/lvmconf --disable-cluster
 fi
 
 %post -n cmirror
@@ -423,10 +470,10 @@ fi
 
 %files
 %doc INSTALL README VERSION WHATS_NEW
-%attr(755,root,root) %{_sbindir}/fsadm
-%attr(755,root,root) %{_sbindir}/lv*
-%attr(755,root,root) %{_sbindir}/pv*
-%attr(755,root,root) %{_sbindir}/vg*
+%attr(755,root,root) /sbin/fsadm
+%attr(755,root,root) /sbin/lv*
+%attr(755,root,root) /sbin/pv*
+%attr(755,root,root) /sbin/vg*
 %dir %{_sysconfdir}/lvm
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
@@ -441,6 +488,13 @@ fi
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
+
+%files -n uclibc-%{name}
+%doc INSTALL README VERSION WHATS_NEW
+%attr(755,root,root) %{uclibc_root}/sbin/fsadm
+%attr(755,root,root) %{uclibc_root}/sbin/lv*
+%attr(755,root,root) %{uclibc_root}/sbin/pv*
+%attr(755,root,root) %{uclibc_root}/sbin/vg*
 
 %files -n %{cmdlibname}
 %defattr(755,root,root,755)
@@ -478,8 +532,8 @@ fi
 %if %mdvver < 201200
 %config(noreplace) %{_initrddir}/clvmd
 %endif
-%{_usrsbindir}/clvmd
-%{_usrsbindir}/lvmconf
+/sbin/clvmd
+/sbin/lvmconf
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 
 %files -n cmirror
@@ -487,18 +541,18 @@ fi
 %if %mdvver < 201200
 %config(noreplace) %{_initrddir}/cmirrord
 %endif
-%{_usrsbindir}/cmirrord
+/sbin/cmirrord
 %attr(644,root,root) %{_mandir}/man8/cmirrord.8*
 %endif
 
 %files -n dmsetup
 %defattr(644,root,root,755)
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
-%attr(755,root,root) %{_sbindir}/dmsetup
-%attr(755,root,root) %{_sbindir}/dmsetup.static
-%attr(755,root,root) %{_sbindir}/dmsetup-static
+%attr(755,root,root) /sbin/dmsetup
+%attr(755,root,root) /sbin/dmsetup.static
+%attr(755,root,root) /sbin/dmsetup-static
 %if %{build_dmeventd}
-%attr(755,root,root) %{_sbindir}/dmeventd
+%attr(755,root,root) /sbin/dmeventd
 %endif
 %if %mdvver >= 201200
 %{_unitdir}/dm-event.service
@@ -508,16 +562,27 @@ fi
 %{_udevdir}/13-dm-disk.rules
 %{_udevdir}/95-dm-notify.rules
 
+%if %{with uclibc}
+%files -n uclibc-dmsetup
+%defattr(755,root,root)
+%{uclibc_root}/sbin/dmsetup
+%endif
+
 %files -n %{dmlibname}
 %defattr(755,root,root)
-/%{_lib}/libdevmapper.so.*
+/%{_lib}/libdevmapper.so.%{dmmajor}*
+
+%if %{with uclibc}
+%files -n uclibc-%{dmlibname}
+%{uclibc_root}/%{_lib}/libdevmapper.so.%{dmmajor}*
+%endif
 
 %files -n %{dmdevelname}
 %defattr(644,root,root,755)
 %{_libdir}/libdevmapper.so
-%{_libdir}/libdevmapper.a*
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/libdevmapper.a
+%{uclibc_root}%{_libdir}/libdevmapper.so
 %endif
 %{_includedir}/libdevmapper.h
 %{_libdir}/pkgconfig/devmapper.pc
