@@ -100,12 +100,16 @@ creating volume groups (kind of virtual disks) from one or more physical
 volumes and creating one or more logical volumes (kind of logical partitions)
 in volume groups.
 
-%package -n %{cmdlibname}
+%package -n	%{cmdlibname}
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
 %define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot).so'
+
+%description -n	%{cmdlibname}
+The lvm2 command line library allows building programs that manage
+lvm devices without invoking a separate program.
 
 %package -n	uclibc-%{cmdlibname}
 Summary:	LVM2 command line library (uClibc linked)
@@ -135,7 +139,7 @@ lvm devices without invoking a separate program.
 This package contains the header files for building with lvm2cmd and lvm2app.
 
 %if %build_lvm2app
-%package -n %{applibname}
+%package -n	%{applibname}
 Summary:	LVM2 application api library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
@@ -144,7 +148,7 @@ Obsoletes:	%{mklibname lvm2app 2.1}
 %description -n	%{applibname}
 LVM2 application API.
 
-%package -n %{appdevelname}
+%package -n	%{appdevelname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	pkgconfig
@@ -159,7 +163,7 @@ This package contains the header files for building with lvm2app.
 %endif
 
 %if %build_cluster
-%package -n clvmd
+%package -n	clvmd
 Summary:	cluster LVM daemon
 Group:		System/Kernel and hardware
 BuildRequires:	cluster-devel >= %{cluster_version}
@@ -173,7 +177,7 @@ clvmd is the daemon that distributes LVM metadata updates around a
 cluster. It must be running on all nodes in the cluster and will give
 an error if a node in the cluster does not have this daemon running.
 
-%package -n cmirror
+%package -n	cmirror
 Summary:	Daemon for device-mapper-based clustered mirrors
 Group:		System/Kernel and hardware
 BuildRequires:	cluster-devel >= %{cluster_version}
@@ -188,7 +192,7 @@ Requires:	%{dmlibname} >= %{dmversion}
 Daemon providing device-mapper-based mirrors in a shared-storage cluster.
 %endif
 
-%package -n dmsetup
+%package -n	dmsetup
 Summary:	Device mapper setup tool
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
@@ -210,23 +214,10 @@ Dmsetup manages logical devices that use the device-mapper driver.
 Devices are created by loading a table that specifies a target for
 each sector (512 bytes) in the logical device.
 
-%package -n %{dmlibname}
+%package -n	%{dmlibname}
 Summary:	Device mapper library
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
-
-%if %{with uclibc}
-%package -n	uclibc-dmsetup
-Summary:	Device mapper setup tool (uClibc linked)
-Version:	%{dmversion}
-Group:		System/Kernel and hardware
-Requires:	udev
-
-%description -n	uclibc-dmsetup
-Dmsetup manages logical devices that use the device-mapper driver.  
-Devices are created by loading a table that specifies a target for
-each sector (512 bytes) in the logical device.
-%endif
 
 %description -n	%{dmlibname}
 The device-mapper driver enables the definition of new block
@@ -249,7 +240,18 @@ can be used to define disk partitions - or logical volumes.
 This package contains the shared libraries required for running
 programs which use device-mapper.
 
-%package -n %{dmdevelname}
+%package -n	uclibc-dmsetup
+Summary:	Device mapper setup tool (uClibc linked)
+Version:	%{dmversion}
+Group:		System/Kernel and hardware
+Requires:	udev
+
+%description -n	uclibc-dmsetup
+Dmsetup manages logical devices that use the device-mapper driver.  
+Devices are created by loading a table that specifies a target for
+each sector (512 bytes) in the logical device.
+
+%package -n	%{dmdevelname}
 Summary:	Device mapper development library
 Version:	%{dmversion}
 Group:		Development/C
@@ -272,7 +274,7 @@ This package contains the header files and development libraries
 for building programs which use device-mapper.
 
 %if %{build_dmeventd}
-%package -n %{event_libname}
+%package -n	%{event_libname}
 Summary:	Device mapper event library
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
@@ -298,7 +300,7 @@ The device-mapper-event library allows monitoring of active mapped devices.
 This package contains the shared libraries required for running
 programs which use device-mapper-event.
 
-%package -n %{event_develname}
+%package -n	%{event_develname}
 Summary:	Device mapper event development library
 Version:	%{dmversion}
 Group:		Development/C
