@@ -68,7 +68,7 @@ BuildRequires:	sed
 Conflicts:	lvm
 Conflicts:	lvm1
 %if %{with uclibc}
-BuildRequires:	uClibc-devel
+BuildRequires:	uClibc-devel >= 0.9.33.2-16
 %endif
 %if %build_dmeventd
 # install plugins as well
@@ -354,8 +354,7 @@ unset ac_cv_lib_dl_dlopen
 %if %{with uclibc}
 mkdir -p uclibc
 pushd uclibc
-%configure2_5x	CC="%{uclibc_cc}" \
-		CFLAGS="%{uclibc_cflags}" \
+%uclibc_configure \
 		--with-optimisation="" \
 		%{common_configure_parameters} \
 		--libdir=%{uclibc_root}/%{_lib} \
@@ -452,8 +451,7 @@ install -m 0755 scripts/lvmconf.sh %{buildroot}/sbin/lvmconf
 %endif
 
 %if %{with uclibc}
-install uclibc/tools/lvm.static -D %{buildroot}/sbin/lvm.static
-install uclibc/tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
+mv %{buildroot}%{uclibc_root}%{_sbindir}/*static %{buildroot}/sbin
 %else
 install static/tools/lvm.static -D %{buildroot}/sbin/lvm.static
 install static/tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
@@ -479,7 +477,7 @@ chmod u+w  %{buildroot}/sbin/*
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
 
-rm -f %{buildroot}%{_sbindir}/{dmeventd,dmsetup,lvm}.static
+rm -f %{buildroot}/sbin/dmeventd.static
 
 %pre
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
