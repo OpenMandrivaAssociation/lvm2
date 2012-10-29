@@ -1,7 +1,3 @@
-%define name lvm2
-%define lvmversion 2.02.97
-%define dmversion 1.02.76
-%define release 2
 %define _udevdir /lib/udev/rules.d
 %define dmmajor 1.02
 %define cmdmajor 2.02
@@ -46,9 +42,9 @@
 %endif
 
 Summary:	Logical Volume Manager administration tools
-Name:		%{name}
-Version:	%{lvmversion}
-Release:	%{release}
+Name:		lvm
+Version:	2.02.97
+Release:	3
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Source2:	%{name}-tmpfiles.conf
@@ -62,13 +58,13 @@ Group:		System/Kernel and hardware
 URL:		http://sources.redhat.com/lvm2/
 BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
-BuildRequires:	ncurses-devel
+BuildRequires:	pkgconfig(ncursesw)
 #BuildRequires:	autoconf
 BuildRequires:	sed
 Conflicts:	lvm
 Conflicts:	lvm1
 %if %{with uclibc}
-BuildRequires:	uClibc-devel >= 0.9.33.2-16
+BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 %if %build_dmeventd
 # install plugins as well
