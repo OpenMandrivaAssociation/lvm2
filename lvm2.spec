@@ -1,5 +1,6 @@
+%define lvmversion 2.02.97
+%define dmversion 1.02.76
 %define _udevdir /lib/udev/rules.d
-%define	dmversion 1.02.76
 %define dmmajor 1.02
 %define cmdmajor 2.02
 %define appmajor 2.2
@@ -44,10 +45,11 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.02.97
+%define lvmversion 2.02.97
+Version:	%{lvmversion}
 Release:	3
-Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz
-Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz.asc
+Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
+Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Source2:	%{name}-tmpfiles.conf
 Patch0:		lvm2-2.02.53-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
@@ -69,7 +71,7 @@ BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 %if %build_dmeventd
 # install plugins as well
-Requires:	%{cmdlibname} = %{version}-%{release}
+Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
 %if %mdvver >= 201200
@@ -122,12 +124,12 @@ lvm devices without invoking a separate program.
 %package -n	%{cmddevelname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
-Requires:	%{cmdlibname} = %{version}-%{release}
+Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
 %if %{with uclibc}
-Requires:	uclibc-%{cmdlibname} = %{version}-%{release}
+Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
 %endif
-Provides:	liblvm2cmd-devel = %{version}-%{release}
+Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d}
 
 %description -n	%{cmddevelname}
@@ -149,9 +151,9 @@ LVM2 application API.
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	pkgconfig
-Requires:	%{applibname} = %{version}-%{release}
+Requires:	%{applibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
-Provides:	liblvm2app-devel = %{version}-%{release}
+Provides:	liblvm2app-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2app %appmajor -d}
 
 %description -n	%{appdevelname}
@@ -321,7 +323,7 @@ for building programs which use device-mapper-event.
 %endif
 
 %prep
-%setup -q -n LVM2.%{version}
+%setup -q -n LVM2.%{lvmversion}
 %patch0 -p1 -b .alternatives
 %patch1 -p1 -b .qdiskd
 %patch2 -p1 -b .vgmknodes-man
@@ -331,7 +333,7 @@ for building programs which use device-mapper-event.
 %build
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
 datedm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM`
-if [ "${datelvm%:*}" != "%{version}" -o "${datedm%:*}" != "%{dmversion}" -o \
+if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
  "%{release}" = "%{mkrel 1}" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
 	echo "ERROR:	you should not be touching this package" 1>&2
 	echo "	without full understanding of relationship between device-mapper" 1>&2
