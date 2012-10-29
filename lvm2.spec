@@ -43,7 +43,7 @@
 %endif
 
 Summary:	Logical Volume Manager administration tools
-Name:		lvm
+Name:		lvm2
 Version:	2.02.97
 Release:	3
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz
