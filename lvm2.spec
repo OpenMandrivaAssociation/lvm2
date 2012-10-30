@@ -78,7 +78,6 @@ Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	systemd-units
 Requires(post): systemd
 %endif
-ExclusiveArch:	%{ix86}
 
 %description
 LVM includes all of the support for handling read/write operations on
