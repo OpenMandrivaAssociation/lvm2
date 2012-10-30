@@ -202,7 +202,7 @@ Provides:	dmeventd = %{dmversion}-%{release}
 %endif
 Requires:	%{dm_req} = %{dmversion}-%{release}
 %if %mdvver >= 201200
-BuildRequires:	pkgconfig(udev) >= 186
+BuildRequires:	pkgconfig(udev) >= 195
 %else
 BuildRequires:	pkgconfig(udev)
 %endif
