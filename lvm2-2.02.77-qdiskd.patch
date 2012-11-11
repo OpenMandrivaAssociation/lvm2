@@ -1,0 +1,22 @@
+diff -p -up LVM2.2.02.77/configure.in.qdiskd LVM2.2.02.77/configure.in
+--- LVM2.2.02.77/configure.in.qdiskd	2010-11-05 16:18:38.000000000 +0000
++++ LVM2.2.02.77/configure.in	2010-12-11 17:22:52.158759026 +0000
+@@ -424,7 +424,6 @@ fi
+ if [[ `expr x"$CLVMD" : '.*cman.*'` != 0 ]]; then
+ 	BUILDCMAN=yes
+ 	CLVMD_CMANAGERS="$CLVMD_CMANAGERS cman"
+-	CLVMD_NEEDS_QDISKD=yes
+ fi
+ if [[ `expr x"$CLVMD" : '.*corosync.*'` != 0 ]]; then
+ 	BUILDCOROSYNC=yes
+diff -p -up LVM2.2.02.77/configure.qdiskd LVM2.2.02.77/configure
+--- LVM2.2.02.77/configure.qdiskd	2010-11-09 11:14:06.000000000 +0000
++++ LVM2.2.02.77/configure	2010-12-11 17:22:57.208759003 +0000
+@@ -11573,7 +11573,6 @@ fi
+ if [ `expr x"$CLVMD" : '.*cman.*'` != 0 ]; then
+ 	BUILDCMAN=yes
+ 	CLVMD_CMANAGERS="$CLVMD_CMANAGERS cman"
+-	CLVMD_NEEDS_QDISKD=yes
+ fi
+ if [ `expr x"$CLVMD" : '.*corosync.*'` != 0 ]; then
+ 	BUILDCOROSYNC=yes
