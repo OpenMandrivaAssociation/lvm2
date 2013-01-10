@@ -47,7 +47,7 @@ Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 %define lvmversion 2.02.97
 Version:	%{lvmversion}
-Release:	4
+Release:	5
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Source2:	%{name}-tmpfiles.conf
