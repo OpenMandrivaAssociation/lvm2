@@ -1,4 +1,3 @@
-%define lvmversion 2.02.97
 %define dmversion 1.02.76
 %define _udevdir /lib/udev/rules.d
 %define dmmajor 1.02
@@ -45,11 +44,10 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-%define lvmversion 2.02.97
-Version:	%{lvmversion}
-Release:	5
-Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
-Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
+Version:	2.02.97
+Release:	6
+Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz
+Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{version}.tgz.asc
 Source2:	%{name}-tmpfiles.conf
 Patch0:		lvm2-2.02.53-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
@@ -71,7 +69,7 @@ BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 %if %build_dmeventd
 # install plugins as well
-Requires:	%{cmdlibname} = %{lvmversion}-%{release}
+Requires:	%{cmdlibname} = %{version}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
 %if %mdvver >= 201200
@@ -87,6 +85,7 @@ creating volume groups (kind of virtual disks) from one or more physical
 volumes and creating one or more logical volumes (kind of logical partitions)
 in volume groups.
 
+%if %{with uclibc}
 %package -n	uclibc-%{name}
 Summary:	Logical Volume Manager administration tools (uClibc linked)
 Group:		System/Kernel and hardware
@@ -98,6 +97,7 @@ multiple devices (MD), see mdadm(8) or even loop devices, see losetup(8)),
 creating volume groups (kind of virtual disks) from one or more physical
 volumes and creating one or more logical volumes (kind of logical partitions)
 in volume groups.
+%endif
 
 %package -n	%{cmdlibname}
 Summary:	LVM2 command line library
@@ -110,6 +110,7 @@ Requires:	%{dm_req} >= %{dmversion}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 
+%if %{with uclibc}
 %package -n	uclibc-%{cmdlibname}
 Summary:	LVM2 command line library (uClibc linked)
 Group:		System/Kernel and hardware
@@ -120,16 +121,17 @@ Requires:	uclibc-%{dm_req} >= %{dmversion}
 %description -n	uclibc-%{cmdlibname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
+%endif
 
 %package -n	%{cmddevelname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
-Requires:	%{cmdlibname} = %{lvmversion}-%{release}
+Requires:	%{cmdlibname} = %{version}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
 %if %{with uclibc}
-Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
+Requires:	uclibc-%{cmdlibname} = %{version}-%{release}
 %endif
-Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
+Provides:	liblvm2cmd-devel = %{version}-%{release}
 Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d}
 
 %description -n	%{cmddevelname}
@@ -151,9 +153,9 @@ LVM2 application API.
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	pkgconfig
-Requires:	%{applibname} = %{lvmversion}-%{release}
+Requires:	%{applibname} = %{version}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
-Provides:	liblvm2app-devel = %{lvmversion}-%{release}
+Provides:	liblvm2app-devel = %{version}-%{release}
 Obsoletes:	%{mklibname lvm2app %appmajor -d}
 
 %description -n	%{appdevelname}
@@ -226,10 +228,14 @@ can be used to define disk partitions - or logical volumes.
 This package contains the shared libraries required for running
 programs which use device-mapper.
 
+%if %{with uclibc}
 %package -n	uclibc-%{dmlibname}
 Summary:	Device mapper library (uClibc linked)
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
+%ifarch %ix68
+%define __noautoreqfiles	'libudev.so.1'
+%endif
 
 %description -n	uclibc-%{dmlibname}
 The device-mapper driver enables the definition of new block
@@ -238,7 +244,9 @@ can be used to define disk partitions - or logical volumes.
 
 This package contains the shared libraries required for running
 programs which use device-mapper.
+%endif
 
+%if %{with uclibc}
 %package -n	uclibc-dmsetup
 Summary:	Device mapper setup tool (uClibc linked)
 Version:	%{dmversion}
@@ -249,6 +257,7 @@ Requires:	udev
 Dmsetup manages logical devices that use the device-mapper driver.  
 Devices are created by loading a table that specifies a target for
 each sector (512 bytes) in the logical device.
+%endif
 
 %package -n	%{dmdevelname}
 Summary:	Device mapper development library
@@ -287,6 +296,7 @@ The device-mapper-event library allows monitoring of active mapped devices.
 This package contains the shared libraries required for running
 programs which use device-mapper-event.
 
+%if %{with uclibc}
 %package -n	uclibc-%{event_libname}
 Summary:	Device mapper event library (uClibc linked)
 Version:	%{dmversion}
@@ -298,6 +308,7 @@ The device-mapper-event library allows monitoring of active mapped devices.
 
 This package contains the shared libraries required for running
 programs which use device-mapper-event.
+%endif
 
 %package -n	%{event_develname}
 Summary:	Device mapper event development library
@@ -323,7 +334,7 @@ for building programs which use device-mapper-event.
 %endif
 
 %prep
-%setup -q -n LVM2.%{lvmversion}
+%setup -q -n LVM2.%{version}
 %patch0 -p1 -b .alternatives
 %patch1 -p1 -b .qdiskd
 %patch2 -p1 -b .vgmknodes-man
@@ -333,7 +344,7 @@ for building programs which use device-mapper-event.
 %build
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
 datedm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM`
-if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
+if [ "${datelvm%:*}" != "%{version}" -o "${datedm%:*}" != "%{dmversion}" -o \
  "%{release}" = "%{mkrel 1}" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
 	echo "ERROR:	you should not be touching this package" 1>&2
 	echo "	without full understanding of relationship between device-mapper" 1>&2
@@ -522,12 +533,14 @@ fi
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
 
+%if %{with uclibc}
 %files -n uclibc-%{name}
 %doc INSTALL README VERSION WHATS_NEW
 %attr(755,root,root) %{uclibc_root}/sbin/fsadm
 %attr(755,root,root) %{uclibc_root}/sbin/lv*
 %attr(755,root,root) %{uclibc_root}/sbin/pv*
 %attr(755,root,root) %{uclibc_root}/sbin/vg*
+%endif
 
 %files -n %{cmdlibname}
 %defattr(755,root,root,755)
@@ -646,8 +659,10 @@ fi
 %files -n %{event_libname}
 /%{_lib}/libdevmapper-event.so.*
 
+%if %{with uclibc}
 %files -n uclibc-%{event_libname}
 %{uclibc_root}/%{_lib}/libdevmapper-event.so.*
+%endif
 
 %files -n %{event_develname}
 %defattr(644,root,root,755)
