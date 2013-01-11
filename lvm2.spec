@@ -132,7 +132,7 @@ Requires:	%{dm_req_d} = %{dmversion}-%{release}
 Requires:	uclibc-%{cmdlibname} = %{version}-%{release}
 %endif
 Provides:	liblvm2cmd-devel = %{version}-%{release}
-Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d}
+Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{version}-%{release}
 
 %description -n	%{cmddevelname}
 The lvm2 command line library allows building programs that manage
