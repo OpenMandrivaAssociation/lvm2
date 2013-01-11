@@ -46,7 +46,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	6
+Release:	7
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Source2:	%{name}-tmpfiles.conf
@@ -234,9 +234,10 @@ programs which use device-mapper.
 Summary:	Device mapper library (uClibc linked)
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
-%ifarch %ix68
-%define __noautoreqfiles	'libudev.so.1'
-%endif
+#(tpg) in case of fire...
+#ifarch %ix68
+#define __noautoreqfiles	'libudev.so.1'
+#endif
 
 %description -n	uclibc-%{dmlibname}
 The device-mapper driver enables the definition of new block
