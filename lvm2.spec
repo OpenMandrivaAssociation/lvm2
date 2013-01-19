@@ -509,10 +509,11 @@ fi
 
 %files
 %doc INSTALL README VERSION WHATS_NEW
-%attr(755,root,root) /sbin/fsadm
-%attr(755,root,root) /sbin/lv*
-%attr(755,root,root) /sbin/pv*
-%attr(755,root,root) /sbin/vg*
+/sbin/blkdeactivate
+/sbin/fsadm
+/sbin/lv*
+/sbin/pv*
+/sbin/vg*
 %dir %{_sysconfdir}/lvm
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
@@ -521,6 +522,7 @@ fi
 %attr(600,root,root) %ghost %{_sysconfdir}/lvm/cache/.cache
 %attr(700,root,root) %dir /run/lock/lvm
 %if %mdvver >= 201200
+%{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
 %endif
 %{_prefix}/lib/tmpfiles.d/%{name}.conf
@@ -531,10 +533,11 @@ fi
 %if %{with uclibc}
 %files -n uclibc-%{name}
 %doc INSTALL README VERSION WHATS_NEW
-%attr(755,root,root) %{uclibc_root}/sbin/fsadm
-%attr(755,root,root) %{uclibc_root}/sbin/lv*
-%attr(755,root,root) %{uclibc_root}/sbin/pv*
-%attr(755,root,root) %{uclibc_root}/sbin/vg*
+%{uclibc_root}/sbin/blkdeactivate
+%{uclibc_root}/sbin/fsadm
+%{uclibc_root}/sbin/lv*
+%{uclibc_root}/sbin/pv*
+%{uclibc_root}/sbin/vg*
 %endif
 
 %files -n %{cmdlibname}
@@ -601,7 +604,6 @@ fi
 
 %files -n dmsetup
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
-/sbin/blkdeactivate
 /sbin/dmsetup
 /sbin/dmsetup.static
 /sbin/dmsetup-static
@@ -609,7 +611,6 @@ fi
 /sbin/dmeventd
 %endif
 %if %mdvver >= 201200
-%{_unitdir}/blk-availability.service
 %{_unitdir}/dm-event.service
 %{_unitdir}/dm-event.socket
 %endif
@@ -619,7 +620,6 @@ fi
 
 %if %{with uclibc}
 %files -n uclibc-dmsetup
-%{uclibc_root}/sbin/blkdeactivate
 %{uclibc_root}/sbin/dmsetup
 %if %{build_dmeventd}
 %{uclibc_root}/sbin/dmeventd
