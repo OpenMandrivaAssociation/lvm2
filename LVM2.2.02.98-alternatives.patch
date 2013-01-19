@@ -1,0 +1,22 @@
+--- LVM2.2.02.98/tools/lvmcmdline.c~	2012-10-15 14:24:59.000000000 +0000
++++ LVM2.2.02.98/tools/lvmcmdline.c	2013-01-19 00:16:36.159081074 +0000
+@@ -1463,7 +1463,7 @@ static void _exec_lvm1_command(char **ar
+ {
+ 	char path[PATH_MAX];
+ 
+-	if (dm_snprintf(path, sizeof(path), "%s.lvm1", argv[0]) < 0) {
++	if (dm_snprintf(path, sizeof(path), "lvm1-%s", argv[0]) < 0) {
+ 		log_error("Failed to create LVM1 tool pathname");
+ 		return;
+ 	}
+@@ -1486,7 +1486,9 @@ int lvm2_main(int argc, char **argv)
+ 
+ 	base = last_path_component(argv[0]);
+ 	if (strcmp(base, "lvm") && strcmp(base, "lvm.static") &&
+-	    strcmp(base, "initrd-lvm"))
++	    strcmp(base, "lvm2") && strcmp(base, "lvm2.static") &&
++            strcmp(base, "lvm-static") && strcmp(base, "lvm2-static") &&
++	    strcmp(base, "initrd-lvm") && strcmp(base, "initrd-lvm2"))
+ 		alias = 1;
+ 
+ 	if (!_check_standard_fds())

@@ -1,25 +1,7 @@
-%define lvmversion 2.02.97
-%define dmversion 1.02.76
-%define _udevdir /lib/udev/rules.d
-%define dmmajor 1.02
-%define cmdmajor 2.02
-%define appmajor 2.2
-
-%define dmlibname %mklibname devmapper %{dmmajor}
-%define dmdevelname %mklibname devmapper -d
-%define event_libname %mklibname devmapper-event %{dmmajor}
-%define event_develname %mklibname devmapper-event -d
-%define cmdlibname %mklibname lvm2cmd %{cmdmajor}
-%define cmddevelname %mklibname lvm2cmd -d
-
 %define build_lvm2app 1
 %define build_cluster 0
 %define build_dmeventd 1
-
-#requirements for cluster
-%define corosync_version 1.2.0
-%define openais_version 1.1.1
-%define cluster_version 3.0.6
+%bcond_without uclibc
 
 %{?_with_dmeventd: %{expand: %%global build_dmeventd 1}}
 %{?_without_dmeventd: %{expand: %%global build_dmeventd 0}}
@@ -28,43 +10,57 @@
 %{?_with_cluster: %{expand: %%global build_cluster 1}}
 %{?_without_cluster: %{expand: %%global build_cluster 0}}
 
-%bcond_without uclibc
+%define _udevdir /lib/udev/rules.d
+%define lvmversion	2.02.98
+%define dmversion	1.02.77
+%define dmmajor		1.02
+%define cmdmajor	2.02
+%define appmajor	2.2
 
+%define dmlibname	%mklibname devmapper %{dmmajor}
+%define dmdevname	%mklibname devmapper -d
+%define event_libname	%mklibname devmapper-event %{dmmajor}
+%define event_devname	%mklibname devmapper-event -d
+%define cmdlibname	%mklibname lvm2cmd %{cmdmajor}
+%define cmddevname	%mklibname lvm2cmd -d
 %if %build_lvm2app
-%define applibname %mklibname lvm2app %{appmajor}
-%define appdevelname %mklibname -d lvm2
+%define applibname	%mklibname lvm2app %{appmajor}
+%define appdevname	%mklibname -d lvm2
 %endif
+
+#requirements for cluster
+%define corosync_version 1.2.0
+%define openais_version 1.1.1
+%define cluster_version 3.0.6
 
 %if %build_dmeventd
 %define dm_req %{event_libname}
-%define dm_req_d %{event_develname}
+%define dm_req_d %{event_devname}
 %else
 %define dm_req %{dmlibname}
-%define dm_req_d %{dmdevelname}
+%define dm_req_d %{dmdevname}
 %endif
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	%{lvmversion}
-Release:	9
+Version:	2.02.98
+Release:	1
+License:	GPLv2 and LGPL2.1
+Group:		System/Kernel and hardware
+Url:		http://sources.redhat.com/lvm2/
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source1:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz.asc
 Source2:	%{name}-tmpfiles.conf
-Patch0:		lvm2-2.02.53-alternatives.patch
+Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
 Patch6:		lvm2-2.02.97-make-sure-variable-gets-set.patch
-License:	GPLv2 and LGPL2.1
-Group:		System/Kernel and hardware
-URL:		http://sources.redhat.com/lvm2/
+
+BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
-BuildRequires:	pkgconfig(ncursesw)
-#BuildRequires:	autoconf
-BuildRequires:	sed
-Conflicts:	lvm
-Conflicts:	lvm1
+BuildRequires:	pkgconfig(ncurses)
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
@@ -77,6 +73,8 @@ Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	systemd-units
 Requires(post): systemd
 %endif
+Conflicts:	lvm
+Conflicts:	lvm1
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -124,7 +122,7 @@ The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 %endif
 
-%package -n	%{cmddevelname}
+%package -n	%{cmddevname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
@@ -133,9 +131,9 @@ Requires:	%{dm_req_d} = %{dmversion}-%{release}
 Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
-Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{version}-%{release}
+Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{lvmversion}-%{release}
 
-%description -n	%{cmddevelname}
+%description -n	%{cmddevname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 This package contains the header files for building with lvm2cmd and lvm2app.
@@ -150,16 +148,15 @@ Obsoletes:	%{mklibname lvm2app 2.1}
 %description -n	%{applibname}
 LVM2 application API.
 
-%package -n	%{appdevelname}
+%package -n	%{appdevname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
-Requires:	pkgconfig
 Requires:	%{applibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
 Provides:	liblvm2app-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2app %appmajor -d}
 
-%description -n	%{appdevelname}
+%description -n	%{appdevname}
 LVM2 application API
 This package contains the header files for building with lvm2app.
 %endif
@@ -261,7 +258,7 @@ Devices are created by loading a table that specifies a target for
 each sector (512 bytes) in the logical device.
 %endif
 
-%package -n	%{dmdevelname}
+%package -n	%{dmdevname}
 Summary:	Device mapper development library
 Version:	%{dmversion}
 Group:		Development/C
@@ -275,7 +272,7 @@ Requires:	pkgconfig
 Conflicts:	device-mapper-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper %dmmajor -d}
 
-%description -n	%{dmdevelname}
+%description -n	%{dmdevname}
 The device-mapper driver enables the definition of new block
 devices composed of ranges of sectors of existing devices.  This
 can be used to define disk partitions - or logical volumes.
@@ -312,23 +309,23 @@ This package contains the shared libraries required for running
 programs which use device-mapper-event.
 %endif
 
-%package -n	%{event_develname}
+%package -n	%{event_devname}
 Summary:	Device mapper event development library
 Version:	%{dmversion}
 Group:		Development/C
 Provides:	device-mapper-event-devel = %{dmversion}-%{release}
 Provides:	libdevmapper-event-devel = %{dmversion}-%{release}
 Requires:	%{event_libname} = %{dmversion}-%{release}
-Requires:	%{dmdevelname} = %{dmversion}-%{release}
+Requires:	%{dmdevname} = %{dmversion}-%{release}
 %if %{with uclibc}
 Requires:	%{event_libname} = %{dmversion}-%{release}
-Requires:	%{dmdevelname} = %{dmversion}-%{release}
+Requires:	%{dmdevname} = %{dmversion}-%{release}
 %endif
 Requires:	pkgconfig
 Conflicts:	device-mapper-event-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper-event %dmmajor -d}
 
-%description -n	%{event_develname}
+%description -n	%{event_devname}
 The device-mapper-event library allows monitoring of active mapped devices.
 
 This package contains the header files and development libraries
@@ -336,18 +333,14 @@ for building programs which use device-mapper-event.
 %endif
 
 %prep
-%setup -q -n LVM2.%{lvmversion}
-%patch0 -p1 -b .alternatives
-%patch1 -p1 -b .qdiskd
-%patch2 -p1 -b .vgmknodes-man
-%patch5 -p1 -b .preferred
-%patch6 -p1 -b .cc~
+%setup -qn LVM2.%{lvmversion}
+%apply_patches
 
 %build
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
 datedm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM`
 if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
- "%{release}" = "%{mkrel 1}" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
+ "%{release}" = "1" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
 	echo "ERROR:	you should not be touching this package" 1>&2
 	echo "	without full understanding of relationship between device-mapper" 1>&2
 	echo "	and lvm2 versions" 1>&2
@@ -545,7 +538,6 @@ fi
 %endif
 
 %files -n %{cmdlibname}
-%defattr(755,root,root,755)
 /%{_lib}/liblvm2cmd.so.%{cmdmajor}
 %if %{build_dmeventd}
 %dir /%{_lib}/device-mapper
@@ -560,7 +552,6 @@ fi
 
 %if %{with uclibc}
 %files -n uclibc-%{cmdlibname}
-%defattr(755,root,root,755)
 %{uclibc_root}/%{_lib}/liblvm2cmd.so.%{cmdmajor}
 %if %{build_dmeventd}
 %dir %{uclibc_root}/%{_lib}/device-mapper
@@ -574,10 +565,9 @@ fi
 %endif
 %endif
 
-%files -n %{cmddevelname}
-%defattr(644,root,root,755)
+%files -n %{cmddevname}
 %{_includedir}/lvm2cmd.h
-%attr(755,root,root) %{_libdir}/liblvm2cmd.so
+%{_libdir}/liblvm2cmd.so
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/liblvm2cmd.so
 %endif
@@ -586,16 +576,14 @@ fi
 %files -n %{applibname}
 /%{_lib}/liblvm2app.so.*
 
-%files -n %{appdevelname}
-%defattr(644,root,root,755)
+%files -n %{appdevname}
 %{_includedir}/lvm2app.h
-%attr(755,root,root) %{_libdir}/liblvm2app.so
+%{_libdir}/liblvm2app.so
 %{_libdir}/pkgconfig/lvm2app.pc
 %endif
 
 %if %build_cluster
 %files -n clvmd
-%defattr(755, root,root)
 %if %mdvver < 201200
 %config(noreplace) %{_initrddir}/clvmd
 %endif
@@ -604,7 +592,6 @@ fi
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 
 %files -n cmirror
-%defattr(755,root,root,-)
 %if %mdvver < 201200
 %config(noreplace) %{_initrddir}/cmirrord
 %endif
@@ -613,7 +600,6 @@ fi
 %endif
 
 %files -n dmsetup
-%defattr(644,root,root,755)
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
 %attr(755,root,root) /sbin/dmsetup
 %attr(755,root,root) /sbin/dmsetup.static
@@ -631,7 +617,6 @@ fi
 
 %if %{with uclibc}
 %files -n uclibc-dmsetup
-%defattr(755,root,root)
 %{uclibc_root}/sbin/dmsetup
 %if %{build_dmeventd}
 %{uclibc_root}/sbin/dmeventd
@@ -639,7 +624,6 @@ fi
 %endif
 
 %files -n %{dmlibname}
-%defattr(755,root,root)
 /%{_lib}/libdevmapper.so.%{dmmajor}*
 
 %if %{with uclibc}
@@ -647,8 +631,7 @@ fi
 %{uclibc_root}/%{_lib}/libdevmapper.so.%{dmmajor}*
 %endif
 
-%files -n %{dmdevelname}
-%defattr(644,root,root,755)
+%files -n %{dmdevname}
 %{_libdir}/libdevmapper.so
 %if %{with uclibc}
 %{uclibc_root}%{_libdir}/libdevmapper.a
@@ -666,8 +649,7 @@ fi
 %{uclibc_root}/%{_lib}/libdevmapper-event.so.*
 %endif
 
-%files -n %{event_develname}
-%defattr(644,root,root,755)
+%files -n %{event_devname}
 %{_includedir}/libdevmapper-event.h
 %{_libdir}/libdevmapper-event.so
 %{_libdir}/libdevmapper-event-lvm2.so
@@ -678,410 +660,3 @@ fi
 %{_libdir}/pkgconfig/devmapper-event.pc
 %endif
 
-%changelog
-* Thu Dec 13 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 2.02.97-4
-- rebuild on ABF
-
-* Mon Oct 29 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 2.02.97-3
-+ Revision: 820272
-- try rebuilding again in hope of packages hitting i586 repo this time.. :|
-
-* Sun Oct 28 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 2.02.97-2
-+ Revision: 820174
-- fix uClibc build
-- configure uClibc with the additional options:
-        o --enable-cmdlib
-        o --enable-dmeventd
-        o --with-dmeventd-path=/sbin/dmeventd
-        o --enable-udev_sync
-        o --enable-udev_rules
-        o --with-udevdir=%%{_udevdir}
-        o --with-systemdsystemunitdir=%%{_unitdir}
-- fix some fsckage with building stuff..
-- enable dynamically linked uClibc build
-- fix uClibc build
-
-* Mon Sep 17 2012 Per Øyvind Karlsen <peroyvind@mandriva.org> 2.02.97-1mdv2012.0
-+ Revision: 817004
-- fix mixed-use-of-spaces-and-tabs
-- fix shared-lib-not-executable
-- update dependency filter for internal dependency generator
-- add %%{_prefix}/lib/tmpfiles.d/%%{name}.conf to %%files
-- set --with-systemdsystemunitdir to proper directory
-
-  + Tomasz Pawel Gajc <tpg@mandriva.org>
-    - spec file clean
-    - support systemd serives instead of old sysvinit ones
-    - update to new version 2.02.97
-
-* Fri Jul 20 2012 Tomasz Pawel Gajc <tpg@mandriva.org> 2.02.96-3
-+ Revision: 810339
-- obsolete old lvm2app major
-
-* Tue Jul 10 2012 Tomasz Pawel Gajc <tpg@mandriva.org> 2.02.96-2
-+ Revision: 808733
-- set default locking directory to /run, because it is quite common to have /var on lvm and this produces endless loop while mounting partitions
-
-* Mon Jul 09 2012 Tomasz Pawel Gajc <tpg@mandriva.org> 2.02.96-1
-+ Revision: 808638
-- fix file list
-- disable patch 2 for now
-- drop find_lang
-- add version to udev buildrequires
-- update to new version 2.02.96
-
-  + Alexander Khrukin <akhrukin@mandriva.org>
-    - version update 2.02.95
-
-* Sun Jun 12 2011 Funda Wang <fwang@mandriva.org> 2.02.85-3
-+ Revision: 684305
-- always create symlink for lvm2
-
-* Sun Jun 12 2011 Eugeni Dodonov <eugeni@mandriva.com> 2.02.85-2
-+ Revision: 684300
-- Rebuild as BS seems to have eaten the latest package.
-
-* Sat Jun 11 2011 Luca Berra <bluca@mandriva.org> 2.02.85-1
-+ Revision: 684241
-- update to lvm2-2.02.85 and device-mapper 1.02.64
-- disable static build
-- remove compatibility hack for mdv < 2009.0
-- fix man page packaging
-
-* Sun May 22 2011 Oden Eriksson <oeriksson@mandriva.com> 2.02.78-4
-+ Revision: 677163
-- rebuild
-
-* Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 2.02.78-3
-+ Revision: 666107
-- mass rebuild
-
-* Thu Dec 23 2010 Luca Berra <bluca@mandriva.org> 2.02.78-2mnb2
-+ Revision: 624115
-- add some requires to ensure consistency between device-mapper and lvm
-
-* Sun Dec 12 2010 Luca Berra <bluca@mandriva.org> 2.02.78-1mnb2
-+ Revision: 620610
-- update to lvm2-2.02.78 and device-mapper 1.02.59
-- really update tarballs
-- remove obsolete patches
-- p1 qdiskd is started as part of cman
-- fix static build (bor)
-- clvmd now requires openais and corosync (bor)
-
-  + Götz Waschk <waschk@mandriva.org>
-    - update to new version 2.02.77
-
-  + Oden Eriksson <oeriksson@mandriva.com>
-    - fix typo
-    - sync with MDVSA-2010:171
-
-* Mon Mar 01 2010 Thomas Backlund <tmb@mandriva.org> 2.02.61-5mnb2
-+ Revision: 513264
-- fix udev rule to add symlinks in /dev/mapper/
-
-* Mon Mar 01 2010 Luca Berra <bluca@mandriva.org> 2.02.61-4mnb2
-+ Revision: 513116
-- enable liblvm2app
-
-* Sat Feb 20 2010 Luca Berra <bluca@mandriva.org> 2.02.61-3mnb2
-+ Revision: 508818
-- update dm version
-
-* Fri Feb 19 2010 Thomas Backlund <tmb@mandriva.org> 2.02.61-2mnb2
-+ Revision: 508449
-- make lib(64)devmapper-event1.02 provide device-mapper-event (for dmraid-event)
-
-* Tue Feb 16 2010 Funda Wang <fwang@mandriva.org> 2.02.61-1mnb2
-+ Revision: 506589
-- New version 2.02.61
-
-  + Luca Berra <bluca@mandriva.org>
-    - fix permissions on lvm2-monitor initscript
-    - make dmeventd require same EVR libdevmapper-event
-    - enable loading of dm target modules as needed
-    - fix dmeventd not linking against libdevmapper-event
-    - fix static lib build on x86_64
-    - fix location of dmeventd binary
-    - update to lvm2 2.02.60/device-mapper 1.02.43
-    - build cluster mirror daemon
-    - enable udev integration
-    - set default preferred names in configuration (fedora)
-
-  + Per Øyvind Karlsen <peroyvind@mandriva.org>
-    - build a uclibc linked static library as well
-    - link static binaries against uclibc rather than glibc
-    - do static and shared builds in separate directories
-    - link against libraries from where they're actually built at (P5)
-
-* Fri Nov 06 2009 Frederik Himpe <fhimpe@mandriva.org> 2.02.54-1mnb2
-+ Revision: 462071
-- Really update to 2.02.54
-- update to new version 2.02.54
-
-* Tue Oct 13 2009 Buchan Milne <bgmilne@mandriva.org> 2.02.53-5mnb2
-+ Revision: 457026
-- Re-fix lsb headers in clvmd init (to require cman)
-
-* Wed Oct 07 2009 Anssi Hannula <anssi@mandriva.org> 2.02.53-4mnb2
-+ Revision: 455711
-- modify _exclude_files_from_autoreq to only match the .so symlink so
-  that automatic dependencies continue working, and remove the then
-  unneeded explicit require that was added for this issue
-
-* Tue Oct 06 2009 Anssi Hannula <anssi@mandriva.org> 2.02.53-3mnb2
-+ Revision: 455260
-- fix versioned requires added in previous release
-
-* Tue Oct 06 2009 Buchan Milne <bgmilne@mandriva.org> 2.02.53-2mnb2
-+ Revision: 454651
-- Put an explicit requires back in for the valid dependency that was a victim of
-  the previous fix
-
-  + Christophe Fergeau <cfergeau@mandriva.com>
-    - make sure liblvm2cmd2.02 don't requires devel packages
-
-* Thu Oct 01 2009 Buchan Milne <bgmilne@mandriva.org> 2.02.53-1mnb2
-+ Revision: 452390
-- Buildrequire cluster-devel 3.0.3, openais-devel 1.1.0, corosync-devel 1.1.0
-- put explicit versioned requires on libdevmapper on lvm to ensure lvm works
-- Fix build on x86_64
-
-  + Luca Berra <bluca@mandriva.org>
-    - New version 2.02.53
-      device-mapper is now built from lvm2 spec file
-      dietlibc static binaries have been removed
-      cluster support for openais/corosync is not built
-
-* Sun Sep 27 2009 Olivier Blin <blino@mandriva.org> 2.02.33-9mnb2
-+ Revision: 450120
-- use dietlibc on arm and mips too (from Arnaud Patard)
-
-* Wed Apr 08 2009 Buchan Milne <bgmilne@mandriva.org> 2.02.33-8mnb2
-+ Revision: 365105
-- Fix LSB headers in clvmd init script (incl to require cman to be started for clvmd)
-- Drop unused source file
-
-* Tue Apr 07 2009 Buchan Milne <bgmilne@mandriva.org> 2.02.33-7mnb2
-+ Revision: 364814
-- Remove conflict between lvm2 and clvmd (/sbin/lvmconf)
-
-* Wed Feb 25 2009 Thierry Vignaud <tv@mandriva.org> 2.02.33-6mnb2
-+ Revision: 344660
-- rebuild for new libreadline
-
-* Tue Jan 06 2009 Buchan Milne <bgmilne@mandriva.org> 2.02.33-5mnb2
-+ Revision: 325771
-- Enable cluster support by default
-
-* Sun Dec 21 2008 Oden Eriksson <oeriksson@mandriva.com> 2.02.33-4mnb2
-+ Revision: 317041
-- rediffed some fuzzy patches
-
-  + Buchan Milne <bgmilne@mandriva.org>
-    - Fix clvmd (compilation with --with cluster)
-
-* Wed Aug 06 2008 Thierry Vignaud <tv@mandriva.org> 2.02.33-3mnb2
-+ Revision: 265035
-- rebuild early 2009.0 package (before pixel changes)
-
-* Tue Jun 10 2008 Oden Eriksson <oeriksson@mandriva.com> 2.02.33-2mnb2
-+ Revision: 217575
-- rebuilt against dietlibc-devel-0.32
-
-  + Pixel <pixel@mandriva.com>
-    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
-
-* Mon Feb 18 2008 Thierry Vignaud <tv@mandriva.org> 2.02.33-1mnb1
-+ Revision: 170654
-- replace %%mkrel with %%manbo_mkrel for Manbo Core 1
-
-* Wed Feb 06 2008 Olivier Blin <blino@mandriva.org> 2.02.33-1mdv2008.1
-+ Revision: 163060
-- 2.02.33
-
-* Tue Feb 05 2008 Olivier Blin <blino@mandriva.org> 2.02.31-2mdv2008.1
-+ Revision: 162814
-- build with ncurses instead of deprecated termcap
-
-* Wed Jan 23 2008 Olivier Blin <blino@mandriva.org> 2.02.31-1mdv2008.1
-+ Revision: 157141
-- do not install fsadm manually (now done by Makefile)
-- define UINT64_MAX when building with dietlibc
-- buildrequire device-mapper-devel >= 1.02.23 (for readahead support)
-- 2.02.31
-
-* Tue Jan 15 2008 Thierry Vignaud <tv@mandriva.org> 2.02.27-3mdv2008.1
-+ Revision: 152884
-- rebuild
-
-* Tue Jan 15 2008 Thierry Vignaud <tv@mandriva.org> 2.02.27-2mdv2008.1
-+ Revision: 152882
-- rebuild
-- kill re-definition of %%buildroot on Pixel's request
-
-  + Olivier Blin <blino@mandriva.org>
-    - restore BuildRoot
-
-* Wed Aug 22 2007 Adam Williamson <awilliamson@mandriva.org> 2.02.27-1mdv2008.0
-+ Revision: 69193
-- fix typo
-- disable stack protector (build fails if enabled)
-- update buildrequires for dmeventd build (still disabled by default)
-- add patch6 to fix a conflicting types error when building with dietlibc
-- rediff and update patch0 and patch1
-- new devel policy
-- new release 2.02.27
-
-
-* Mon Sep 11 2006 Luca Berra <bluca@comedia.it>
-+ 2006-09-11 11:06:54 (60771)
-New release 2.02.09
-
-* Tue Jul 11 2006 Luca Berra <bluca@comedia.it>
-+ 2006-07-11 22:16:08 (38858)
-remove alternatives, but still keep lvm2 and lvm2-static links for compatibility with existing tools
-
-* Tue Jul 11 2006 Luca Berra <bluca@comedia.it>
-+ 2006-07-11 20:55:25 (38791)
-create backup file when applying p6
-
-* Tue Jul 11 2006 Pixel <pixel@mandriva.com>
-+ 2006-07-11 13:01:44 (38772)
-really apply patch6
-
-* Tue Jul 11 2006 Pixel <pixel@mandriva.com>
-+ 2006-07-11 12:30:34 (38771)
-release fixed vgs for DrakX
-
-* Tue Jul 11 2006 Pixel <pixel@mandriva.com>
-+ 2006-07-11 12:29:14 (38770)
-fix exit code for VG not found (bug #22968)
-
-* Wed Jul 05 2006 Luca Berra <bluca@comedia.it>
-+ 2006-07-05 09:11:45 (38381)
-import lvm2-2.02.06-1mdv2007.0
-
-* Sun May 28 2006 Luca Berra <bluca@vodka.it> 2.02.06-1mdv2007.0
-- New release 2.02.06
-- build against dietlibc on ppc64
-- add an option for dietlibc build
-- require new device-mapper
-
-* Thu Apr 20 2006 Per Øyvind Karlsen <pkarlsen@mandriva.com> 2.01.15-4mdk
-- build against dietlibc on sparc too
-
-* Sun Jan 29 2006 Olivier Blin <oblin@mandriva.com> 2.01.15-3mdk
-- fix 2.01.09-2mdk changelog date to match current lvm2 package in main i586
-
-* Fri Jan 27 2006 Luca Berra <bluca@vodka.it> 2.01.15-2mdk
-- Rebuild
-
-* Sat Jan 21 2006 Luca Berra <bluca@vodka.it> 2.01.15-1mdk
-- New release 2.01.15
-- update p1 (diet)
-- add missing defines in dietlibc (p2)
-
-* Sun Jan 01 2006 Mandriva Linux Team <http://www.mandrivaexpert.com/> 2.01.09-2mdk
-- Rebuild
-
-* Sun Apr 17 2005 Luca Berra <bluca@vodka.it> 2.01.09-1mdk 
-- 2.01.09
-- part of p4 (ignorelockingfailure) was merged
-- rediffed p5 (File descriptor left open)
-- added support for GFS pool format
-- added cluster build option and clvmd subpackage
-
-* Tue Apr 05 2005 Luca Berra <bluca@vodka.it> 2.00.33-4mdk 
-- add --ignorelockingfailure to vgmknodes (p4)
-- silence annoyng "File descriptor left open" messages (p5)
-
-* Sat Mar 05 2005 Luca Berra <bluca@vodka.it> 2.00.33-3mdk 
-- remove require for libdevmapper1.00
-
-* Sat Mar 05 2005 Luca Berra <bluca@vodka.it> 2.00.33-2mdk 
-- rebuild for new libdevmapper
-
-* Sat Jan 29 2005 Luca Berra <bluca@vodka.it> 2.00.33-1mdk 
-- 2.00.33
-
-* Thu Jan 20 2005 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 2.00.32-2mdk
-- rebuild for new readline
-
-* Sat Jan 15 2005 Luca Berra <bluca@vodka.it> 2.00.32-1mdk 
-- 2.0.32
-- do not link static binary with libdl
-
-* Fri Dec 24 2004 Per Øyvind Karlsen <peroyvind@linux-mandrake.com> 2.00.31-1mdk
-- 2.00.31
-- cosmetics
-
-* Sun Nov 28 2004 Luca Berra <bluca@vodka.it> 2.00.27-1mdk 
-- 2.0.27
-
-* Sun Nov 14 2004 Luca Berra <bluca@vodka.it> 2.00.25-1mdk 
-- 2.0.25
-- added fsadm
-- enabled nls
-- added support for building the command line library
-
-* Tue Sep 07 2004 Luca Berra <bluca@mandrakesoft.com> 2.00.22-1mdk
-- 2.00.22
-- define _BSD_SOURCE when building with dietlibc
-- drop p4 no longer needed
-
-* Sun Aug 01 2004 Christiaan Welvaart <cjw@daneel.dyndns.org> 2.00.20-2mdk
-- use dietlibc for static build on ppc as well
-- add BuildRequires: glibc-static-devel for other archs
-
-* Thu Jul 22 2004 Luca Berra <bluca@vodka.it> 2.00.20-1mdk 
-- 2.00.20
-- disabled selinux build
-- added workaround for including fs.h with glibc 2.3.3 (p4)
-
-* Tue Jun 29 2004 Luca Berra <bluca@vodka.it> 2.00.19-2mdk 
-- really fix alternatives patch
-
-* Tue Jun 29 2004 Luca Berra <bluca@vodka.it> 2.00.19-1mdk 
-- 2.00.19
-- rediffed p0 (alternatives) and p1 (diet)
-
-* Mon May 24 2004 Luca Berra <bluca@vodka.it> 2.00.16-1mdk 
-- 2.00.16
-
-* Sat Apr 17 2004 Luca Berra <bluca@vodka.it> 2.00.14-1mdk 
-- 2.00.14
-- rediffed p0, p1, p3
-- removed p2, p4, p5 merged upstream
-
-* Sun Jan 25 2004 Luca Berra <bluca@vodka.it> 2.00.08-8mdk 
-- patch to ignore devices that have an md superblock on them
-
-* Fri Jan 23 2004 Luca Berra <bluca@vodka.it> 2.00.08-7mdk
-- patch to fix uidless PVs created during 9.2 installation
-
-* Sun Jan 04 2004 Luca Berra <bluca@vodka.it> 2.00.08-6mdk
-- DIRM: /etc/lvm
-- build vs termcap, not ncurses
-
-* Mon Dec 29 2003 Stefan van der Eijk <stefan@eijk.nu> 2.00.08-5mdk
-- BuildRequires
-
-* Sat Dec 20 2003 Luca Berra <bluca@vodka.it> 2.00.08-4mdk
-- fix annoying "setlocale failed" message in dietlibc version
-
-* Sun Dec 14 2003 Luca Berra <bluca@vodka.it> 2.00.08-3mdk
-- added vgmknodes to static/diet binary
-- imported blksize64 patch from fedora
-- use %%post -f for alternatives script
-- lvm.conf is a config file
-
-* Sat Nov 22 2003 Luca Berra <bluca@vodka.it> 2.00.08-2mdk
-- built against device-mapper 1.00.07
-
-* Thu Nov 20 2003 Luca Berra <bluca@vodka.it> 2.00.08-1mdk
-- 2.0.08 stable
-- added static/dietlibc version for initrd
-
-* Tue Sep 16 2003 Luca Berra <bluca@vodka.it> 2.00.07-1mdk
-- 2.00.07 stable
