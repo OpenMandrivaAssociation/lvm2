@@ -601,13 +601,15 @@ fi
 
 %files -n dmsetup
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
-%attr(755,root,root) /sbin/dmsetup
-%attr(755,root,root) /sbin/dmsetup.static
-%attr(755,root,root) /sbin/dmsetup-static
+/sbin/blkdeactivate
+/sbin/dmsetup
+/sbin/dmsetup.static
+/sbin/dmsetup-static
 %if %{build_dmeventd}
-%attr(755,root,root) /sbin/dmeventd
+/sbin/dmeventd
 %endif
 %if %mdvver >= 201200
+%{_unitdir}/blk-availability.service
 %{_unitdir}/dm-event.service
 %{_unitdir}/dm-event.socket
 %endif
@@ -617,6 +619,7 @@ fi
 
 %if %{with uclibc}
 %files -n uclibc-dmsetup
+%{uclibc_root}/sbin/blkdeactivate
 %{uclibc_root}/sbin/dmsetup
 %if %{build_dmeventd}
 %{uclibc_root}/sbin/dmeventd
