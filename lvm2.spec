@@ -336,6 +336,9 @@ for building programs which use device-mapper-event.
 %apply_patches
 
 %build
+%ifarch %arm
+export ac_cv_func_malloc_0_nonnull=yes
+%endif
 datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
 datedm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM`
 if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
