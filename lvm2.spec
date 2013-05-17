@@ -2,6 +2,7 @@
 %define build_cluster 0
 %define build_dmeventd 1
 %bcond_without uclibc
+%bcond_without crosscompile
 
 %{?_with_dmeventd: %{expand: %%global build_dmeventd 1}}
 %{?_without_dmeventd: %{expand: %%global build_dmeventd 0}}
@@ -336,6 +337,10 @@ for building programs which use device-mapper-event.
 %apply_patches
 
 %build
+%if %{with crosscompile}
+export ac_cv_func_malloc_0_nonnull=yes
+export ac_cv_func_realloc_0_nonnull=yes
+%endif
 %ifarch %arm
 export ac_cv_func_malloc_0_nonnull=yes
 %endif
