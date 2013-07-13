@@ -314,14 +314,12 @@ Summary:	Device mapper event development library
 Version:	%{dmversion}
 Group:		Development/C
 Provides:	device-mapper-event-devel = %{dmversion}-%{release}
-Provides:	libdevmapper-event-devel = %{dmversion}-%{release}
 Requires:	%{event_libname} = %{dmversion}-%{release}
 Requires:	%{dmdevname} = %{dmversion}-%{release}
 %if %{with uclibc}
 Requires:	%{event_libname} = %{dmversion}-%{release}
 Requires:	%{dmdevname} = %{dmversion}-%{release}
 %endif
-Requires:	pkgconfig
 Conflicts:	device-mapper-event-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper-event %dmmajor -d}
 
@@ -367,24 +365,24 @@ unset ac_cv_lib_dl_dlopen
 mkdir -p uclibc
 pushd uclibc
 %uclibc_configure \
-		--with-optimisation="" \
-		%{common_configure_parameters} \
-		--libdir=%{uclibc_root}/%{_lib} \
-		--with-usrlibdir=%{uclibc_root}%{_libdir} \
-		--sbindir=%{uclibc_root}/sbin \
-		--enable-static_link \
-		--disable-readline \
-		--with-cluster=none \
-		--with-pool=none \
+	--with-optimisation="" \
+	%{common_configure_parameters} \
+	--libdir=%{uclibc_root}/%{_lib} \
+	--with-usrlibdir=%{uclibc_root}%{_libdir} \
+	--sbindir=%{uclibc_root}/sbin \
+	--enable-static_link \
+	--disable-readline \
+	--with-cluster=none \
+	--with-pool=none \
 %if %{build_dmeventd}
-		--enable-cmdlib \
-		--enable-dmeventd \
-		--with-dmeventd-path=/sbin/dmeventd \
+	--enable-cmdlib \
+	--enable-dmeventd \
+	--with-dmeventd-path=/sbin/dmeventd \
 %endif
-		--enable-udev_sync \
-		--enable-udev_rules \
-		--with-udevdir=%{_udevdir} \
-		--with-systemdsystemunitdir=%{_unitdir}
+	--enable-udev_sync \
+	--enable-udev_rules \
+	--with-udevdir=%{_udevdir} \
+	--with-systemdsystemunitdir=%{_unitdir}
 %make V=1
 popd
 
@@ -392,8 +390,10 @@ popd
 mkdir -p static
 pushd static
 %configure2_5x %{common_configure_parameters} \
-	--enable-static_link --disable-readline \
-	--with-cluster=none --with-pool=none
+	--enable-static_link \
+	--disable-readline \
+	--with-cluster=none \
+	--with-pool=none
 sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make
 popd
@@ -403,9 +403,12 @@ mkdir -p shared
 pushd shared
 %configure2_5x %{common_configure_parameters} \
 	--sbindir=/sbin \
-	--disable-static_link --enable-readline \
-	--enable-fsadm --enable-pkgconfig \
-	--with-usrlibdir=%{_libdir} --libdir=/%{_lib} \
+	--disable-static_link \
+	--enable-readline \
+	--enable-fsadm \
+	--enable-pkgconfig \
+	--with-usrlibdir=%{_libdir} \
+	--libdir=/%{_lib} \
 	--enable-cmdlib \
 %if %build_lvm2app
 	--enable-applib \
@@ -421,7 +424,8 @@ pushd shared
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
 %endif
-	--enable-udev_sync --enable-udev_rules \
+	--enable-udev_sync \
+	--enable-udev_rules \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
