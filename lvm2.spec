@@ -1,19 +1,12 @@
-%define build_lvm2app 1
-%define build_cluster 0
-%define build_dmeventd 1
-%bcond_without uclibc
-%bcond_without crosscompile
-
-%{?_with_dmeventd: %{expand: %%global build_dmeventd 1}}
-%{?_without_dmeventd: %{expand: %%global build_dmeventd 0}}
-%{?_with_lvm2app: %{expand: %%global build_lvm2app 1}}
-%{?_without_lvm2app: %{expand: %%global build_lvm2app 0}}
-%{?_with_cluster: %{expand: %%global build_cluster 1}}
-%{?_without_cluster: %{expand: %%global build_cluster 0}}
+%bcond_without	lvm2app
+%bcond_with	cluster
+%bcond_without	dmeventd
+%bcond_without	uclibc
+%bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.98
-%define dmversion	1.02.77
+%define lvmversion	2.02.100
+%define dmversion	1.02.79
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -24,7 +17,7 @@
 %define event_devname	%mklibname devmapper-event -d
 %define cmdlibname	%mklibname lvm2cmd %{cmdmajor}
 %define cmddevname	%mklibname lvm2cmd -d
-%if %build_lvm2app
+%if %{with lvm2app}
 %define applibname	%mklibname lvm2app %{appmajor}
 %define appdevname	%mklibname -d lvm2
 %endif
@@ -34,7 +27,7 @@
 %define openais_version 1.1.1
 %define cluster_version 3.0.6
 
-%if %build_dmeventd
+%if %{with dmeventd}
 %define dm_req %{event_libname}
 %define dm_req_d %{event_devname}
 %else
@@ -44,8 +37,8 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.02.98
-Release:	2
+Version:	2.02.100
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -64,15 +57,13 @@ BuildRequires:	pkgconfig(ncurses)
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
-%if %build_dmeventd
+%if %{with dmeventd}
 # install plugins as well
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
-%if %mdvver >= 201200
 BuildRequires:	systemd-units
 Requires(post): systemd
-%endif
 Conflicts:	lvm
 Conflicts:	lvm1
 
@@ -138,7 +129,7 @@ The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 This package contains the header files for building with lvm2cmd and lvm2app.
 
-%if %build_lvm2app
+%if %{with lvm2app}
 %package -n	%{applibname}
 Summary:	LVM2 application api library
 Group:		System/Kernel and hardware
@@ -161,7 +152,7 @@ LVM2 application API
 This package contains the header files for building with lvm2app.
 %endif
 
-%if %build_cluster
+%if %{with cluster}
 %package -n	clvmd
 Summary:	cluster LVM daemon
 Group:		System/Kernel and hardware
@@ -196,15 +187,11 @@ Summary:	Device mapper setup tool
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
-%if %{build_dmeventd}
+%if %{with dmeventd}
 Provides:	dmeventd = %{dmversion}-%{release}
 %endif
 Requires:	%{dm_req} = %{dmversion}-%{release}
-%if %mdvver >= 201200
 BuildRequires:	pkgconfig(udev) >= 195
-%else
-BuildRequires:	pkgconfig(udev)
-%endif
 Requires:	udev
 Requires(pre):	rpm-helper
 
@@ -280,7 +267,7 @@ can be used to define disk partitions - or logical volumes.
 This package contains the header files and development libraries
 for building programs which use device-mapper.
 
-%if %{build_dmeventd}
+%if %{with dmeventd}
 %package -n	%{event_libname}
 Summary:	Device mapper event library
 Version:	%{dmversion}
@@ -351,7 +338,7 @@ if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
 	echo "	and lvm2 versions" 1>&2
 	exit 1
 fi
-%if %{build_dmeventd}
+%if %{with dmeventd}
 %define _disable_ld_as_needed 1
 %endif
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
@@ -374,7 +361,7 @@ pushd uclibc
 	--disable-readline \
 	--with-cluster=none \
 	--with-pool=none \
-%if %{build_dmeventd}
+%if %{with dmeventd}
 	--enable-cmdlib \
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
@@ -410,17 +397,17 @@ pushd shared
 	--with-usrlibdir=%{_libdir} \
 	--libdir=/%{_lib} \
 	--enable-cmdlib \
-%if %build_lvm2app
+%if %with lvm2app
 	--enable-applib \
 %endif
-%if %build_cluster
+%if %{with cluster}
 	--with-clvmd=cman,openais,corosync \
 	--enable-cmirrord \
 %else
 	--with-cluster=none \
 	--with-pool=none \
 %endif
-%if %{build_dmeventd}
+%if %{with dmeventd}
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
 %endif
@@ -440,10 +427,8 @@ rm -f %{buildroot}%{uclibc_root}%{_libdir}/{liblvm2cmd,libdevmapper-event*}.a
 %endif
 
 %makeinstall_std -C shared
-%if %mdvver >= 201200
 make -C shared install_systemd_units DESTDIR=%{buildroot}
 make -C shared install_tmpfiles_configuration DESTDIR=%{buildroot}
-%endif
 
 install -m644 %{SOURCE2} -D %{buildroot}%{_prefix}/lib/tmpfiles.d/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
@@ -453,16 +438,12 @@ touch %{buildroot}/etc/lvm/cache/.cache
 
 install -d %{buildroot}/run/lock/lvm
 
-%if %mdvver >= 201200
-%else
-install shared/scripts/lvm2_monitoring_init_red_hat -E %{buildroot}%{_initrddir}/lvm2-monitor
-%if %build_cluster
+%if %{with cluster}
 install shared/scripts/clvmd_init_red_hat %{buildroot}%{_initrddir}/clvmd
 install shared/scripts/cmirrord_init_red_hat %{buildroot}%{_initrddir}/cmirrord
 %endif
-%endif
 
-%if %build_cluster
+%if %{with cluster}
 install -m 0755 scripts/lvmconf.sh %{buildroot}/sbin/lvmconf
 %endif
 
@@ -485,7 +466,7 @@ ln %{buildroot}%{uclibc_root}/sbin/lvm %{buildroot}%{uclibc_root}/sbin/lvm2
 
 #hack permissions of libs
 chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
-%if %build_cluster
+%if %{with cluster}
 chmod u+w  %{buildroot}/sbin/*
 %endif
 
@@ -500,7 +481,7 @@ if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
 	update-alternatives --remove lvm /sbin/lvm2
 fi
 
-%if %build_cluster
+%if %{with cluster}
 %post -n clvmd
 %_post_service clvmd
 /sbin/lvmconf --lockinglibdir %{_libdir}
@@ -526,16 +507,15 @@ fi
 /sbin/pv*
 /sbin/vg*
 %dir %{_sysconfdir}/lvm
+%{_sysconfdir}/lvm/profile/default.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/cache
 %attr(600,root,root) %ghost %{_sysconfdir}/lvm/cache/.cache
 %attr(700,root,root) %dir /run/lock/lvm
-%if %mdvver >= 201200
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
-%endif
 %{_prefix}/lib/tmpfiles.d/%{name}.conf
 %{_mandir}/man5/*
 %{_mandir}/man8/*
@@ -553,7 +533,7 @@ fi
 
 %files -n %{cmdlibname}
 /%{_lib}/liblvm2cmd.so.%{cmdmajor}
-%if %{build_dmeventd}
+%if %{with dmeventd}
 %dir /%{_lib}/device-mapper
 /%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
 /%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
@@ -567,7 +547,7 @@ fi
 %if %{with uclibc}
 %files -n uclibc-%{cmdlibname}
 %{uclibc_root}/%{_lib}/liblvm2cmd.so.%{cmdmajor}
-%if %{build_dmeventd}
+%if %{with dmeventd}
 %dir %{uclibc_root}/%{_lib}/device-mapper
 %{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
 %{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
@@ -586,7 +566,7 @@ fi
 %{uclibc_root}%{_libdir}/liblvm2cmd.so
 %endif
 
-%if %build_lvm2app
+%if %{with lvm2app}
 %files -n %{applibname}
 /%{_lib}/liblvm2app.so.*
 
@@ -596,19 +576,13 @@ fi
 %{_libdir}/pkgconfig/lvm2app.pc
 %endif
 
-%if %build_cluster
+%if %{with cluster}
 %files -n clvmd
-%if %mdvver < 201200
-%config(noreplace) %{_initrddir}/clvmd
-%endif
 /sbin/clvmd
 /sbin/lvmconf
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 
 %files -n cmirror
-%if %mdvver < 201200
-%config(noreplace) %{_initrddir}/cmirrord
-%endif
 /sbin/cmirrord
 %attr(644,root,root) %{_mandir}/man8/cmirrord.8*
 %endif
@@ -618,13 +592,11 @@ fi
 /sbin/dmsetup
 /sbin/dmsetup.static
 /sbin/dmsetup-static
-%if %{build_dmeventd}
+%if %{with dmeventd}
 /sbin/dmeventd
 %endif
-%if %mdvver >= 201200
 %{_unitdir}/dm-event.service
 %{_unitdir}/dm-event.socket
-%endif
 %{_udevdir}/10-dm.rules
 %{_udevdir}/13-dm-disk.rules
 %{_udevdir}/95-dm-notify.rules
@@ -632,7 +604,7 @@ fi
 %if %{with uclibc}
 %files -n uclibc-dmsetup
 %{uclibc_root}/sbin/dmsetup
-%if %{build_dmeventd}
+%if %{with dmeventd}
 %{uclibc_root}/sbin/dmeventd
 %endif
 %endif
@@ -654,7 +626,7 @@ fi
 %{_includedir}/libdevmapper.h
 %{_libdir}/pkgconfig/devmapper.pc
 
-%if %{build_dmeventd}
+%if %{with dmeventd}
 %files -n %{event_libname}
 /%{_lib}/libdevmapper-event.so.*
 
@@ -673,4 +645,3 @@ fi
 %endif
 %{_libdir}/pkgconfig/devmapper-event.pc
 %endif
-
