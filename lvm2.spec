@@ -5,8 +5,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.100
-%define dmversion	1.02.79
+%define lvmversion	2.02.104
+%define dmversion	1.02.83
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -37,8 +37,8 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.02.100
-Release:	5
+Version:	2.02.104
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -63,7 +63,8 @@ Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	systemd-units
-Requires(post): systemd
+BuildRequires:	pkgconfig(systemd)
+Requires(post):	rpm-helper
 Conflicts:	lvm
 Conflicts:	lvm1
 
@@ -368,6 +369,7 @@ pushd uclibc
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
+    --enable-udev-systemd-background-jobs \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 %make V=1
@@ -413,6 +415,7 @@ pushd shared
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
+    --enable-udev-systemd-background-jobs \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
