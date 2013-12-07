@@ -38,7 +38,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	2.02.104
-Release:	3
+Release:	4
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
