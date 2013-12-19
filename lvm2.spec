@@ -48,7 +48,6 @@ Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
-Patch6:		lvm2-2.02.97-make-sure-variable-gets-set.patch
 
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
