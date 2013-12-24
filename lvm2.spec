@@ -371,9 +371,6 @@ pushd uclibc
 	--enable-udev_sync \
 	--enable-udev_rules \
 	--enable-udev-systemd-background-jobs \
-	--with-thin=internal --with-thin-check=%{_sbindir}/thin_check \
-	--with-thin-dump=%{_sbindir}/thin_dump \
-	--with-thin-repair=%{_sbindir}/thin_repair \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 %make V=1
@@ -420,9 +417,6 @@ pushd shared
 	--enable-udev_sync \
 	--enable-udev_rules \
 	--enable-udev-systemd-background-jobs \
-	--with-thin=internal --with-thin-check=%{_sbindir}/thin_check \
-	--with-thin-dump=%{_sbindir}/thin_dump \
-	--with-thin-repair=%{_sbindir}/thin_repair \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
