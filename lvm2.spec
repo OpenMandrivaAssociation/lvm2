@@ -1,7 +1,7 @@
 %bcond_without	lvm2app
 %bcond_with	cluster
 %bcond_without	dmeventd
-%bcond_without	uclibc
+%bcond_with	uclibc
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
@@ -49,6 +49,7 @@ Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
 Patch6:		lvm2-aarch64.patch
+Patch7:		thin-perfomance-norule.patch
 
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
@@ -369,7 +370,10 @@ pushd uclibc
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
-    --enable-udev-systemd-background-jobs \
+	--enable-udev-systemd-background-jobs \
+	--with-thin=internal --with-thin-check=%{_sbindir}/thin_check \
+	--with-thin-dump=%{_sbindir}/thin_dump \
+	--with-thin-repair=%{_sbindir}/thin_repair \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 %make V=1
@@ -415,7 +419,10 @@ pushd shared
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
-    --enable-udev-systemd-background-jobs \
+	--enable-udev-systemd-background-jobs \
+	--with-thin=internal --with-thin-check=%{_sbindir}/thin_check \
+	--with-thin-dump=%{_sbindir}/thin_dump \
+	--with-thin-repair=%{_sbindir}/thin_repair \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
