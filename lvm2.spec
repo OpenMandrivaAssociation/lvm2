@@ -55,6 +55,7 @@ BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(ncurses)
+BuildRequires:	glibc-static-devel
 %if %{with uclibc}
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
