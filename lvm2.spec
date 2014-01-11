@@ -52,6 +52,10 @@ Patch6:		lvm2-aarch64.patch
 Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.104-link-against-libpthread.patch
 
+# Fedora
+Patch101:	lvm2-enable-lvmetad-by-default.patch
+Patch102:	lvm2-2_02_105-udev-fix-systemd_ready-env-var-assignment-for-foreign-devs-in-lvmetad-rules.patch
+
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
