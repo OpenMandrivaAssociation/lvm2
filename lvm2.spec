@@ -5,8 +5,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.103
-%define dmversion	1.02.82
+%define lvmversion	2.02.104
+%define dmversion	1.02.83
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -37,7 +37,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.02.104
+Version:	%{lvmversion}
 Release:	6
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
@@ -50,6 +50,7 @@ Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
 Patch6:		lvm2-aarch64.patch
 Patch7:		thin-perfomance-norule.patch
+Patch8:		LVM2.2.02.104-link-against-libpthread.patch
 
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
@@ -323,6 +324,7 @@ for building programs which use device-mapper-event.
 %prep
 %setup -qn LVM2.%{lvmversion}
 %apply_patches
+autoreconf -fiv
 
 %build
 %if %{with crosscompile}
@@ -347,7 +349,7 @@ fi
 %define common_configure_parameters --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660
 export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
-export CONFIGURE_TOP=".."
+export CONFIGURE_TOP="$PWD"
 
 unset ac_cv_lib_dl_dlopen
 
