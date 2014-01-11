@@ -512,6 +512,7 @@ fi
 /sbin/pv*
 /sbin/vg*
 %dir %{_sysconfdir}/lvm
+%dir %{_sysconfdir}/lvm/profile
 %{_sysconfdir}/lvm/profile/default.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
