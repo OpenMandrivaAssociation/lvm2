@@ -1,0 +1,58 @@
+commit cc9adc9d85426e53f50f9d6a2a39e82cac545c61
+Author: Peter Rajnoha <prajnoha@redhat.com>
+Date:   Wed Dec 11 13:13:21 2013 +0100
+
+    udev: fix SYSTEMD_READY assignment for foreign devices in lvmetad rules
+    
+    Some devices, similarly to us, are not prepared after ADD event, but
+    after an extra CHANGE event when the device is properly set up.
+    This includes MD and loop devices. This patch fixes the
+    SYSTEMD_READY assignment that is crucial for proper functionality
+    of SYSTEMD_WANTS that we use to instantiate a lvm2-pvscan@.service
+    systemd service to activate the VG/LVs (see also bug
+    info).
+    
+    All that extra handling of foreign devices should eventually be moved
+    to rules which process those devices primarily (MD and loop)! We should
+    only check a dedicated variable whether the device is usable or not.
+---
+ udev/69-dm-lvm-metad.rules.in | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/udev/69-dm-lvm-metad.rules.in b/udev/69-dm-lvm-metad.rules.in
+index 5b15b6f..d0b7b2a 100644
+--- a/udev/69-dm-lvm-metad.rules.in
++++ b/udev/69-dm-lvm-metad.rules.in
+@@ -39,6 +39,8 @@ ACTION=="remove", GOTO="lvm_scan"
+ # but they require an extra setup and they are ready after a CHANGE event.
+ # Also support coldplugging with ADD event but only if the device is already
+ # properly activated.
++# This logic should be eventually moved to rules where those particular
++# devices are processed primarily (MD and loop).
+ 
+ # DM device:
+ KERNEL!="dm-[0-9]*", GOTO="next"
+@@ -52,6 +54,7 @@ IMPORT{db}="LVM_MD_PV_ACTIVATED"
+ ACTION=="add", ENV{LVM_MD_PV_ACTIVATED}=="1", GOTO="lvm_scan"
+ ACTION=="change", ENV{LVM_MD_PV_ACTIVATED}!="1", TEST=="md/array_state", ENV{LVM_MD_PV_ACTIVATED}="1", GOTO="lvm_scan"
+ ACTION=="add", KERNEL=="md[0-9]*p[0-9]*", GOTO="lvm_scan"
++ENV{SYSTEMD_READY}="0"
+ GOTO="lvm_end"
+ 
+ # Loop device:
+@@ -59,6 +62,7 @@ LABEL="next"
+ KERNEL!="loop[0-9]*", GOTO="next"
+ ACTION=="add", ENV{LVM_LOOP_PV_ACTIVATED}=="1", GOTO="lvm_scan"
+ ACTION=="change", ENV{LVM_LOOP_PV_ACTIVATED}!="1", TEST=="loop/backing_file", ENV{LVM_LOOP_PV_ACTIVATED}="1", GOTO="lvm_scan"
++ENV{SYSTEMD_READY}="0"
+ GOTO="lvm_end"
+ 
+ # If the PV is not a special device listed above, scan only after device addition (ADD event)
+@@ -80,6 +84,7 @@ LABEL="lvm_scan"
+ #  MD    |          |      X      |       X*       |                   |
+ #  loop  |          |      X      |       X*       |                   |
+ #  other |    X     |             |       X        |                   |   X
++ENV{SYSTEMD_READY}="1"
+ (PVSCAN_RULE)
+ 
+ LABEL="lvm_end"

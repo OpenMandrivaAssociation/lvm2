@@ -1,0 +1,11 @@
+--- LVM2.2.02.104/make.tmpl.in~	2014-01-11 04:15:02.170158387 +0100
++++ LVM2.2.02.104/make.tmpl.in	2014-01-11 04:15:04.580190683 +0100
+@@ -43,7 +43,7 @@ PYTHON = @PYTHON@
+ 
+ LIBS = @LIBS@
+ # Extra libraries always linked with static binaries
+-STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS)
++STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) -lpthread
+ DEFS += @DEFS@
+ # FIXME set this only where it's needed, not globally?
+ CFLAGS += @CFLAGS@ @UDEV_CFLAGS@
