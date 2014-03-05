@@ -87,6 +87,7 @@ in volume groups.
 %package -n	uclibc-%{name}
 Summary:	Logical Volume Manager administration tools (uClibc linked)
 Group:		System/Kernel and hardware
+Requires:	%{name} = %{EVRD}
 
 %description -n	uclibc-%{name}
 LVM includes all of the support for handling read/write operations on
