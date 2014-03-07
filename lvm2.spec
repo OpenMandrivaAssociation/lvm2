@@ -5,8 +5,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.104
-%define dmversion	1.02.83
+%define lvmversion	2.02.105
+%define dmversion	1.02.84
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -38,7 +38,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	8
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -49,12 +49,13 @@ Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
 Patch6:		lvm2-aarch64.patch
-Patch7:		thin-perfomance-norule.patch
-Patch8:		LVM2.2.02.104-link-against-libpthread.patch
+#Patch7:		thin-perfomance-norule.patch
+Patch8:		LVM2.2.02.105-link-against-libpthread.patch
 
 # Fedora
 Patch101:	lvm2-enable-lvmetad-by-default.patch
-Patch102:	lvm2-2_02_105-udev-fix-systemd_ready-env-var-assignment-for-foreign-devs-in-lvmetad-rules.patch
+Patch102:	lvm2-udev-remove-rules-to-handle-inappropriate-events.patch
+Patch103:	lvm2-2_02_106-avoid-exposing-temporary-devices-when-initializing-thin-pool-volume.patch
 
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
@@ -362,6 +363,7 @@ unset ac_cv_lib_dl_dlopen
 mkdir -p uclibc
 pushd uclibc
 %uclibc_configure \
+	BLKID_LIBS="-lblkid -luuid" \
 	--with-optimisation="" \
 	%{common_configure_parameters} \
 	--libdir=%{uclibc_root}/%{_lib} \
@@ -521,6 +523,7 @@ fi
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
 %{_sysconfdir}/lvm/profile/default.profile
+%{_sysconfdir}/lvm/profile/thin-performance.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
@@ -551,10 +554,12 @@ fi
 /%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
 /%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
 /%{_lib}/device-mapper/libdevmapper-event-lvm2snapshot.so
+/%{_lib}/device-mapper/libdevmapper-event-lvm2thin.so
 /%{_lib}/libdevmapper-event-lvm2.so.%{cmdmajor}
 /%{_lib}/libdevmapper-event-lvm2mirror.so
 /%{_lib}/libdevmapper-event-lvm2raid.so
 /%{_lib}/libdevmapper-event-lvm2snapshot.so
+/%{_lib}/libdevmapper-event-lvm2thin.so
 %endif
 
 %if %{with uclibc}
@@ -565,10 +570,12 @@ fi
 %{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
 %{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
 %{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2snapshot.so
+%{uclibc_root}/%{_lib}/device-mapper/libdevmapper-event-lvm2thin.so
 %{uclibc_root}/%{_lib}/libdevmapper-event-lvm2.so.%{cmdmajor}
 %{uclibc_root}/%{_lib}/libdevmapper-event-lvm2mirror.so
 %{uclibc_root}/%{_lib}/libdevmapper-event-lvm2raid.so
 %{uclibc_root}/%{_lib}/libdevmapper-event-lvm2snapshot.so
+%{uclibc_root}/%{_lib}/libdevmapper-event-lvm2thin.so
 %endif
 %endif
 
