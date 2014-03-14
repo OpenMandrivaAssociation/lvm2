@@ -370,7 +370,7 @@ pushd uclibc
 	--with-usrlibdir=%{uclibc_root}%{_libdir} \
 	--sbindir=%{uclibc_root}/sbin \
 	--enable-static_link \
-	--disable-readline \
+	--enable-readline \
 	--with-cluster=none \
 	--with-pool=none \
 %if %{with dmeventd}
