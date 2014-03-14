@@ -51,6 +51,7 @@ Patch5:		lvm2-2.02.77-preferred_names.patch
 Patch6:		lvm2-aarch64.patch
 #Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.105-link-against-libpthread.patch
+Patch9:		lvm2-2.02.105-readline-6.3.patch
 
 # Fedora
 Patch101:	lvm2-enable-lvmetad-by-default.patch
