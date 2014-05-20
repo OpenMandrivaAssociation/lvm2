@@ -62,6 +62,8 @@ BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	glibc-static-devel
 %if %{with uclibc}
+BuildRequires:	pkgconfig(blkid)
+BuildRequires:	pkgconfig(uuid)
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 %if %{with dmeventd}
@@ -370,7 +372,7 @@ pushd uclibc
 	--with-usrlibdir=%{uclibc_root}%{_libdir} \
 	--sbindir=%{uclibc_root}/sbin \
 	--enable-static_link \
-	--disable-readline \
+	--enable-readline \
 	--with-cluster=none \
 	--with-pool=none \
 %if %{with dmeventd}
