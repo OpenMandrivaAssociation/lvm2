@@ -38,7 +38,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -89,6 +89,7 @@ in volume groups.
 Summary:	Logical Volume Manager administration tools (uClibc linked)
 Group:		System/Kernel and hardware
 Requires:	%{name} = %{EVRD}
+Requires:	uclibc-%{cmdlibname} = %{EVRD}
 
 %description -n	uclibc-%{name}
 LVM includes all of the support for handling read/write operations on
