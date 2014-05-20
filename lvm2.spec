@@ -5,8 +5,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.105
-%define dmversion	1.02.84
+%define lvmversion	2.02.106
+%define dmversion	1.02.85
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -38,7 +38,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -48,14 +48,12 @@ Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.97-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
-Patch6:		lvm2-aarch64.patch
 #Patch7:		thin-perfomance-norule.patch
-Patch8:		LVM2.2.02.105-link-against-libpthread.patch
+Patch8:		LVM2.2.02.106-link-against-libpthread.patch
 
 # Fedora
 Patch101:	lvm2-enable-lvmetad-by-default.patch
-Patch102:	lvm2-udev-remove-rules-to-handle-inappropriate-events.patch
-Patch103:	lvm2-2_02_106-avoid-exposing-temporary-devices-when-initializing-thin-pool-volume.patch
+Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
