@@ -58,6 +58,7 @@ Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 BuildRequires:	sed
 BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
+BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	glibc-static-devel
 %if %{with uclibc}
