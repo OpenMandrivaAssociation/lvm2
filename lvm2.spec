@@ -534,6 +534,7 @@ fi
 %{_unitdir}/lvm2-monitor.service
 %{_prefix}/lib/tmpfiles.d/%{name}.conf
 %{_mandir}/man5/*
+%{_mandir}/man7/lvmthin.7*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
 
