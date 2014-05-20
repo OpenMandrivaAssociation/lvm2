@@ -118,7 +118,7 @@ Summary:	LVM2 command line library (uClibc linked)
 Group:		System/Kernel and hardware
 Requires:	uclibc-%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
-%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot).so'
+%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot|thin).so'
 
 %description -n	uclibc-%{cmdlibname}
 The lvm2 command line library allows building programs that manage
