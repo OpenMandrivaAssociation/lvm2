@@ -1,6 +1,7 @@
 %bcond_without	lvm2app
 %bcond_with	cluster
 %bcond_without	dmeventd
+%bcond_without	lvmetad
 %bcond_without	uclibc
 %bcond_without	crosscompile
 
@@ -380,6 +381,9 @@ pushd uclibc
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
 %endif
+%if %{with lvmetad}
+	--enable-lvmetad \
+%endif
 	--enable-udev_sync \
 	--enable-udev_rules \
 	--enable-udev-systemd-background-jobs \
@@ -425,6 +429,9 @@ pushd shared
 %if %{with dmeventd}
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
+%endif
+%if %{with lvmetad}
+	--enable-lvmetad \
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
@@ -536,11 +543,17 @@ fi
 %attr(700,root,root) %dir /run/lock/lvm
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
+%if %{with lvmetad}
+%{_unitdir}/lvm2-lvmetad.socket
+%{_unitdir}/lvm2-lvmetad.service
+%{_unitdir}/lvm2-pvscan@.service
+%endif
 %{_prefix}/lib/tmpfiles.d/%{name}.conf
 %{_mandir}/man5/*
 %{_mandir}/man7/lvmthin.7*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
+%{_udevdir}/69-dm-lvm-metad.rules
 
 %if %{with uclibc}
 %files -n uclibc-%{name}
