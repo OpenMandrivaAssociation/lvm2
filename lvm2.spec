@@ -547,7 +547,7 @@ fi
 %{_unitdir}/lvm2-lvmetad.service
 %{_unitdir}/lvm2-pvscan@.service
 %endif
-%{_prefix}/lib/tmpfiles.d/%{name}.conf
+%{_tmpfilesdir}/%{name}.conf
 %{_mandir}/man5/*
 %{_mandir}/man7/lvmthin.7*
 %{_mandir}/man8/*
