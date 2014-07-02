@@ -5,8 +5,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.106
-%define dmversion	1.02.85
+%define lvmversion	2.02.107
+%define dmversion	1.02.86
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -38,7 +38,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	3
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -46,7 +46,7 @@ Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
 Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
-Patch2:		lvm2-2.02.97-vgmknodes-man.patch
+Patch2:		lvm2-2.02.107-vgmknodes-man.patch
 Patch5:		lvm2-2.02.77-preferred_names.patch
 #Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.106-link-against-libpthread.patch
@@ -524,7 +524,9 @@ fi
 /sbin/vg*
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
-%{_sysconfdir}/lvm/profile/default.profile
+%{_sysconfdir}/lvm/profile/command_profile_template.profile
+%{_sysconfdir}/lvm/profile/metadata_profile_template.profile
+%{_sysconfdir}/lvm/profile/thin-generic.profile
 %{_sysconfdir}/lvm/profile/thin-performance.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
