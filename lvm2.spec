@@ -449,11 +449,9 @@ popd
 rm -f %{buildroot}%{uclibc_root}%{_libdir}/{liblvm2cmd,libdevmapper-event*}.a
 %endif
 
-%makeinstall_std -C shared
-make -C shared install_systemd_units DESTDIR=%{buildroot}
-make -C shared install_tmpfiles_configuration DESTDIR=%{buildroot}
+%makeinstall_std -C shared install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
 
-install -m644 %{SOURCE2} -D %{buildroot}%{_prefix}/lib/tmpfiles.d/%{name}.conf
+install -m644 %{SOURCE2} -D %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
 install -d %{buildroot}/etc/lvm/backup
 install -d %{buildroot}/etc/lvm/cache
@@ -540,9 +538,10 @@ fi
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/cache
 %attr(600,root,root) %ghost %{_sysconfdir}/lvm/cache/.cache
-%attr(700,root,root) %dir /run/lock/lvm
+%attr(700,root,root) %dir %{_rundir}/lock/lvm
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
+%{_systemgeneratordir}/lvm2-activation-generator
 %if %{with lvmetad}
 %{_unitdir}/lvm2-lvmetad.socket
 %{_unitdir}/lvm2-lvmetad.service
