@@ -389,13 +389,13 @@ pushd uclibc
 	--enable-udev-systemd-background-jobs \
 	--with-udevdir=%{_udevdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
-%make V=1
+%make CC=uclibc-gcc V=1
 popd
 
 %else
 mkdir -p static
 pushd static
-%configure2_5x %{common_configure_parameters} \
+%configure %{common_configure_parameters} \
 	--enable-static_link \
 	--disable-readline \
 	--with-cluster=none \
@@ -407,7 +407,7 @@ popd
 
 mkdir -p shared
 pushd shared
-%configure2_5x %{common_configure_parameters} \
+%configure %{common_configure_parameters} \
 	--sbindir=/sbin \
 	--disable-static_link \
 	--enable-readline \
