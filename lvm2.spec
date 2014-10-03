@@ -2,12 +2,12 @@
 %bcond_with	cluster
 %bcond_without	dmeventd
 %bcond_without	lvmetad
-%bcond_without	uclibc
+%bcond_with	uclibc
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.107
-%define dmversion	1.02.86
+%define lvmversion	2.02.111
+%define dmversion	1.02.90
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
