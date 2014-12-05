@@ -39,7 +39,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	3
+Release:	4
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -501,6 +501,15 @@ rm -f %{buildroot}/sbin/dmeventd.static
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
 	update-alternatives --remove lvm /sbin/lvm2
 fi
+
+%post
+%systemd_post blk-availability.service lvm2-monitor.service
+
+%preun
+%systemd_preun blk-availability.service lvm2-monitor.service
+
+%postun
+%systemd_postun lvm2-monitor.service
 
 %if %{with cluster}
 %post -n clvmd
