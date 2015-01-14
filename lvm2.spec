@@ -6,8 +6,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.111
-%define dmversion	1.02.90
+%define lvmversion	2.02.114
+%define dmversion	1.02.92
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -366,6 +366,7 @@ unset ac_cv_lib_dl_dlopen
 mkdir -p uclibc
 pushd uclibc
 %uclibc_configure \
+        LDFLAGS='-Wl,--allow-multiple-definition' \
 	BLKID_LIBS="-lblkid -luuid" \
 	--with-optimisation="" \
 	%{common_configure_parameters} \
@@ -559,6 +560,7 @@ fi
 %{_tmpfilesdir}/%{name}.conf
 %{_mandir}/man5/*
 %{_mandir}/man7/lvmthin.7*
+%{_mandir}/man7/lvmcache.7*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
 %{_udevdir}/69-dm-lvm-metad.rules
