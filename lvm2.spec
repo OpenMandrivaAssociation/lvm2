@@ -6,8 +6,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.114
-%define dmversion	1.02.92
+%define lvmversion	2.02.116
+%define dmversion	1.02.93
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -39,7 +39,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	5
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -503,31 +503,16 @@ if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
 	update-alternatives --remove lvm /sbin/lvm2
 fi
 
-%post
-%systemd_post blk-availability.service lvm2-monitor.service
-
-%preun
-%systemd_preun blk-availability.service lvm2-monitor.service
-
-%postun
-%systemd_postun lvm2-monitor.service
 
 %if %{with cluster}
 %post -n clvmd
-%_post_service clvmd
 /sbin/lvmconf --lockinglibdir %{_libdir}
 
 %preun -n clvmd
-%_preun_service clvmd
 if [ "$1" = 0 ]; then
 	/sbin/lvmconf --disable-cluster
 fi
 
-%post -n cmirror
-%_post_service cmirror
-
-%preun -n cmirror
-%_preun_service cmirror
 %endif
 
 %files
