@@ -524,6 +524,7 @@ fi
 /sbin/vg*
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
+%{_sysconfdir}/lvm/lvmlocal.conf
 %{_sysconfdir}/lvm/profile/command_profile_template.profile
 %{_sysconfdir}/lvm/profile/metadata_profile_template.profile
 %{_sysconfdir}/lvm/profile/thin-generic.profile
@@ -546,6 +547,7 @@ fi
 %{_mandir}/man5/*
 %{_mandir}/man7/lvmthin.7*
 %{_mandir}/man7/lvmcache.7*
+%{_mandir}/man7/lvmsystemid.7*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
 %{_udevdir}/69-dm-lvm-metad.rules
