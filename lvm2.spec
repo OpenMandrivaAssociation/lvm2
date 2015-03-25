@@ -7,7 +7,7 @@
 
 %define _udevdir /lib/udev/rules.d
 %define lvmversion	2.02.118
-%define dmversion	1.02.94
+%define dmversion	1.02.95
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
