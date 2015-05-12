@@ -1,30 +1,24 @@
- conf/example.conf.in         | 2 +-
- lib/config/config_settings.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/conf/example.conf.in b/conf/example.conf.in
-index 2ed3fd6..8618a3e 100644
---- a/conf/example.conf.in
-+++ b/conf/example.conf.in
-@@ -667,7 +667,7 @@ global {
-     # is set at the same time, LVM always issues a warning message about this
-     # and then it automatically disables use_lvmetad.
+diff -Naur LVM2.2.02.119/conf/example.conf.in LVM2.2.02.119.tpg/conf/example.conf.in
+--- LVM2.2.02.119/conf/example.conf.in	2015-05-02 00:42:51.000000000 +0000
++++ LVM2.2.02.119.tpg/conf/example.conf.in	2015-05-12 20:43:37.930429524 +0000
+@@ -820,7 +820,7 @@
+ 	# lvmetad is not compatible with locking_type 3 (clustering).
+ 	# LVM prints warnings and ignores lvmetad if this combination
+ 	# is seen.
+-	use_lvmetad = 0
++	use_lvmetad = 1
  
--    use_lvmetad = 0
-+    use_lvmetad = 1
+ 	# Configuration option global/thin_check_executable.
+ 	# The full path to the thin_check command.
+diff -Naur LVM2.2.02.119/lib/config/config_settings.h LVM2.2.02.119.tpg/lib/config/config_settings.h
+--- LVM2.2.02.119/lib/config/config_settings.h	2015-05-02 00:42:52.000000000 +0000
++++ LVM2.2.02.119.tpg/lib/config/config_settings.h	2015-05-12 20:44:11.889335122 +0000
+@@ -780,7 +780,7 @@
+ 	"was never a valid path in the /dev filesystem.\n"
+ 	"Enable this option to reinstate the previous format.\n")
  
-     # Full path of the utility called to check that a thin metadata device
-     # is in a state that allows it to be used.
-diff --git a/lib/config/config_settings.h b/lib/config/config_settings.h
-index 932ba2e..79917e5 100644
---- a/lib/config/config_settings.h
-+++ b/lib/config/config_settings.h
-@@ -173,7 +173,7 @@ cfg(global_metadata_read_only_CFG, "metadata_read_only", global_CFG_SECTION, 0,
- cfg(global_raid10_segtype_default_CFG, "raid10_segtype_default", global_CFG_SECTION, 0, CFG_TYPE_STRING, DEFAULT_RAID10_SEGTYPE, vsn(2, 2, 99), NULL)
- cfg(global_sparse_segtype_default_CFG, "sparse_segtype_default", global_CFG_SECTION, 0, CFG_TYPE_STRING, DEFAULT_SPARSE_SEGTYPE, vsn(2, 2, 112), NULL)
- cfg(global_lvdisplay_shows_full_device_path_CFG, "lvdisplay_shows_full_device_path", global_CFG_SECTION, CFG_PROFILABLE, CFG_TYPE_BOOL, DEFAULT_LVDISPLAY_SHOWS_FULL_DEVICE_PATH, vsn(2, 2, 89), NULL)
--cfg(global_use_lvmetad_CFG, "use_lvmetad", global_CFG_SECTION, 0, CFG_TYPE_BOOL, 0, vsn(2, 2, 93), NULL)
-+cfg(global_use_lvmetad_CFG, "use_lvmetad", global_CFG_SECTION, 0, CFG_TYPE_BOOL, 1, vsn(2, 2, 93), NULL)
- cfg(global_thin_check_executable_CFG, "thin_check_executable", global_CFG_SECTION, CFG_ALLOW_EMPTY, CFG_TYPE_STRING, THIN_CHECK_CMD, vsn(2, 2, 94), NULL)
- cfg_array(global_thin_check_options_CFG, "thin_check_options", global_CFG_SECTION, 0, CFG_TYPE_STRING, "#S" DEFAULT_THIN_CHECK_OPTIONS, vsn(2, 2, 96), NULL)
- cfg_array(global_thin_disabled_features_CFG, "thin_disabled_features", global_CFG_SECTION, CFG_ALLOW_EMPTY, CFG_TYPE_STRING, NULL, vsn(2, 2, 99), NULL)
+-cfg(global_use_lvmetad_CFG, "use_lvmetad", global_CFG_SECTION, 0, CFG_TYPE_BOOL, 0, vsn(2, 2, 93), NULL, 0, NULL,
++cfg(global_use_lvmetad_CFG, "use_lvmetad", global_CFG_SECTION, 0, CFG_TYPE_BOOL, 1, vsn(2, 2, 93), NULL, 0, NULL,
+ 	"Use lvmetad to cache metadata and reduce disk scanning.\n"
+ 	"When enabled (and running), lvmetad provides LVM commands\n"
+ 	"with VG metadata and PV state.  LVM commands then avoid\n"

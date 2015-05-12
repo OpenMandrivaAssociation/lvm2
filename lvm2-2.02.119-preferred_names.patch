@@ -1,0 +1,12 @@
+diff -Naur LVM2.2.02.119/conf/example.conf.in LVM2.2.02.119.tpg/conf/example.conf.in
+--- LVM2.2.02.119/conf/example.conf.in	2015-05-02 00:42:51.000000000 +0000
++++ LVM2.2.02.119.tpg/conf/example.conf.in	2015-05-12 20:41:17.605665524 +0000
+@@ -90,7 +90,7 @@
+ 	# Rule 3 prefers a symlink.
+ 	# Rule 4 prefers the path with least value in lexicographical order.
+ 	# Example:
+-	# preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
++	preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
+ 	# This configuration option does not have a default value defined.
+ 	# preferred_names=[]
+ 
