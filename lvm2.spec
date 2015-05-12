@@ -56,24 +56,24 @@ Patch8:		LVM2.2.02.106-link-against-libpthread.patch
 Patch101:	lvm2-enable-lvmetad-by-default.patch
 Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 
-#BuildRequires:	sed
-#BuildConflicts:	device-mapper-devel < %{dmversion}
-#BuildRequires:	readline-devel
-#BuildRequires:	pkgconfig(blkid)
-#BuildRequires:	pkgconfig(ncurses)
-#BuildRequires:	glibc-static-devel
+BuildRequires:	sed
+BuildConflicts:	device-mapper-devel < %{dmversion}
+BuildRequires:	readline-devel
+BuildRequires:	pkgconfig(blkid)
+BuildRequires:	pkgconfig(ncurses)
+BuildRequires:	glibc-static-devel
 %if %{with uclibc}
-#BuildRequires:	pkgconfig(blkid)
-#BuildRequires:	pkgconfig(uuid)
-#BuildRequires:	uClibc-devel >= 0.9.33.2-15
+BuildRequires:	pkgconfig(blkid)
+BuildRequires:	pkgconfig(uuid)
+BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 %if %{with dmeventd}
 # install plugins as well
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
-#BuildRequires:	systemd-units
-#BuildRequires:	pkgconfig(systemd)
+BuildRequires:	systemd-units
+BuildRequires:	pkgconfig(systemd)
 Requires(post):	rpm-helper
 Conflicts:	lvm
 Conflicts:	lvm1
@@ -204,7 +204,7 @@ Provides:	device-mapper = %{dmversion}-%{release}
 Provides:	dmeventd = %{dmversion}-%{release}
 %endif
 Requires:	%{dm_req} = %{dmversion}-%{release}
-#BuildRequires:	pkgconfig(udev) >= 195
+BuildRequires:	pkgconfig(udev) >= 195
 Requires:	udev
 Requires(pre):	rpm-helper
 
