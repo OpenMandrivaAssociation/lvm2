@@ -6,8 +6,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.119
-%define dmversion	1.02.96
+%define lvmversion	2.02.120
+%define dmversion	1.02.97
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -50,10 +50,9 @@ Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.107-vgmknodes-man.patch
 Patch5:		lvm2-2.02.119-preferred_names.patch
 #Patch7:		thin-perfomance-norule.patch
-Patch8:		LVM2.2.02.106-link-against-libpthread.patch
+Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 
 # Fedora
-Patch101:	lvm2-enable-lvmetad-by-default.patch
 Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 
 BuildRequires:	sed
