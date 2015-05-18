@@ -364,9 +364,9 @@ unset ac_cv_lib_dl_dlopen
 %if %{with uclibc}
 mkdir -p uclibc
 pushd uclibc
+export CFLAGS="%{uclibc_cflags}"
+export LDFLAGS='-Wl,--allow-multiple-definition'
 %uclibc_configure \
-        LDFLAGS='-Wl,--allow-multiple-definition' \
-	BLKID_LIBS="-lblkid -luuid" \
 	--with-optimisation="" \
 	%{common_configure_parameters} \
 	--libdir=%{uclibc_root}/%{_lib} \
