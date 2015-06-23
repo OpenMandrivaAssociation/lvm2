@@ -39,7 +39,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -130,9 +130,6 @@ Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
-%if %{with uclibc}
-Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
-%endif
 Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{lvmversion}-%{release}
 
@@ -264,9 +261,6 @@ Group:		Development/C
 Provides:	device-mapper-devel = %{dmversion}-%{release}
 Provides:	libdevmapper-devel = %{dmversion}-%{release}
 Requires:	%{dmlibname} = %{dmversion}-%{release}
-%if %{with uclibc}
-Requires:	uclibc-%{dmlibname} = %{dmversion}-%{release}
-%endif
 Requires:	pkgconfig
 Conflicts:	device-mapper-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper %dmmajor -d}
@@ -315,10 +309,6 @@ Group:		Development/C
 Provides:	device-mapper-event-devel = %{dmversion}-%{release}
 Requires:	%{event_libname} = %{dmversion}-%{release}
 Requires:	%{dmdevname} = %{dmversion}-%{release}
-%if %{with uclibc}
-Requires:	%{event_libname} = %{dmversion}-%{release}
-Requires:	%{dmdevname} = %{dmversion}-%{release}
-%endif
 Conflicts:	device-mapper-event-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper-event %dmmajor -d}
 
