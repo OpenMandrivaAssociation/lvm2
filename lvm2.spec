@@ -39,7 +39,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	3
+Release:	4
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -264,7 +264,7 @@ Provides:	uclibc-device-mapper-devel = %{dmversion}-%{release}
 Provides:	uclibc-libdevmapper-devel = %{dmversion}-%{release}
 Requires:	uclibc-%{dmlibname} = %{dmversion}-%{release}
 Requires:	%{dmdevname} = %{dmversion}-%{release}
-Conflicts:	%{dmdevname} < 2.02.121-3
+Conflicts:	%{dmdevname} < 1.02.98-4
 
 %description -n	uclibc-%{dmdevname}
 The device-mapper driver enables the definition of new block
@@ -343,7 +343,7 @@ Provides:	uclibc-device-mapper-event-devel = %{dmversion}-%{release}
 Requires:	uclibc-%{event_libname} = %{dmversion}-%{release}
 Requires:	%{event_devname} = %{dmversion}-%{release}
 Requires:	uclibc-%{dmdevname} = %{dmversion}-%{release}
-Conflicts:	%{event_devname} < 2.02.121-3
+Conflicts:	%{event_devname} < 1.02.98-4
 
 %description -n	uclibc-%{event_devname}
 The device-mapper-event library allows monitoring of active mapped devices.
