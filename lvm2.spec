@@ -133,7 +133,7 @@ Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req_d} = %{dmversion}-%{release}
 Requires:	%{cmddevname} = %{lvmversion}-%{release}
 Provides:	uclibc-liblvm2cmd-devel = %{lvmversion}-%{release}
-Conflicts:	%{cmddevname} < 2.02.121-3
+Conflicts:	%{cmddevname} < 2.02.121-2
 
 %description -n	uclibc-%{cmddevname}
 The lvm2 command line library allows building programs that manage
@@ -264,7 +264,7 @@ Provides:	uclibc-device-mapper-devel = %{dmversion}-%{release}
 Provides:	uclibc-libdevmapper-devel = %{dmversion}-%{release}
 Requires:	uclibc-%{dmlibname} = %{dmversion}-%{release}
 Requires:	%{dmdevname} = %{dmversion}-%{release}
-Conflicts:	%{dmdevname} < 2.02.121-3
+Conflicts:	%{dmdevname} < 2.02.121-2
 
 %description -n	uclibc-%{dmdevname}
 The device-mapper driver enables the definition of new block
@@ -343,7 +343,7 @@ Provides:	uclibc-device-mapper-event-devel = %{dmversion}-%{release}
 Requires:	uclibc-%{event_libname} = %{dmversion}-%{release}
 Requires:	%{event_devname} = %{dmversion}-%{release}
 Requires:	uclibc-%{dmdevname} = %{dmversion}-%{release}
-Conflicts:	%{event_devname} < 2.02.121-3
+Conflicts:	%{event_devname} < 2.02.121-2
 
 %description -n	uclibc-%{event_devname}
 The device-mapper-event library allows monitoring of active mapped devices.
