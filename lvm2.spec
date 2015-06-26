@@ -62,8 +62,10 @@ BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	glibc-static-devel
 %if %{with uclibc}
-BuildRequires:	pkgconfig(blkid)
-BuildRequires:	pkgconfig(uuid)
+#BuildRequires:	uclibc-libblkid-devel
+#BuildRequires:	uclibc-libuuid-devel
+BuildRequires:	uclibc-ncurses-devel
+BuildRequires:	uclibc-readline-devel
 BuildRequires:	uClibc-devel >= 0.9.33.2-15
 %endif
 %if %{with dmeventd}
@@ -123,6 +125,20 @@ Requires:	uclibc-%{dm_req} >= %{dmversion}
 %description -n	uclibc-%{cmdlibname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
+
+%package -n	uclibc-%{cmddevname}
+Summary:	Development files for LVM2 command line library
+Group:		System/Kernel and hardware
+Requires:	uclibc-%{cmdlibname} = %{lvmversion}-%{release}
+Requires:	%{dm_req_d} = %{dmversion}-%{release}
+Requires:	%{cmddevname} = %{lvmversion}-%{release}
+Provides:	uclibc-liblvm2cmd-devel = %{lvmversion}-%{release}
+Conflicts:	%{cmddevname} < 2.02.121-3
+
+%description -n	uclibc%{cmddevname}
+The lvm2 command line library allows building programs that manage
+lvm devices without invoking a separate program.
+This package contains the header files for building with lvm2cmd and lvm2app.
 %endif
 
 %package -n	%{cmddevname}
@@ -239,6 +255,24 @@ can be used to define disk partitions - or logical volumes.
 
 This package contains the shared libraries required for running
 programs which use device-mapper.
+
+%package -n	uclibc-%{dmdevname}
+Summary:	Device mapper development library
+Version:	%{dmversion}
+Group:		Development/C
+Provides:	uclibc-device-mapper-devel = %{dmversion}-%{release}
+Provides:	uclibc-libdevmapper-devel = %{dmversion}-%{release}
+Requires:	uclibc-%{dmlibname} = %{dmversion}-%{release}
+Requires:	%{dmdevname} = %{dmversion}-%{release}
+Conflicts:	%{dmdevname} < 2.02.121-3
+
+%description -n	uclibc-%{dmdevname}
+The device-mapper driver enables the definition of new block
+devices composed of ranges of sectors of existing devices.  This
+can be used to define disk partitions - or logical volumes.
+
+This package contains the header files and development libraries
+for building programs which use device-mapper.
 %endif
 
 %if %{with uclibc}
@@ -300,6 +334,22 @@ The device-mapper-event library allows monitoring of active mapped devices.
 
 This package contains the shared libraries required for running
 programs which use device-mapper-event.
+
+%package -n	uclibc-%{event_devname}
+Summary:	Device mapper event development library
+Version:	%{dmversion}
+Group:		Development/C
+Provides:	uclibc-device-mapper-event-devel = %{dmversion}-%{release}
+Requires:	uclibc-%{event_libname} = %{dmversion}-%{release}
+Requires:	%{event_devname} = %{dmversion}-%{release}
+Requires:	uclibc-%{dmdevname} = %{dmversion}-%{release}
+Conflicts:	%{event_devname} < 2.02.121-3
+
+%description -n	uclibc-%{event_devname}
+The device-mapper-event library allows monitoring of active mapped devices.
+
+This package contains the header files and development libraries
+for building programs which use device-mapper-event.
 %endif
 
 %package -n	%{event_devname}
@@ -581,14 +631,14 @@ fi
 %{uclibc_root}/%{_lib}/libdevmapper-event-lvm2snapshot.so
 %{uclibc_root}/%{_lib}/libdevmapper-event-lvm2thin.so
 %endif
+
+%files -n uclibc-%{cmddevname}
+%{uclibc_root}%{_libdir}/liblvm2cmd.so
 %endif
 
 %files -n %{cmddevname}
 %{_includedir}/lvm2cmd.h
 %{_libdir}/liblvm2cmd.so
-%if %{with uclibc}
-%{uclibc_root}%{_libdir}/liblvm2cmd.so
-%endif
 
 %if %{with lvm2app}
 %files -n %{applibname}
@@ -639,14 +689,14 @@ fi
 %if %{with uclibc}
 %files -n uclibc-%{dmlibname}
 %{uclibc_root}/%{_lib}/libdevmapper.so.%{dmmajor}*
+
+%files -n uclibc-%{dmdevname}
+%{uclibc_root}%{_libdir}/libdevmapper.a
+%{uclibc_root}%{_libdir}/libdevmapper.so
 %endif
 
 %files -n %{dmdevname}
 %{_libdir}/libdevmapper.so
-%if %{with uclibc}
-%{uclibc_root}%{_libdir}/libdevmapper.a
-%{uclibc_root}%{_libdir}/libdevmapper.so
-%endif
 %{_includedir}/libdevmapper.h
 %{_libdir}/pkgconfig/devmapper.pc
 
@@ -657,15 +707,15 @@ fi
 %if %{with uclibc}
 %files -n uclibc-%{event_libname}
 %{uclibc_root}/%{_lib}/libdevmapper-event.so.*
+
+%files -n uclibc-%{event_devname}
+%{uclibc_root}%{_libdir}/libdevmapper-event.so
+%{uclibc_root}%{_libdir}/libdevmapper-event-lvm2.so
 %endif
 
 %files -n %{event_devname}
 %{_includedir}/libdevmapper-event.h
 %{_libdir}/libdevmapper-event.so
 %{_libdir}/libdevmapper-event-lvm2.so
-%if %{with uclibc}
-%{uclibc_root}%{_libdir}/libdevmapper-event.so
-%{uclibc_root}%{_libdir}/libdevmapper-event-lvm2.so
-%endif
 %{_libdir}/pkgconfig/devmapper-event.pc
 %endif
