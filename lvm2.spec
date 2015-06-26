@@ -135,7 +135,7 @@ Requires:	%{cmddevname} = %{lvmversion}-%{release}
 Provides:	uclibc-liblvm2cmd-devel = %{lvmversion}-%{release}
 Conflicts:	%{cmddevname} < 2.02.121-3
 
-%description -n	uclibc%{cmddevname}
+%description -n	uclibc-%{cmddevname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 This package contains the header files for building with lvm2cmd and lvm2app.
