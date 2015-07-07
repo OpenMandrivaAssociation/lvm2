@@ -2,7 +2,7 @@
 %bcond_with	cluster
 %bcond_without	dmeventd
 %bcond_without	lvmetad
-%bcond_with	uclibc
+%bcond_without	uclibc
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
