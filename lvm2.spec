@@ -2,7 +2,7 @@
 %bcond_with	cluster
 %bcond_without	dmeventd
 %bcond_without	lvmetad
-%bcond_without	uclibc
+%bcond_with	uclibc
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
@@ -39,7 +39,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	3
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
