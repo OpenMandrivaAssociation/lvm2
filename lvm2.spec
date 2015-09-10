@@ -1,3 +1,5 @@
+%define _disable_lto 1
+
 %bcond_without	lvm2app
 %bcond_with	cluster
 %bcond_without	dmeventd
@@ -433,6 +435,7 @@ export LDFLAGS='-Wl,--allow-multiple-definition'
 popd
 
 %else
+export LIBS=-lm
 mkdir -p static
 pushd static
 %configure %{common_configure_parameters} \
@@ -568,6 +571,8 @@ fi
 %{_sysconfdir}/lvm/profile/metadata_profile_template.profile
 %{_sysconfdir}/lvm/profile/thin-generic.profile
 %{_sysconfdir}/lvm/profile/thin-performance.profile
+%{_sysconfdir}/lvm/profile/cache-mq.profile
+%{_sysconfdir}/lvm/profile/cache-smq.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
@@ -664,6 +669,7 @@ fi
 %files -n dmsetup
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
 /sbin/dmsetup
+/sbin/dmstats
 /sbin/dmsetup.static
 /sbin/dmsetup-static
 %if %{with dmeventd}
