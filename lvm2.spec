@@ -6,8 +6,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.124
-%define dmversion	1.02.101
+%define lvmversion	2.02.130
+%define dmversion	1.02.107
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -56,7 +56,7 @@ Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 
 BuildRequires:	sed
-BuildConflicts:	device-mapper-devel < %{dmversion}
+#BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
