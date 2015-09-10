@@ -436,6 +436,9 @@ popd
 
 %else
 export LIBS=-lm
+export CC=gcc
+export CXX=g++
+
 mkdir -p static
 pushd static
 %configure %{common_configure_parameters} \
