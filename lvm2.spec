@@ -8,8 +8,8 @@
 %bcond_without	crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.130
-%define dmversion	1.02.107
+%define lvmversion	2.02.132
+%define dmversion	1.02.109
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -110,7 +110,7 @@ Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
-%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot).so'
+%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot|thin).so'
 
 %description -n	%{cmdlibname}
 The lvm2 command line library allows building programs that manage
