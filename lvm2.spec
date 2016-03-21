@@ -69,6 +69,7 @@ Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	systemd-units
 BuildRequires:	pkgconfig(systemd)
+BuildRequires:	pkgconfig(python)
 Requires(post):	rpm-helper
 Conflicts:	lvm
 Conflicts:	lvm1
