@@ -67,7 +67,7 @@ BuildRequires:	glibc-static-devel
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
-BuildRequires:	systemd-units
+BuildRequires:	intltool
 BuildRequires:	pkgconfig(systemd)
 Requires(post):	rpm-helper
 Conflicts:	lvm
@@ -247,6 +247,7 @@ for building programs which use device-mapper-event.
 aclocal -I m4 --install
 autoheader --force
 libtoolize -c --automake --force
+intltoolize -c --automake --force
 automake --foreign --add-missing --force-missing --copy --include-deps
 autoconf
 
