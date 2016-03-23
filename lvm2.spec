@@ -8,7 +8,7 @@
 
 %define _udevdir /lib/udev/rules.d
 %define lvmversion	2.02.147
-%define dmversion	1.02.129
+%define dmversion	1.02.120
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -69,7 +69,6 @@ Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	systemd-units
 BuildRequires:	pkgconfig(systemd)
-BuildRequires:	pkgconfig(python)
 Requires(post):	rpm-helper
 Conflicts:	lvm
 Conflicts:	lvm1
@@ -244,7 +243,14 @@ for building programs which use device-mapper-event.
 %prep
 %setup -qn LVM2.%{lvmversion}
 %apply_patches
-autoreconf -fiv
+
+aclocal -I m4 --install
+autoheader --force
+libtoolize -c --automake --force
+intltoolize -c --automake --force
+automake --foreign --add-missing --force-missing --copy --include-deps
+autoconf
+
 
 %build
 %if %{with crosscompile}
@@ -266,7 +272,7 @@ fi
 %if %{with dmeventd}
 %define _disable_ld_as_needed 1
 %endif
-%define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking
+%define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking --disable-python_bindings
 export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP="$PWD"
@@ -298,6 +304,8 @@ pushd shared
 	--enable-fsadm \
 	--enable-pkgconfig \
 	--with-usrlibdir=%{_libdir} \
+	--enable-notify-dbus \
+	--enable-dbus-service \
 	--libdir=/%{_lib} \
 	--enable-cmdlib \
 %if %with lvm2app
@@ -370,7 +378,7 @@ rm -f %{buildroot}/sbin/dmeventd.static
 
 %pre
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
-	update-alternatives --remove lvm /sbin/lvm2
+    update-alternatives --remove lvm /sbin/lvm2
 fi
 
 
@@ -380,7 +388,7 @@ fi
 
 %preun -n clvmd
 if [ "$1" = 0 ]; then
-	/sbin/lvmconf --disable-cluster
+    /sbin/lvmconf --disable-cluster
 fi
 
 %endif
