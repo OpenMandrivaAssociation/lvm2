@@ -248,6 +248,7 @@ aclocal -I m4 --install
 autoheader --force
 libtoolize -c --automake --force
 intltoolize -c --automake --force
+autoconf
 automake --foreign --add-missing --force-missing --copy --include-deps
 autoconf
 
