@@ -68,6 +68,7 @@ Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 %endif
 Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	intltool
+BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
 Requires(post):	rpm-helper
 Conflicts:	lvm
@@ -243,15 +244,7 @@ for building programs which use device-mapper-event.
 %prep
 %setup -qn LVM2.%{lvmversion}
 %apply_patches
-
-aclocal -I m4 --install
-autoheader --force
-libtoolize -c --automake --force
-intltoolize -c --automake --force
-autoconf
-automake --foreign --add-missing --force-missing --copy --include-deps
-autoconf
-
+autoreconf -fiv
 
 %build
 %if %{with crosscompile}
