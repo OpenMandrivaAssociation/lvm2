@@ -287,7 +287,6 @@ pushd static
 sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make
 popd
-%endif
 
 mkdir -p shared
 pushd shared
