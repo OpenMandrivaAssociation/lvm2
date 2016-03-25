@@ -70,6 +70,7 @@ Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	intltool
 BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
+BuildRequires:	pkgconfig(libsystemd-id128)
 Requires(post):	rpm-helper
 Conflicts:	lvm
 Conflicts:	lvm1
