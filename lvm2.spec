@@ -7,8 +7,8 @@
 %bcond_without crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.147
-%define dmversion	1.02.120
+%define lvmversion	2.02.149
+%define dmversion	1.02.121
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
