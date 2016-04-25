@@ -7,8 +7,8 @@
 %bcond_without crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.149
-%define dmversion	1.02.121
+%define lvmversion	2.02.151
+%define dmversion	1.02.123
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -40,7 +40,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
