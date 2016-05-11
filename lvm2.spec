@@ -1,5 +1,9 @@
 %define _disable_lto 1
 
+%if %mdvver < 201500
+%define _rundir /run
+%endif
+
 %bcond_without lvm2app
 %bcond_with cluster
 %bcond_without dmeventd
@@ -7,8 +11,8 @@
 %bcond_without crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.151
-%define dmversion	1.02.123
+%define lvmversion	2.02.153
+%define dmversion	1.02.124
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -44,7 +48,7 @@ Release:	0.1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
-Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
+Source0:	http://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
 Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
@@ -52,9 +56,6 @@ Patch2:		lvm2-2.02.107-vgmknodes-man.patch
 Patch5:		lvm2-2.02.119-preferred_names.patch
 #Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
-
-# Fedora
-Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
@@ -281,7 +282,7 @@ export CXX=g++
 
 mkdir -p static
 pushd static
-%configure %{common_configure_parameters} \
+%configure2_5x %{common_configure_parameters} \
 	--enable-static_link \
 	--disable-readline \
 	--with-cluster=none \
@@ -292,14 +293,16 @@ popd
 
 mkdir -p shared
 pushd shared
-%configure %{common_configure_parameters} \
+%configure2_5x %{common_configure_parameters} \
 	--sbindir=/sbin \
 	--disable-static_link \
 	--enable-readline \
 	--enable-fsadm \
 	--enable-pkgconfig \
 	--with-usrlibdir=%{_libdir} \
+%if %mdvver >= 201500
 	--enable-notify-dbus \
+%endif
 	--libdir=/%{_lib} \
 	--enable-cmdlib \
 %if %with lvm2app
