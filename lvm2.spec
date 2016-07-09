@@ -7,8 +7,8 @@
 %bcond_without crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.151
-%define dmversion	1.02.123
+%define lvmversion	2.02.160
+%define dmversion	1.02.130
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -70,7 +70,6 @@ Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	intltool
 BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
-BuildRequires:	pkgconfig(libsystemd-id128)
 BuildRequires:	thin-provisioning-tools
 Requires(post):	rpm-helper
 Conflicts:	lvm
@@ -323,7 +322,7 @@ pushd shared
 	--enable-udev_rules \
 	--enable-udev-systemd-background-jobs \
 	--with-udevdir=%{_udevdir} \
-	--with-systemdsystemunitdir=%{_unitdir}
+	--with-systemdsystemunitdir=%{_systemunitdir}
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
 %make
@@ -409,13 +408,13 @@ fi
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/cache
 %attr(600,root,root) %ghost %{_sysconfdir}/lvm/cache/.cache
 %attr(700,root,root) %dir %{_rundir}/lock/lvm
-%{_unitdir}/blk-availability.service
-%{_unitdir}/lvm2-monitor.service
+%{_systemunitdir}/blk-availability.service
+%{_systemunitdir}/lvm2-monitor.service
 %{_systemgeneratordir}/lvm2-activation-generator
 %if %{with lvmetad}
-%{_unitdir}/lvm2-lvmetad.socket
-%{_unitdir}/lvm2-lvmetad.service
-%{_unitdir}/lvm2-pvscan@.service
+%{_systemunitdir}/lvm2-lvmetad.socket
+%{_systemunitdir}/lvm2-lvmetad.service
+%{_systemunitdir}/lvm2-pvscan@.service
 %endif
 %{_tmpfilesdir}/%{name}.conf
 %{_mandir}/man5/*
@@ -475,8 +474,8 @@ fi
 %if %{with dmeventd}
 /sbin/dmeventd
 %endif
-%{_unitdir}/dm-event.service
-%{_unitdir}/dm-event.socket
+%{_systemunitdir}/dm-event.service
+%{_systemunitdir}/dm-event.socket
 %{_udevdir}/10-dm.rules
 %{_udevdir}/13-dm-disk.rules
 %{_udevdir}/95-dm-notify.rules
