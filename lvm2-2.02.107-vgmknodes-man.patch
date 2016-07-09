@@ -1,10 +1,11 @@
---- LVM2.2.02.107/man/vgmknodes.8.in.0002~	2014-07-02 16:52:52.551203299 +0200
-+++ LVM2.2.02.107/man/vgmknodes.8.in	2014-07-02 16:54:26.618796526 +0200
-@@ -6,6 +6,7 @@ vgmknodes \(em recreate volume group dir
+diff -Naur LVM2.2.02.160/man/vgmknodes.8.in LVM2.2.02.160.tpg/man/vgmknodes.8.in
+--- LVM2.2.02.160/man/vgmknodes.8.in	2016-07-06 15:56:38.000000000 +0000
++++ LVM2.2.02.160.tpg/man/vgmknodes.8.in	2016-07-09 08:11:10.000000000 +0000
+@@ -6,6 +6,7 @@
  .RB [ \-\-commandprofile
  .IR ProfileName ]
  .RB [ \-d | \-\-debug ]
 +.RB [ \-\-ignorelockingfailure]
  .RB [ \-h | \-\-help ]
  .RB [ \-\-refresh ]
- .RB [ \-v | \-\-verbose ]
+ .RB [ \-\-reportformat
