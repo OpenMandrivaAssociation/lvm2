@@ -49,12 +49,12 @@ Source2:	%{name}-tmpfiles.conf
 Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch2:		lvm2-2.02.107-vgmknodes-man.patch
-Patch5:		lvm2-2.02.119-preferred_names.patch
+#Fedora
+Patch4:		lvm2-set-default-preferred_names.patch
+Patch5:		lvm2-lvmetad-timeout.patch
+
 #Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
-
-# Fedora
-Patch102:	lvm2-remove-mpath-device-handling-from-udev-rules.patch
 
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
@@ -62,16 +62,16 @@ BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	glibc-static-devel
-%if %{with dmeventd}
-# install plugins as well
-Requires:	%{cmdlibname} = %{lvmversion}-%{release}
-%endif
-Requires:	%{dm_req} >= %{dmversion}
 BuildRequires:	intltool
 BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
 BuildRequires:	thin-provisioning-tools
 Requires(post):	rpm-helper
+%if %{with dmeventd}
+# install plugins as well
+Requires:	%{cmdlibname} = %{lvmversion}-%{release}
+%endif
+Requires:	%{dm_req} >= %{dmversion}
 Conflicts:	lvm
 Conflicts:	lvm1
 
@@ -245,6 +245,7 @@ for building programs which use device-mapper-event.
 %prep
 %setup -qn LVM2.%{lvmversion}
 %apply_patches
+
 autoreconf -fiv
 
 %build
@@ -369,6 +370,17 @@ export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
 
 rm -f %{buildroot}/sbin/dmeventd.static
 
+install -d %{buildroot}%{_presetdir}
+cat > %{buildroot}%{_presetdir}/86-lvm2.preset << EOF
+enable blk-availability.service
+enable lvm2-monitor.service
+enable lvm2-lvmetad.socket
+EOF
+
+cat > %{buildroot}%{_presetdir}/86-device-mapper.preset << EOF
+enable dm-event.socket
+EOF
+
 %pre
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
     update-alternatives --remove lvm /sbin/lvm2
@@ -377,13 +389,17 @@ fi
 
 %if %{with cluster}
 %post -n clvmd
-/sbin/lvmconf --lockinglibdir %{_libdir}
+/sbin/clvmd -S || echo "Failed to restart clvmd daemon. Please, try manual restart."
 
 %preun -n clvmd
 if [ "$1" = 0 ]; then
     /sbin/lvmconf --disable-cluster
 fi
+%endif
 
+%if %{with dmeventd}
+%post -n dmsetup
+/sbin/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."
 %endif
 
 %files
@@ -408,6 +424,7 @@ fi
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/cache
 %attr(600,root,root) %ghost %{_sysconfdir}/lvm/cache/.cache
 %attr(700,root,root) %dir %{_rundir}/lock/lvm
+%{_presetdir}/86-lvm2.preset
 %{_systemunitdir}/blk-availability.service
 %{_systemunitdir}/lvm2-monitor.service
 %{_systemgeneratordir}/lvm2-activation-generator
@@ -474,6 +491,7 @@ fi
 %if %{with dmeventd}
 /sbin/dmeventd
 %endif
+%{_presetdir}/86-device-mapper.preset
 %{_systemunitdir}/dm-event.service
 %{_systemunitdir}/dm-event.socket
 %{_udevdir}/10-dm.rules
