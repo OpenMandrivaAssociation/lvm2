@@ -7,8 +7,8 @@
 %bcond_without crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.160
-%define dmversion	1.02.130
+%define lvmversion	2.02.168
+%define dmversion	1.02.137
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -418,6 +418,7 @@ fi
 %{_sysconfdir}/lvm/profile/thin-performance.profile
 %{_sysconfdir}/lvm/profile/cache-mq.profile
 %{_sysconfdir}/lvm/profile/cache-smq.profile
+%{_sysconfdir}/lvm/profile/lvmdbusd.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
@@ -438,6 +439,8 @@ fi
 %{_mandir}/man7/lvmthin.7*
 %{_mandir}/man7/lvmcache.7*
 %{_mandir}/man7/lvmsystemid.7*
+%{_mandir}/man7/lvmraid.7.*
+%{_mandir}/man7/lvmreport.7.*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
 %{_udevdir}/69-dm-lvm-metad.rules
