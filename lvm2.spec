@@ -7,8 +7,8 @@
 %bcond_without crosscompile
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.168
-%define dmversion	1.02.137
+%define lvmversion	2.02.172
+%define dmversion	1.02.141
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -48,7 +48,7 @@ Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
 Patch0:		LVM2.2.02.98-alternatives.patch
 Patch1:		lvm2-2.02.77-qdiskd.patch
-Patch2:		lvm2-2.02.107-vgmknodes-man.patch
+#Patch2:		lvm2-2.02.107-vgmknodes-man.patch
 #Fedora
 Patch4:		lvm2-set-default-preferred_names.patch
 Patch5:		lvm2-lvmetad-timeout.patch
@@ -174,7 +174,7 @@ Requires:	udev
 Requires(pre):	rpm-helper
 
 %description -n	dmsetup
-Dmsetup manages logical devices that use the device-mapper driver.  
+Dmsetup manages logical devices that use the device-mapper driver.
 Devices are created by loading a table that specifies a target for
 each sector (512 bytes) in the logical device.
 
