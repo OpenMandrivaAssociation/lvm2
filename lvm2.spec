@@ -252,6 +252,7 @@ Summary:	LVM2 D-Bus daemon
 License:	GPLv2
 Group:		System/Base
 Requires:	lvm2 >= %{version}-%{release}
+BuildRequires:	python-devel
 Requires:	dbus
 Requires:	python-dbus
 Requires:	pyudev
