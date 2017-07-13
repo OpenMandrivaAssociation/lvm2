@@ -5,6 +5,7 @@
 %bcond_without dmeventd
 %bcond_without lvmetad
 %bcond_without crosscompile
+%bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
 %define lvmversion	2.02.172
@@ -242,6 +243,27 @@ This package contains the header files and development libraries
 for building programs which use device-mapper-event.
 %endif
 
+##############################################################################
+# LVM D-Bus daemon
+##############################################################################
+%if %{with lvmdbusd}
+%package	dbusd
+Summary:	LVM2 D-Bus daemon
+License:	GPLv2
+Group:		System/Base
+Requires:	lvm2 >= %{version}-%{release}
+Requires:	dbus
+Requires:	python-dbus
+Requires:	pyudev
+Requires:	python3-gobject-base
+Requires(post): rpm-helper
+Requires(preun): rpm-helper
+Requires(postun): rpm-helper
+
+%description dbusd
+Daemon for access to LVM2 functionality through a D-Bus interface.
+%endif
+
 %prep
 %setup -qn LVM2.%{lvmversion}
 %apply_patches
@@ -268,7 +290,7 @@ fi
 %if %{with dmeventd}
 %define _disable_ld_as_needed 1
 %endif
-%define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking --disable-python_bindings --disable-dbus-service
+%define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user=`id -un` --with-group=`id -gn` --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking --disable-python_bindings
 export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP="$PWD"
@@ -302,7 +324,11 @@ pushd shared
 	--enable-notify-dbus \
 	--libdir=/%{_lib} \
 	--enable-cmdlib \
-%if %with lvm2app
+%if %{with lvmdbusd}
+	--enable-dbus-service \
+	--enable-notify-dbus \
+%endif
+%if %{with lvm2app}
 	--enable-applib \
 %endif
 %if %{with cluster}
@@ -406,7 +432,28 @@ fi
 %doc INSTALL README VERSION WHATS_NEW
 /sbin/blkdeactivate
 /sbin/fsadm
-/sbin/lv*
+/sbin/lvchange
+/sbin/lvconvert
+/sbin/lvcreate
+/sbin/lvdisplay
+/sbin/lvextend
+/sbin/lvm
+/sbin/lvm.static
+/sbin/lvm2
+/sbin/lvm2-static
+/sbin/lvmconf
+/sbin/lvmconfig
+/sbin/lvmdiskscan
+/sbin/lvmdump
+/sbin/lvmetad
+/sbin/lvmsadc
+/sbin/lvmsar
+/sbin/lvreduce
+/sbin/lvremove
+/sbin/lvrename
+/sbin/lvresize
+/sbin/lvs
+/sbin/lvscan
 /sbin/pv*
 /sbin/vg*
 %dir %{_sysconfdir}/lvm
@@ -518,4 +565,18 @@ fi
 %{_libdir}/libdevmapper-event.so
 %{_libdir}/libdevmapper-event-lvm2.so
 %{_libdir}/pkgconfig/devmapper-event.pc
+%endif
+
+##############################################################################
+# LVM D-Bus daemon
+##############################################################################
+%if %{with lvmdbusd}
+%files dbusd
+%defattr(555,root,root,-)
+/sbin/lvmdbusd
+%defattr(444,root,root,-)
+%{_sysconfdir}/dbus-1/system.d/com.redhat.lvmdbus1.conf
+%{_datadir}/dbus-1/system-services/com.redhat.lvmdbus1.service
+%{_unitdir}/lvm2-lvmdbusd.service
+%{python_sitelib}/lvmdbusd/*
 %endif
