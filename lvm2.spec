@@ -41,7 +41,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -258,7 +258,7 @@ BuildRequires:	python-dbus
 Requires:	dbus
 Requires:	python-dbus
 Requires:	pyudev
-Requires:	python3-gobject-base
+Requires:	python-gobject3
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Requires(postun): rpm-helper
