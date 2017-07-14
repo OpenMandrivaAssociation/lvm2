@@ -254,6 +254,7 @@ Group:		System/Base
 Requires:	lvm2 >= %{version}-%{release}
 BuildRequires:	python-devel
 BuildRequires:	pyudev
+BuildRequires:	python-dbus
 Requires:	dbus
 Requires:	python-dbus
 Requires:	pyudev
