@@ -56,7 +56,6 @@ Patch5:		lvm2-lvmetad-timeout.patch
 
 #Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
-
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
