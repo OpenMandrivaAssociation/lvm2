@@ -8,8 +8,8 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.172
-%define dmversion	1.02.141
+%define lvmversion	2.02.177
+%define dmversion	1.02.146
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -41,7 +41,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -56,7 +56,6 @@ Patch5:		lvm2-lvmetad-timeout.patch
 
 #Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
-
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
