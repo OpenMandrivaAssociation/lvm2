@@ -8,8 +8,8 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.177
-%define dmversion	1.02.146
+%define lvmversion	2.02.178
+%define dmversion	1.02.147
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -391,7 +391,6 @@ chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
 %if %{with cluster}
 chmod u+w  %{buildroot}/sbin/*
 %endif
-
 
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
