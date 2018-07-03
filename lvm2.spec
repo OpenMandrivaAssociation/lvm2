@@ -83,18 +83,18 @@ creating volume groups (kind of virtual disks) from one or more physical
 volumes and creating one or more logical volumes (kind of logical partitions)
 in volume groups.
 
-%package -n	%{cmdlibname}
+%package -n %{cmdlibname}
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
-%define __noautoreqfiles	'libdevmapper-event-lvm2(mirror|raid|snapshot|thin).so'
+%global __requires_exclude devel\\(libdevmapper
 
-%description -n	%{cmdlibname}
+%description -n %{cmdlibname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 
-%package -n	%{cmddevname}
+%package -n %{cmddevname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
@@ -102,22 +102,22 @@ Requires:	%{dm_req_d} = %{dmversion}-%{release}
 Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{lvmversion}-%{release}
 
-%description -n	%{cmddevname}
+%description -n %{cmddevname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
 This package contains the header files for building with lvm2cmd and lvm2app.
 
 %if %{with lvm2app}
-%package -n	%{applibname}
+%package -n %{applibname}
 Summary:	LVM2 application api library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
 Obsoletes:	%{mklibname lvm2app 2.1}
 
-%description -n	%{applibname}
+%description -n %{applibname}
 LVM2 application API.
 
-%package -n	%{appdevname}
+%package -n %{appdevname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{applibname} = %{lvmversion}-%{release}
@@ -125,13 +125,13 @@ Requires:	%{dm_req_d} = %{dmversion}-%{release}
 Provides:	liblvm2app-devel = %{lvmversion}-%{release}
 Obsoletes:	%{mklibname lvm2app %appmajor -d}
 
-%description -n	%{appdevname}
+%description -n %{appdevname}
 LVM2 application API
 This package contains the header files for building with lvm2app.
 %endif
 
 %if %{with cluster}
-%package -n	clvmd
+%package -n clvmd
 Summary:	cluster LVM daemon
 Group:		System/Kernel and hardware
 BuildRequires:	cluster-devel >= %{cluster_version}
@@ -140,12 +140,12 @@ BuildRequires:	corosync-devel >= %{corosync_version}
 Requires:	cman >= %{cluster_version}
 Requires:	%{dm_req} >= %{dmversion}
 
-%description -n	clvmd
+%description -n clvmd
 clvmd is the daemon that distributes LVM metadata updates around a
 cluster. It must be running on all nodes in the cluster and will give
 an error if a node in the cluster does not have this daemon running.
 
-%package -n	cmirror
+%package -n cmirror
 Summary:	Daemon for device-mapper-based clustered mirrors
 Group:		System/Kernel and hardware
 BuildRequires:	cluster-devel >= %{cluster_version}
@@ -156,11 +156,11 @@ Requires:	openais >= %{openais_version}
 Requires:	corosync >= %{corosync_version}
 Requires:	%{dmlibname} >= %{dmversion}
 
-%description -n	cmirror
+%description -n cmirror
 Daemon providing device-mapper-based mirrors in a shared-storage cluster.
 %endif
 
-%package -n	dmsetup
+%package -n dmsetup
 Summary:	Device mapper setup tool
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
@@ -173,17 +173,17 @@ BuildRequires:	pkgconfig(udev) >= 195
 Requires:	udev
 Requires(pre):	rpm-helper
 
-%description -n	dmsetup
+%description -n dmsetup
 Dmsetup manages logical devices that use the device-mapper driver.
 Devices are created by loading a table that specifies a target for
 each sector (512 bytes) in the logical device.
 
-%package -n	%{dmlibname}
+%package -n %{dmlibname}
 Summary:	Device mapper library
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
 
-%description -n	%{dmlibname}
+%description -n %{dmlibname}
 The device-mapper driver enables the definition of new block
 devices composed of ranges of sectors of existing devices.  This
 can be used to define disk partitions - or logical volumes.
@@ -191,7 +191,7 @@ can be used to define disk partitions - or logical volumes.
 This package contains the shared libraries required for running
 programs which use device-mapper.
 
-%package -n	%{dmdevname}
+%package -n %{dmdevname}
 Summary:	Device mapper development library
 Version:	%{dmversion}
 Group:		Development/C
@@ -202,7 +202,7 @@ Requires:	pkgconfig
 Conflicts:	device-mapper-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper %dmmajor -d}
 
-%description -n	%{dmdevname}
+%description -n %{dmdevname}
 The device-mapper driver enables the definition of new block
 devices composed of ranges of sectors of existing devices.  This
 can be used to define disk partitions - or logical volumes.
@@ -211,7 +211,7 @@ This package contains the header files and development libraries
 for building programs which use device-mapper.
 
 %if %{with dmeventd}
-%package -n	%{event_libname}
+%package -n %{event_libname}
 Summary:	Device mapper event library
 Version:	%{dmversion}
 Group:		System/Kernel and hardware
@@ -219,13 +219,13 @@ Provides:	device-mapper-event = %{dmversion}-%{release}
 Provides:	libdevmapper-event = %{dmversion}-%{release}
 Requires:	%{dmlibname} >= %{dmversion}
 
-%description -n	%{event_libname}
+%description -n %{event_libname}
 The device-mapper-event library allows monitoring of active mapped devices.
 
 This package contains the shared libraries required for running
 programs which use device-mapper-event.
 
-%package -n	%{event_devname}
+%package -n %{event_devname}
 Summary:	Device mapper event development library
 Version:	%{dmversion}
 Group:		Development/C
@@ -235,7 +235,7 @@ Requires:	%{dmdevname} = %{dmversion}-%{release}
 Conflicts:	device-mapper-event-devel < %{dmversion}-%{release}
 Obsoletes:	%{mklibname devmapper-event %dmmajor -d}
 
-%description -n	%{event_devname}
+%description -n %{event_devname}
 The device-mapper-event library allows monitoring of active mapped devices.
 
 This package contains the header files and development libraries
@@ -246,7 +246,7 @@ for building programs which use device-mapper-event.
 # LVM D-Bus daemon
 ##############################################################################
 %if %{with lvmdbusd}
-%package	dbusd
+%package dbusd
 Summary:	LVM2 D-Bus daemon
 License:	GPLv2
 Group:		System/Base
@@ -258,9 +258,9 @@ Requires:	dbus
 Requires:	python-dbus
 Requires:	pyudev
 Requires:	python-gobject3
-Requires(post): rpm-helper
-Requires(preun): rpm-helper
-Requires(postun): rpm-helper
+Requires(post):	rpm-helper
+Requires(preun):	rpm-helper
+Requires(postun):	rpm-helper
 
 %description dbusd
 Daemon for access to LVM2 functionality through a D-Bus interface.
@@ -280,13 +280,13 @@ export ac_cv_func_realloc_0_nonnull=yes
 %ifarch %arm
 export ac_cv_func_malloc_0_nonnull=yes
 %endif
-datelvm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION`
-datedm=`awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM`
+datelvm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION)
+datedm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM)
 if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
  "%{release}" = "1" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
 	echo "ERROR:	you should not be touching this package" 1>&2
-	echo "	without full understanding of relationship between device-mapper" 1>&2
-	echo "	and lvm2 versions" 1>&2
+	echo "without full understanding of relationship between device-mapper" 1>&2
+	echo " and lvm2 versions" 1>&2
 	exit 1
 fi
 %if %{with dmeventd}
