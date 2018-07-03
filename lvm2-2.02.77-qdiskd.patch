@@ -1,7 +1,7 @@
-diff -Naur LVM2.2.02.160/configure LVM2.2.02.160.tpg/configure
---- LVM2.2.02.160/configure	2016-07-06 15:56:37.000000000 +0000
-+++ LVM2.2.02.160.tpg/configure	2016-07-09 08:06:56.907992049 +0000
-@@ -9676,7 +9676,6 @@
+diff -Naur LVM2.2.02.178/configure LVM2.2.02.178.tpg/configure
+--- LVM2.2.02.178/configure	2018-06-13 12:32:34.000000000 +0000
++++ LVM2.2.02.178.tpg/configure	2018-07-03 21:02:13.690634950 +0000
+@@ -9920,7 +9920,6 @@
  if [ `expr x"$CLVMD" : '.*cman.*'` != 0 ]; then
  	BUILDCMAN=yes
  	CLVMD_CMANAGERS="$CLVMD_CMANAGERS cman"
@@ -9,10 +9,10 @@ diff -Naur LVM2.2.02.160/configure LVM2.2.02.160.tpg/configure
  fi
  if [ `expr x"$CLVMD" : '.*corosync.*'` != 0 ]; then
  	BUILDCOROSYNC=yes
-diff -Naur LVM2.2.02.160/configure.in LVM2.2.02.160.tpg/configure.in
---- LVM2.2.02.160/configure.in	2016-07-06 15:56:37.000000000 +0000
-+++ LVM2.2.02.160.tpg/configure.in	2016-07-09 08:06:37.237847083 +0000
-@@ -770,7 +770,6 @@
+diff -Naur LVM2.2.02.178/configure.ac LVM2.2.02.178.tpg/configure.ac
+--- LVM2.2.02.178/configure.ac	2018-06-13 12:32:34.000000000 +0000
++++ LVM2.2.02.178.tpg/configure.ac	2018-07-03 21:00:59.885639783 +0000
+@@ -706,7 +706,6 @@
  if [[ `expr x"$CLVMD" : '.*cman.*'` != 0 ]]; then
  	BUILDCMAN=yes
  	CLVMD_CMANAGERS="$CLVMD_CMANAGERS cman"

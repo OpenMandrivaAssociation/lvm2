@@ -47,15 +47,14 @@ Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
-Patch0:		LVM2.2.02.98-alternatives.patch
+
 Patch1:		lvm2-2.02.77-qdiskd.patch
-#Patch2:		lvm2-2.02.107-vgmknodes-man.patch
 #Fedora
 Patch4:		lvm2-set-default-preferred_names.patch
 Patch5:		lvm2-lvmetad-timeout.patch
 
-#Patch7:		thin-perfomance-norule.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
+
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
@@ -170,7 +169,7 @@ Provides:	dmeventd = %{dmversion}-%{release}
 %endif
 Requires:	%{dm_req} = %{dmversion}-%{release}
 BuildRequires:	pkgconfig(udev) >= 195
-Requires:	udev
+Requires:	systemd
 Requires(pre):	rpm-helper
 
 %description -n dmsetup
@@ -251,7 +250,7 @@ Summary:	LVM2 D-Bus daemon
 License:	GPLv2
 Group:		System/Base
 Requires:	lvm2 >= %{version}-%{release}
-BuildRequires:	python-devel
+BuildRequires:	pkgconfig(python)
 BuildRequires:	pyudev
 BuildRequires:	pkgconfig(dbus-python)
 Requires:	dbus
