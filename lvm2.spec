@@ -65,6 +65,7 @@ BuildRequires:	intltool
 BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
 BuildRequires:	thin-provisioning-tools
+BuildRequires:	libaio-devel
 Requires(post):	rpm-helper
 %if %{with dmeventd}
 # install plugins as well
