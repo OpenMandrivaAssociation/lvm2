@@ -8,8 +8,8 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.178
-%define dmversion	1.02.147
+%define lvmversion	2.02.179
+%define dmversion	1.02.148
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
