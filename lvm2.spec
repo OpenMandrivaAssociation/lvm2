@@ -66,6 +66,7 @@ BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
 BuildRequires:	thin-provisioning-tools
 BuildRequires:	libaio-devel
+BuildRequires:	%mklibname aio -d -s
 Requires(post):	rpm-helper
 %if %{with dmeventd}
 # install plugins as well
@@ -74,6 +75,8 @@ Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req} >= %{dmversion}
 Conflicts:	lvm
 Conflicts:	lvm1
+# Workaround for weird bash failure in configure script
+BuildRequires:	mksh
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -271,6 +274,8 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 %apply_patches
 
 autoreconf -fiv
+# Workaround for strange bash failure
+sed -i -e 's,#! /bin/sh,#! /bin/mksh,g' configure
 
 %build
 %if %{with crosscompile}
@@ -300,8 +305,7 @@ export CONFIGURE_TOP="$PWD"
 unset ac_cv_lib_dl_dlopen
 
 export LIBS=-lm
-export CC=gcc
-export CXX=g++
+export LDFLAGS="%{optflags} -flto"
 
 mkdir -p static
 pushd static
