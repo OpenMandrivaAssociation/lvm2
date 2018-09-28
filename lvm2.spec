@@ -481,7 +481,7 @@ fi
 %{_presetdir}/86-lvm2.preset
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
-%{_systemgeneratordir}/lvm2-activation-generator
+%{_systemdgeneratordir}/lvm2-activation-generator
 %if %{with lvmetad}
 %{_unitdir}/lvm2-lvmetad.socket
 %{_unitdir}/lvm2-lvmetad.service
