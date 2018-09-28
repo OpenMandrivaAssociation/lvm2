@@ -512,6 +512,8 @@ fi
 /%{_lib}/libdevmapper-event-lvm2snapshot.so
 /%{_lib}/libdevmapper-event-lvm2thin.so
 %endif
+/%{_lib}/libdevmapper-event-lvm2vdo.so
+/%{_lib}/device-mapper/libdevmapper-event-lvm2vdo.so
 
 %files -n %{cmddevname}
 %{_includedir}/lvm2cmd.h
