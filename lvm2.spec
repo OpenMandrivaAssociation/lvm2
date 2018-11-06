@@ -268,7 +268,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 %endif
 
 %prep
-%autosetup -p1 -nn LVM2.%{lvmversion}
+%autosetup -p1 -n LVM2.%{lvmversion}
 
 autoreconf -fiv
 # Workaround for strange bash failure
