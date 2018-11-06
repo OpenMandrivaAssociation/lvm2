@@ -8,8 +8,8 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.181
-%define dmversion	1.02.150
+%define lvmversion	2.02.182
+%define dmversion	1.02.152
 %define dmmajor		1.02
 %define cmdmajor	2.02
 %define appmajor	2.2
@@ -41,20 +41,17 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
-
 Patch1:		lvm2-2.02.77-qdiskd.patch
 #Fedora
 Patch4:		lvm2-set-default-preferred_names.patch
 Patch5:		lvm2-lvmetad-timeout.patch
-
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
-
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
@@ -271,8 +268,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 %endif
 
 %prep
-%setup -qn LVM2.%{lvmversion}
-%apply_patches
+%autosetup -p1 -nn LVM2.%{lvmversion}
 
 autoreconf -fiv
 # Workaround for strange bash failure
@@ -316,7 +312,7 @@ pushd static
 	--with-cluster=none \
 	--with-pool=none
 sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
-%make
+%make_build
 popd
 
 mkdir -p shared
@@ -359,11 +355,11 @@ pushd shared
 	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
-%make
+%make_build
 popd
 
 %install
-%makeinstall_std -C shared install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
+%make_install -C shared install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
 
 install -m644 %{SOURCE2} -D %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
