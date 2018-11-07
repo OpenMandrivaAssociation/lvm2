@@ -48,6 +48,7 @@ Patch4:		https://src.fedoraproject.org/rpms/lvm2/raw/master/f/lvm2-set-default-p
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
+
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
