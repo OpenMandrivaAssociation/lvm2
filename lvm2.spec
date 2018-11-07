@@ -41,7 +41,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -52,6 +52,8 @@ Patch1:		lvm2-2.02.77-qdiskd.patch
 Patch4:		lvm2-set-default-preferred_names.patch
 Patch5:		lvm2-lvmetad-timeout.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
+# (tpg) patch from ClearLinux
+Patch20:	trim.patch
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
