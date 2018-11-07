@@ -1,5 +1,6 @@
---- LVM2.2.02.132/libdaemon/server/daemon-server.c~	2015-09-22 11:00:58.000000000 -0400
-+++ LVM2.2.02.132/libdaemon/server/daemon-server.c	2015-11-14 19:25:14.924917337 -0500
+diff -up LVM2.2.03.01/libdaemon/server/daemon-server.c.4~ LVM2.2.03.01/libdaemon/server/daemon-server.c
+--- LVM2.2.03.01/libdaemon/server/daemon-server.c.4~	2018-10-31 15:54:24.000000000 +0100
++++ LVM2.2.03.01/libdaemon/server/daemon-server.c	2018-11-07 19:18:38.525506313 +0100
 @@ -30,6 +30,7 @@
  #include <sys/un.h>
  #include <unistd.h>
@@ -8,9 +9,9 @@
  
  #include <syslog.h> /* FIXME. For the global closelog(). */
  
-@@ -624,6 +624,7 @@
+@@ -645,6 +646,7 @@ void daemon_start(daemon_state s)
  
- 	while (!_shutdown_requested && !failed) {
+ 	while (!failed) {
  		_reset_timeout(s);
 +		malloc_trim(0);
  		FD_ZERO(&in);

@@ -1,17 +1,15 @@
 %define _disable_lto 1
 
-%bcond_without lvm2app
 %bcond_with cluster
 %bcond_without dmeventd
-%bcond_without lvmetad
 %bcond_without crosscompile
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.02.182
-%define dmversion	1.02.152
+%define lvmversion	2.03.01
+%define dmversion	1.02.153
 %define dmmajor		1.02
-%define cmdmajor	2.02
+%define cmdmajor	%(echo %{lvmversion} |cut -d. -f1-2)
 %define appmajor	2.2
 
 %define dmlibname	%mklibname devmapper %{dmmajor}
@@ -20,10 +18,6 @@
 %define event_devname	%mklibname devmapper-event -d
 %define cmdlibname	%mklibname lvm2cmd %{cmdmajor}
 %define cmddevname	%mklibname lvm2cmd -d
-%if %{with lvm2app}
-%define applibname	%mklibname lvm2app %{appmajor}
-%define appdevname	%mklibname -d lvm2
-%endif
 
 #requirements for cluster
 %define corosync_version 1.2.0
@@ -41,16 +35,16 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
-Patch1:		lvm2-2.02.77-qdiskd.patch
+Patch1:		fix-service-files.patch
+Patch2:		lvm2-2.03.01-static-compile.patch
 #Fedora
-Patch4:		lvm2-set-default-preferred_names.patch
-Patch5:		lvm2-lvmetad-timeout.patch
+Patch4:		https://src.fedoraproject.org/rpms/lvm2/raw/master/f/lvm2-set-default-preferred_names.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
@@ -108,30 +102,6 @@ Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{lvmversion}-%{release}
 %description -n %{cmddevname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
-This package contains the header files for building with lvm2cmd and lvm2app.
-
-%if %{with lvm2app}
-%package -n %{applibname}
-Summary:	LVM2 application api library
-Group:		System/Kernel and hardware
-Requires:	%{dm_req} >= %{dmversion}
-Obsoletes:	%{mklibname lvm2app 2.1}
-
-%description -n %{applibname}
-LVM2 application API.
-
-%package -n %{appdevname}
-Summary:	Development files for LVM2 command line library
-Group:		System/Kernel and hardware
-Requires:	%{applibname} = %{lvmversion}-%{release}
-Requires:	%{dm_req_d} = %{dmversion}-%{release}
-Provides:	liblvm2app-devel = %{lvmversion}-%{release}
-Obsoletes:	%{mklibname lvm2app %appmajor -d}
-
-%description -n %{appdevname}
-LVM2 application API
-This package contains the header files for building with lvm2app.
-%endif
 
 %if %{with cluster}
 %package -n clvmd
@@ -273,8 +243,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 %autosetup -p1 -n LVM2.%{lvmversion}
 
 autoreconf -fiv
-# Workaround for strange bash failure
-sed -i -e 's,#! /bin/sh,#! /bin/mksh,g' configure
+autoconf
 
 %build
 %if %{with crosscompile}
@@ -297,14 +266,10 @@ fi
 %define _disable_ld_as_needed 1
 %endif
 %define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user= --with-group= --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking --disable-python_bindings
-export ac_cv_lib_dl_dlopen=no
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP="$PWD"
-
-unset ac_cv_lib_dl_dlopen
-
 export LIBS=-lm
-export LDFLAGS="%{optflags} -flto"
+export LDFLAGS="%{optflags} -fuse-ld=bfd -flto"
 
 mkdir -p static
 pushd static
@@ -333,9 +298,6 @@ pushd shared
 	--enable-dbus-service \
 	--enable-notify-dbus \
 %endif
-%if %{with lvm2app}
-	--enable-applib \
-%endif
 %if %{with cluster}
 	--with-clvmd=cman,openais,corosync \
 	--enable-cmirrord \
@@ -346,9 +308,6 @@ pushd shared
 %if %{with dmeventd}
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
-%endif
-%if %{with lvmetad}
-	--enable-lvmetad \
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
@@ -376,12 +335,8 @@ install shared/scripts/clvmd_init_red_hat %{buildroot}%{_initrddir}/clvmd
 install shared/scripts/cmirrord_init_red_hat %{buildroot}%{_initrddir}/cmirrord
 %endif
 
-%if %{with cluster}
-install -m 0755 scripts/lvmconf.sh %{buildroot}/sbin/lvmconf
-%endif
-
 install static/tools/lvm.static -D %{buildroot}/sbin/lvm.static
-install static/tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
+install static/libdm/dm-tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
 
 #install -d %{buildroot}/%{_libdir}/
 #compatibility links
@@ -403,12 +358,14 @@ rm -f %{buildroot}/sbin/dmeventd.static
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-lvm2.preset << EOF
 enable blk-availability.service
-enable lvm2-monitor.service
-enable lvm2-lvmetad.socket
+enable lvm2-lvmpolld.service
+enable lvm2-lvmpolld.socket
 EOF
 
 cat > %{buildroot}%{_presetdir}/86-device-mapper.preset << EOF
+enable dm-event.service
 enable dm-event.socket
+enable lvm2-monitor.service
 EOF
 
 %pre
@@ -420,11 +377,6 @@ fi
 %if %{with cluster}
 %post -n clvmd
 /sbin/clvmd -S || echo "Failed to restart clvmd daemon. Please, try manual restart."
-
-%preun -n clvmd
-if [ "$1" = 0 ]; then
-    /sbin/lvmconf --disable-cluster
-fi
 %endif
 
 %if %{with dmeventd}
@@ -445,11 +397,9 @@ fi
 /sbin/lvm.static
 /sbin/lvm2
 /sbin/lvm2-static
-/sbin/lvmconf
 /sbin/lvmconfig
 /sbin/lvmdiskscan
 /sbin/lvmdump
-/sbin/lvmetad
 /sbin/lvmsadc
 /sbin/lvmsar
 /sbin/lvreduce
@@ -470,6 +420,7 @@ fi
 %{_sysconfdir}/lvm/profile/cache-mq.profile
 %{_sysconfdir}/lvm/profile/cache-smq.profile
 %{_sysconfdir}/lvm/profile/lvmdbusd.profile
+%{_sysconfdir}/lvm/profile/vdo-small.profile
 %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/archive
 %attr(700,root,root) %dir %{_sysconfdir}/lvm/backup
@@ -480,11 +431,6 @@ fi
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
 %{_systemdgeneratordir}/lvm2-activation-generator
-%if %{with lvmetad}
-%{_unitdir}/lvm2-lvmetad.socket
-%{_unitdir}/lvm2-lvmetad.service
-%{_unitdir}/lvm2-pvscan@.service
-%endif
 %{_tmpfilesdir}/%{name}.conf
 %{_mandir}/man5/*
 %{_mandir}/man7/lvmthin.7*
@@ -494,7 +440,6 @@ fi
 %{_mandir}/man7/lvmreport.7.*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
-%{_udevdir}/69-dm-lvm-metad.rules
 
 %files -n %{cmdlibname}
 /%{_lib}/liblvm2cmd.so.%{cmdmajor}
@@ -517,20 +462,9 @@ fi
 %{_includedir}/lvm2cmd.h
 %{_libdir}/liblvm2cmd.so
 
-%if %{with lvm2app}
-%files -n %{applibname}
-/%{_lib}/liblvm2app.so.*
-
-%files -n %{appdevname}
-%{_includedir}/lvm2app.h
-%{_libdir}/liblvm2app.so
-%{_libdir}/pkgconfig/lvm2app.pc
-%endif
-
 %if %{with cluster}
 %files -n clvmd
 /sbin/clvmd
-/sbin/lvmconf
 %attr(644,root,root) %{_mandir}/man8/clvmd.8*
 
 %files -n cmirror
