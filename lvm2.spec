@@ -54,6 +54,7 @@ Patch5:		lvm2-lvmetad-timeout.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
+
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
 BuildRequires:	readline-devel
