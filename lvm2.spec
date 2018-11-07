@@ -385,6 +385,10 @@ fi
 /sbin/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."
 %endif
 
+%post
+# lvmetad is gone...
+sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.conf
+
 %files
 %doc INSTALL README VERSION WHATS_NEW
 /sbin/blkdeactivate
