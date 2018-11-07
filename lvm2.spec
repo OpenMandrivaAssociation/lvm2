@@ -6,18 +6,18 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion	2.03.01
-%define dmversion	1.02.153
-%define dmmajor		1.02
-%define cmdmajor	%(echo %{lvmversion} |cut -d. -f1-2)
-%define appmajor	2.2
+%define lvmversion 2.03.01
+%define dmversion 1.02.153
+%define dmmajor 1.02
+%define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
+%define appmajor 2.2
 
-%define dmlibname	%mklibname devmapper %{dmmajor}
-%define dmdevname	%mklibname devmapper -d
-%define event_libname	%mklibname devmapper-event %{dmmajor}
-%define event_devname	%mklibname devmapper-event -d
-%define cmdlibname	%mklibname lvm2cmd %{cmdmajor}
-%define cmddevname	%mklibname lvm2cmd -d
+%define dmlibname %mklibname devmapper %{dmmajor}
+%define dmdevname %mklibname devmapper -d
+%define event_libname %mklibname devmapper-event %{dmmajor}
+%define event_devname %mklibname devmapper-event -d
+%define cmdlibname %mklibname lvm2cmd %{cmdmajor}
+%define cmddevname %mklibname lvm2cmd -d
 
 #requirements for cluster
 %define corosync_version 1.2.0
@@ -35,7 +35,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -72,6 +72,8 @@ Conflicts:	lvm
 Conflicts:	lvm1
 # Workaround for weird bash failure in configure script
 BuildRequires:	mksh
+Requires(post):	sed
+
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -387,7 +389,7 @@ fi
 
 %post
 # lvmetad is gone...
-sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.conf
+sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.conf ||:
 
 %files
 %doc INSTALL README VERSION WHATS_NEW
