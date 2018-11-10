@@ -35,7 +35,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	4
+Release:	5
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -87,7 +87,7 @@ in volume groups.
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
-Conflicts:	%{mklibname lvm2cmd 2.02} < 2.03.01
+Conflicts:	%{mklibname lvm2cmd 2.02} < 2.02.181-1
 Obsoletes:	%{mklibname lvm2cmd 2.02} < 2.02.181-1
 Provides:	%{mklibname lvm2cmd 2.02} = 2.02.182-1
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
