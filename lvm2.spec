@@ -18,6 +18,7 @@
 %define event_devname %mklibname devmapper-event -d
 %define cmdlibname %mklibname lvm2cmd %{cmdmajor}
 %define cmddevname %mklibname lvm2cmd -d
+%define oldcmdlibname %mklibname lvm2cmd 2.02
 
 #requirements for cluster
 %define corosync_version 1.2.0
@@ -35,7 +36,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	7
+Release:	8
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
@@ -87,9 +88,7 @@ in volume groups.
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
 Requires:	%{dm_req} >= %{dmversion}
-Conflicts:	%{mklibname lvm2cmd 2.02} < 2.02.181-2
-Obsoletes:	%{mklibname lvm2cmd 2.02} < 2.02.181-2
-Provides:	%{mklibname lvm2cmd 2.02} = 2.02.182-1
+Obsoletes:	%{oldcmdlibname} < %{EVRD}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
 %global __requires_exclude devel\\(libdevmapper
 
