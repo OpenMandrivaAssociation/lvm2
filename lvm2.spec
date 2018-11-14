@@ -274,7 +274,7 @@ fi
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP="$PWD"
 export LIBS=-lm
-export LDFLAGS="%{optflags} -fuse-ld=bfd -flto"
+export LDFLAGS="%{optflags} -flto"
 
 mkdir -p static
 pushd static
