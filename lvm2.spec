@@ -246,7 +246,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 
 %prep
 %autosetup -p1 -n LVM2.%{lvmversion}
-
+%config_update
 autoreconf -fiv
 autoconf
 
