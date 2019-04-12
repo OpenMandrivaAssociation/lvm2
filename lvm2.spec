@@ -42,7 +42,6 @@ Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
-Patch1:		fix-service-files.patch
 Patch2:		lvm2-2.03.01-static-compile.patch
 #Fedora
 Patch4:		https://src.fedoraproject.org/rpms/lvm2/raw/master/f/lvm2-set-default-preferred_names.patch
@@ -277,7 +276,7 @@ export LIBS=-lm
 export LDFLAGS="%{optflags} -flto"
 
 mkdir -p static
-pushd static
+cd static
 %configure %{common_configure_parameters} \
 	--enable-static_link \
 	--disable-readline \
@@ -285,10 +284,10 @@ pushd static
 	--with-pool=none
 sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make_build
-popd
+cd -
 
 mkdir -p shared
-pushd shared
+cd shared
 %configure %{common_configure_parameters} \
 	--sbindir=/sbin \
 	--disable-static_link \
@@ -322,7 +321,7 @@ pushd shared
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
 %make_build
-popd
+cd -
 
 %install
 %make_install -C shared install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
