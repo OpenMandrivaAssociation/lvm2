@@ -42,7 +42,7 @@ Group:		System/Kernel and hardware
 Url:		http://sources.redhat.com/lvm2/
 Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
-#Patch2:		lvm2-2.03.01-static-compile.patch
+Patch2:		lvm2-2.03.01-static-compile.patch
 #Fedora
 Patch4:		https://src.fedoraproject.org/rpms/lvm2/raw/master/f/lvm2-set-default-preferred_names.patch
 Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
