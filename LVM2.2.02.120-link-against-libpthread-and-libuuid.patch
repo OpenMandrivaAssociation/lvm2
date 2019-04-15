@@ -1,9 +1,9 @@
-diff -up LVM2.2.03.01/make.tmpl.in.omv~ LVM2.2.03.01/make.tmpl.in
---- LVM2.2.03.01/make.tmpl.in.omv~	2018-11-07 19:15:32.368410312 +0100
-+++ LVM2.2.03.01/make.tmpl.in	2018-11-07 19:15:37.531435867 +0100
-@@ -64,7 +64,7 @@ PYCOMPILE = $(top_srcdir)/autoconf/py-co
- LIBS = @LIBS@
- LIBS += $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(RT_LIBS) -lm
+diff -Naur LVM2.2.03.02/make.tmpl.in LVM2.2.03.02.tpg/make.tmpl.in
+--- LVM2.2.03.02/make.tmpl.in	2018-12-18 14:22:34.000000000 +0000
++++ LVM2.2.03.02.tpg/make.tmpl.in	2019-04-15 11:00:09.081000000 +0000
+@@ -63,7 +63,7 @@
+ 
+ LIBS += @LIBS@ $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(RT_LIBS) $(M_LIBS)
  # Extra libraries always linked with static binaries
 -STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS)
 +STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) -pthread -luuid

@@ -45,7 +45,7 @@ Source2:	%{name}-tmpfiles.conf
 #Patch2:		lvm2-2.03.01-static-compile.patch
 #Fedora
 Patch4:		https://src.fedoraproject.org/rpms/lvm2/raw/master/f/lvm2-set-default-preferred_names.patch
-#Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
+Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
 
