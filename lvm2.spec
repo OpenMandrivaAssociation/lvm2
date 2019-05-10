@@ -62,6 +62,9 @@ BuildRequires:	pkgconfig(systemd)
 BuildRequires:	systemd-macros
 BuildRequires:	thin-provisioning-tools
 BuildRequires:	libaio-devel
+%ifarch %{riscv}
+BuildRequires:	lib64atomic-static-devel
+%endif
 BuildRequires:	%mklibname aio -d -s
 Requires(post):	rpm-helper
 %if %{with dmeventd}
