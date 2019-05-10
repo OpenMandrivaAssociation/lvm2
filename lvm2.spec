@@ -273,7 +273,6 @@ fi
 %define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user= --with-group= --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking --disable-python_bindings
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP="$PWD"
-export LIBS=-lm
 export LDFLAGS="%{optflags} -flto"
 
 mkdir -p static
@@ -449,6 +448,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_mandir}/man7/lvmreport.7.*
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
+%{_udevdir}/69-dm-lvm-metad.rules
 
 %files -n %{cmdlibname}
 /%{_lib}/liblvm2cmd.so.%{cmdmajor}
@@ -527,5 +527,6 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_sysconfdir}/dbus-1/system.d/com.redhat.lvmdbus1.conf
 %{_datadir}/dbus-1/system-services/com.redhat.lvmdbus1.service
 %{_unitdir}/lvm2-lvmdbusd.service
+%{_unitdir}/lvm2-pvscan@.service
 %{python_sitelib}/lvmdbusd/*
 %endif
