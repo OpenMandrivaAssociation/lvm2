@@ -78,7 +78,6 @@ Conflicts:	lvm1
 BuildRequires:	mksh
 Requires(post):	sed
 
-
 %description
 LVM includes all of the support for handling read/write operations on
 physical volumes (hard disks, RAID-Systems, magneto optical, etc.,

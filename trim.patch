@@ -1,7 +1,7 @@
-diff -up LVM2.2.03.01/libdaemon/server/daemon-server.c.4~ LVM2.2.03.01/libdaemon/server/daemon-server.c
---- LVM2.2.03.01/libdaemon/server/daemon-server.c.4~	2018-10-31 15:54:24.000000000 +0100
-+++ LVM2.2.03.01/libdaemon/server/daemon-server.c	2018-11-07 19:18:38.525506313 +0100
-@@ -30,6 +30,7 @@
+diff -Naur LVM2.2.03.03/libdaemon/server/daemon-server.c LVM2.2.03.03.tpg/libdaemon/server/daemon-server.c
+--- LVM2.2.03.03/libdaemon/server/daemon-server.c	2019-06-07 15:26:46.000000000 +0000
++++ LVM2.2.03.03.tpg/libdaemon/server/daemon-server.c	2019-06-10 15:56:23.197066409 +0000
+@@ -28,6 +28,7 @@
  #include <sys/un.h>
  #include <unistd.h>
  #include <signal.h>
@@ -9,11 +9,11 @@ diff -up LVM2.2.03.01/libdaemon/server/daemon-server.c.4~ LVM2.2.03.01/libdaemon
  
  #include <syslog.h> /* FIXME. For the global closelog(). */
  
-@@ -645,6 +646,7 @@ void daemon_start(daemon_state s)
+@@ -650,6 +651,7 @@
  
  	while (!failed) {
  		_reset_timeout(s);
 +		malloc_trim(0);
  		FD_ZERO(&in);
  		FD_SET(s.socket_fd, &in);
- 		if (select(FD_SETSIZE, &in, NULL, NULL, _get_timeout(s)) < 0 && errno != EINTR)
+ 

@@ -1,12 +1,7 @@
- conf/example.conf.in         | 2 +-
- lib/config/config_settings.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/conf/example.conf.in b/conf/example.conf.in
-index c0afcb7..ec12918 100644
---- a/conf/example.conf.in
-+++ b/conf/example.conf.in
-@@ -106,7 +106,7 @@ devices {
+diff -Naur LVM2.2.03.03/conf/example.conf.in LVM2.2.03.03.tpg/conf/example.conf.in
+--- LVM2.2.03.03/conf/example.conf.in	2019-06-07 15:26:46.000000000 +0000
++++ LVM2.2.03.03.tpg/conf/example.conf.in	2019-06-10 15:51:28.993042574 +0000
+@@ -106,7 +106,7 @@
  	# Example
  	# preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
  	# 
@@ -15,12 +10,11 @@ index c0afcb7..ec12918 100644
  
  	# Configuration option devices/filter.
  	# Limit the block devices that are used by LVM commands.
-diff --git a/lib/config/config_settings.h b/lib/config/config_settings.h
-index 9017043..c06b6f0 100644
---- a/lib/config/config_settings.h
-+++ b/lib/config/config_settings.h
-@@ -205,7 +205,7 @@ cfg(devices_external_device_info_source_CFG, "external_device_info_source", devi
- 	"    compiled with udev support.\n"
+diff -Naur LVM2.2.03.03/lib/config/config_settings.h LVM2.2.03.03.tpg/lib/config/config_settings.h
+--- LVM2.2.03.03/lib/config/config_settings.h	2019-06-07 15:26:46.000000000 +0000
++++ LVM2.2.03.03.tpg/lib/config/config_settings.h	2019-06-10 15:54:06.938055370 +0000
+@@ -269,7 +269,7 @@
+ 	"    Use no hints.\n"
  	"#\n")
  
 -cfg_array(devices_preferred_names_CFG, "preferred_names", devices_CFG_SECTION, CFG_ALLOW_EMPTY | CFG_DEFAULT_UNDEFINED , CFG_TYPE_STRING, NULL, vsn(1, 2, 19), NULL, 0, NULL,
