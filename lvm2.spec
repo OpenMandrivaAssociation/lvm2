@@ -443,6 +443,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_mandir}/man5/*
 %{_mandir}/man7/lvmthin.7*
 %{_mandir}/man7/lvmcache.7*
+%{_mandir}/man7/lvmvdo.7*
 %{_mandir}/man7/lvmsystemid.7*
 %{_mandir}/man7/lvmraid.7.*
 %{_mandir}/man7/lvmreport.7.*
