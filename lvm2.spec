@@ -1,4 +1,9 @@
 %define _disable_lto 1
+# (tpg) 2019-07-19
+# DEBUG: BUILDSTDERR: ld: error: duplicate symbol 'dm_bitset_parse_list' in version script
+# DEBUG: BUILDSTDERR: ld: error: duplicate symbol 'dm_stats_create_region' in version script
+%global optflags %{optflaga} -fuse-ld=bfd
+%global ldflags %{ldflaga} -fuse-ld=bfd
 
 %bcond_with cluster
 %bcond_without dmeventd
