@@ -40,7 +40,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.05
+Version:	%{lvmversion}
 Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
@@ -147,7 +147,7 @@ Daemon providing device-mapper-based mirrors in a shared-storage cluster.
 
 %package -n dmsetup
 Summary:	Device mapper setup tool
-Version:	2.03.05
+Version:	%{dmversion}
 Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
 %if %{with dmeventd}
@@ -165,7 +165,7 @@ each sector (512 bytes) in the logical device.
 
 %package -n %{dmlibname}
 Summary:	Device mapper library
-Version:	2.03.05
+Version:	%{dmversion}
 Group:		System/Kernel and hardware
 
 %description -n %{dmlibname}
@@ -178,7 +178,7 @@ programs which use device-mapper.
 
 %package -n %{dmdevname}
 Summary:	Device mapper development library
-Version:	2.03.05
+Version:	%{dmversion}
 Group:		Development/C
 Provides:	device-mapper-devel = %{dmversion}-%{release}
 Provides:	libdevmapper-devel = %{dmversion}-%{release}
@@ -198,7 +198,7 @@ for building programs which use device-mapper.
 %if %{with dmeventd}
 %package -n %{event_libname}
 Summary:	Device mapper event library
-Version:	2.03.05
+Version:	%{dmversion}
 Group:		System/Kernel and hardware
 Provides:	device-mapper-event = %{dmversion}-%{release}
 Provides:	libdevmapper-event = %{dmversion}-%{release}
@@ -212,7 +212,7 @@ programs which use device-mapper-event.
 
 %package -n %{event_devname}
 Summary:	Device mapper event development library
-Version:	2.03.05
+Version:	%{dmversion}
 Group:		Development/C
 Provides:	device-mapper-event-devel = %{dmversion}-%{release}
 Requires:	%{event_libname} = %{dmversion}-%{release}
