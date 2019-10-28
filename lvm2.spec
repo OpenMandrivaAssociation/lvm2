@@ -11,8 +11,8 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion 2.03.05
-%define dmversion 1.02.163
+%define lvmversion 2.03.06
+%define dmversion 1.02.165
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
 %define appmajor 2.2
@@ -44,8 +44,8 @@ Version:	%{lvmversion}
 Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
-Url:		http://sources.redhat.com/lvm2/
-Source0:	ftp://sources.redhat.com/pub/lvm2/LVM2.%{lvmversion}.tgz
+Url:		https://sourceware.org/lvm2/
+Source0:	ftp://sourceware.org/pub/lvm2/releases/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
 Patch2:		lvm2-2.03.01-static-compile.patch
 #Fedora
