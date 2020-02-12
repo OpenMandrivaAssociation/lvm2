@@ -12,7 +12,7 @@
 
 %define _udevdir /lib/udev/rules.d
 %define lvmversion 2.03.08
-%define dmversion 1.02.171
+%define dmversion 1.02.169
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
 %define appmajor 2.2
