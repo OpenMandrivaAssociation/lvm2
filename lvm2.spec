@@ -41,7 +41,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -389,8 +389,11 @@ fi
 %endif
 
 %if %{with dmeventd}
-%post -n dmsetup
-/sbin/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."
+%post -n dmsetup	
+if [ -e %{_rundir}/dmeventd.pid ]; then
+    /sbin/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."	
+fi
+
 %endif
 
 %post
