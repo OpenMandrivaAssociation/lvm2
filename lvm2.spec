@@ -41,7 +41,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	3
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -369,12 +369,11 @@ rm -f %{buildroot}/sbin/dmeventd.static
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-lvm2.preset << EOF
 enable blk-availability.service
-enable lvm2-lvmpolld.socket
+enable lvm2-monitor.service
 EOF
 
 cat > %{buildroot}%{_presetdir}/86-device-mapper.preset << EOF
 enable dm-event.socket
-enable lvm2-monitor.service
 EOF
 
 %pre
