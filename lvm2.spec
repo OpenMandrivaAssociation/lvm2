@@ -41,19 +41,23 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	3
+Release:	4
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
 Source0:	ftp://sourceware.org/pub/lvm2/releases/LVM2.%{lvmversion}.tgz
 Source2:	%{name}-tmpfiles.conf
-Patch2:		lvm2-2.03.01-static-compile.patch
-#Fedora
-Patch4:		https://src.fedoraproject.org/rpms/lvm2/raw/master/f/lvm2-set-default-preferred_names.patch
-Patch8:		LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
+Patch0:		lvm2-2.03.01-static-compile.patch
+# Fedora
+Patch10:	LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
+
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
 Patch21:	lvm2-2.02.171-static-libm.patch
+
+# Furgalware
+Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/stop-the-flood-by-default.patch
+Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/fix-service-files.patch
 
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
@@ -269,7 +273,7 @@ datelvm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION)
 datedm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM)
 if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
  "%{release}" = "1" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
-	echo "ERROR:	you should not be touching this package" 1>&2
+	echo "ERROR: you should not be touching this package" 1>&2
 	echo "without full understanding of relationship between device-mapper" 1>&2
 	echo " and lvm2 versions" 1>&2
 	exit 1
@@ -287,7 +291,11 @@ cd static
 %configure %{common_configure_parameters} \
 	--enable-static_link \
 	--disable-readline \
-	--with-cluster=none \
+%if %{with cluster}
+	--with-cluster=internal \
+%else
+	--without-cluster \
+%endif
 	--with-pool=none
 sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make_build
@@ -300,11 +308,12 @@ cd shared
 	--disable-static_link \
 	--enable-readline \
 	--enable-fsadm \
+	--enable-blkid_wiping \
 	--enable-pkgconfig \
 	--with-usrlibdir=%{_libdir} \
-	--enable-notify-dbus \
 	--libdir=/%{_lib} \
 	--enable-cmdlib \
+	--enable-lvmpolld \
 %if %{with lvmdbusd}
 	--enable-dbus-service \
 	--enable-notify-dbus \
@@ -313,7 +322,7 @@ cd shared
 	--with-clvmd=cman,openais,corosync \
 	--enable-cmirrord \
 %else
-	--with-cluster=none \
+	--without-cluster \
 	--with-pool=none \
 %endif
 %if %{with dmeventd}
@@ -370,6 +379,7 @@ install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-lvm2.preset << EOF
 enable blk-availability.service
 enable lvm2-monitor.service
+enable lvm2-lvmpolld.socket
 EOF
 
 cat > %{buildroot}%{_presetdir}/86-device-mapper.preset << EOF
@@ -388,7 +398,7 @@ fi
 %endif
 
 %if %{with dmeventd}
-%post -n dmsetup	
+%post -n dmsetup
 if [ -e %{_rundir}/dmeventd.pid ]; then
     /sbin/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."	
 fi
@@ -410,6 +420,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 /sbin/lvextend
 /sbin/lvm
 /sbin/lvm.static
+/sbin/lvmpolld
 /sbin/lvm2
 /sbin/lvm2-static
 /sbin/lvmconfig
@@ -445,6 +456,8 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_presetdir}/86-lvm2.preset
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-monitor.service
+%{_unitdir}/lvm2-lvmpolld.service
+%{_unitdir}/lvm2-lvmpolld.socket
 %{_systemdgeneratordir}/lvm2-activation-generator
 %{_tmpfilesdir}/%{name}.conf
 %{_mandir}/man5/*
