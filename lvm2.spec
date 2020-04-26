@@ -1,10 +1,3 @@
-%define _disable_lto 1
-# (tpg) 2019-07-19
-# DEBUG: BUILDSTDERR: ld: error: duplicate symbol 'dm_bitset_parse_list' in version script
-# DEBUG: BUILDSTDERR: ld: error: duplicate symbol 'dm_stats_create_region' in version script
-%global optflags %{optflags} -fuse-ld=bfd
-%global ldflags %{ldflags} -fuse-ld=bfd
-
 %bcond_with cluster
 %bcond_without dmeventd
 %bcond_without crosscompile
@@ -45,8 +38,11 @@ Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
-Source0:	ftp://sourceware.org/pub/lvm2/releases/LVM2.%{lvmversion}.tgz
-Source2:	%{name}-tmpfiles.conf
+Source0:	https://sourceware.org/ftp/lvm2/releases/LVM2.%{lvmversion}.tgz
+Source1:	%{name}-tmpfiles.conf
+# Dracut config
+Source2:	60-dracut-distro-lvm.conf
+Source3:	70-dracut-distro-dm.conf
 Patch0:		lvm2-2.03.01-static-compile.patch
 # Fedora
 Patch10:	LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
@@ -342,7 +338,7 @@ cd -
 %install
 %make_install -C shared install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
 
-install -m644 %{SOURCE2} -D %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -m644 %{S:1} -D %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
 install -d %{buildroot}/etc/lvm/backup
 install -d %{buildroot}/etc/lvm/cache
@@ -385,6 +381,11 @@ EOF
 cat > %{buildroot}%{_presetdir}/86-device-mapper.preset << EOF
 enable dm-event.socket
 EOF
+
+# Add lvm support to initramfs
+mkdir -p %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d
+cp %{S:2} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
+cp %{S:3} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
 
 %pre
 if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
@@ -470,6 +471,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_mandir}/man8/*
 %{_udevdir}/11-dm-lvm.rules
 %{_udevdir}/69-dm-lvm-metad.rules
+%{_prefix}/lib/dracut/dracut.conf.d/60-dracut-distro-lvm.conf
 
 %files -n %{cmdlibname}
 /%{_lib}/liblvm2cmd.so.%{cmdmajor}
@@ -517,6 +519,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_udevdir}/10-dm.rules
 %{_udevdir}/13-dm-disk.rules
 %{_udevdir}/95-dm-notify.rules
+%{_prefix}/lib/dracut/dracut.conf.d/70-dracut-distro-dm.conf
 
 %files -n %{dmlibname}
 /%{_lib}/libdevmapper.so.%{dmmajor}*
