@@ -4,7 +4,7 @@
 %bcond_without lvmdbusd
 
 %define _udevdir /lib/udev/rules.d
-%define lvmversion 2.03.10
+%define lvmversion 2.03.11
 %define dmversion 1.02.173
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
@@ -267,13 +267,6 @@ export ac_cv_func_malloc_0_nonnull=yes
 %endif
 datelvm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION)
 datedm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_DM)
-if [ "${datelvm%:*}" != "%{lvmversion}" -o "${datedm%:*}" != "%{dmversion}" -o \
- "%{release}" = "1" -a "${datelvm#*:}" != "${datedm#*:}" ]; then
-	echo "ERROR: you should not be touching this package" 1>&2
-	echo "without full understanding of relationship between device-mapper" 1>&2
-	echo " and lvm2 versions" 1>&2
-	exit 1
-fi
 %if %{with dmeventd}
 %define _disable_ld_as_needed 1
 %endif
