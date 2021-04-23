@@ -34,7 +34,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	2
+Release:	3
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -71,7 +71,6 @@ BuildRequires:	libaio-devel
 BuildRequires:	lib64atomic-static-devel
 %endif
 BuildRequires:	%mklibname aio -d -s
-Requires(post):	rpm-helper
 %if %{with dmeventd}
 # install plugins as well
 Requires:	%{cmdlibname} = %{lvmversion}-%{release}
@@ -81,7 +80,6 @@ Conflicts:	lvm
 Conflicts:	lvm1
 # Workaround for weird bash failure in configure script
 BuildRequires:	mksh
-Requires(post):	sed
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -243,9 +241,6 @@ Requires:	dbus
 Requires:	python-dbus
 Requires:	pyudev
 Requires:	python-gobject3
-Requires(post):	rpm-helper
-Requires(preun):	rpm-helper
-Requires(postun):	rpm-helper
 
 %description dbusd
 Daemon for access to LVM2 functionality through a D-Bus interface.
@@ -380,11 +375,6 @@ mkdir -p %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d
 cp %{S:2} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
 cp %{S:3} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
 
-%pre
-if [ -L /sbin/lvm -a -L /etc/alternatives/lvm ]; then
-    update-alternatives --remove lvm /sbin/lvm2
-fi
-
 
 %if %{with cluster}
 %post -n clvmd
@@ -399,7 +389,7 @@ fi
 
 %endif
 
-%post
+%triggerpostun -- %{name} < 2.03.11-3
 # lvmetad is gone...
 sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.conf ||:
 
