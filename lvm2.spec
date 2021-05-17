@@ -34,7 +34,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	3
+Release:	4
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -154,7 +154,7 @@ Provides:	dmeventd = %{dmversion}-%{release}
 Requires:	%{dm_req} = %{dmversion}-%{release}
 BuildRequires:	pkgconfig(udev) >= 195
 Requires:	systemd
-Requires(pre):	rpm-helper
+Requires:	util-linux
 
 %description -n dmsetup
 Dmsetup manages logical devices that use the device-mapper driver.
