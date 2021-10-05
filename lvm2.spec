@@ -1,11 +1,9 @@
-%bcond_with cluster
 %bcond_without dmeventd
 %bcond_without crosscompile
 %bcond_without lvmdbusd
 
-%define _udevdir /lib/udev/rules.d
-%define lvmversion 2.03.11
-%define dmversion 1.02.173
+%define lvmversion 2.03.13
+%define dmversion 1.02.179
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
 %define appmajor 2.2
@@ -18,11 +16,6 @@
 %define cmddevname %mklibname lvm2cmd -d
 %define oldcmdlibname %mklibname lvm2cmd 2.02
 
-#requirements for cluster
-%define corosync_version 1.2.0
-%define openais_version 1.1.1
-%define cluster_version 3.0.6
-
 %if %{with dmeventd}
 %define dm_req %{event_libname}
 %define dm_req_d %{event_devname}
@@ -34,7 +27,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	%{lvmversion}
-Release:	4
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -64,7 +57,7 @@ BuildRequires:	glibc-static-devel
 BuildRequires:	intltool
 BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
-BuildRequires:	systemd-macros
+BuildRequires:	systemd-rpm-macros
 BuildRequires:	thin-provisioning-tools
 BuildRequires:	libaio-devel
 %ifarch %{riscv}
@@ -112,36 +105,6 @@ Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{lvmversion}-%{release}
 %description -n %{cmddevname}
 The lvm2 command line library allows building programs that manage
 lvm devices without invoking a separate program.
-
-%if %{with cluster}
-%package -n clvmd
-Summary:	cluster LVM daemon
-Group:		System/Kernel and hardware
-BuildRequires:	cluster-devel >= %{cluster_version}
-BuildRequires:	openais-devel >= %{openais_version}
-BuildRequires:	corosync-devel >= %{corosync_version}
-Requires:	cman >= %{cluster_version}
-Requires:	%{dm_req} >= %{dmversion}
-
-%description -n clvmd
-clvmd is the daemon that distributes LVM metadata updates around a
-cluster. It must be running on all nodes in the cluster and will give
-an error if a node in the cluster does not have this daemon running.
-
-%package -n cmirror
-Summary:	Daemon for device-mapper-based clustered mirrors
-Group:		System/Kernel and hardware
-BuildRequires:	cluster-devel >= %{cluster_version}
-BuildRequires:	openais-devel >= %{openais_version}
-BuildRequires:	corosync-devel >= %{corosync_version}
-Requires:	cman >= %{cluster_version}
-Requires:	openais >= %{openais_version}
-Requires:	corosync >= %{corosync_version}
-Requires:	%{dmlibname} >= %{dmversion}
-
-%description -n cmirror
-Daemon providing device-mapper-based mirrors in a shared-storage cluster.
-%endif
 
 %package -n dmsetup
 Summary:	Device mapper setup tool
@@ -265,7 +228,7 @@ datedm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_D
 %if %{with dmeventd}
 %define _disable_ld_as_needed 1
 %endif
-%define common_configure_parameters --with-default-dm-run-dir=/run --with-default-run-dir=/run/lvm --with-default-pid-dir=/run --with-default-locking-dir=/run/lock/lvm --with-user= --with-group= --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking --disable-python_bindings
+%define common_configure_parameters --with-default-dm-run-dir=%{_rundir} --with-default-run-dir=%{_rundir}/lvm --with-default-pid-dir=%{_rundir} --with-default-locking-dir=%{_rundir}/lock/lvm --with-user= --with-group= --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking
 export MODPROBE_CMD=/sbin/modprobe
 export CONFIGURE_TOP="$PWD"
 export LDFLAGS="%{optflags} -flto"
@@ -274,13 +237,8 @@ mkdir -p static
 cd static
 %configure %{common_configure_parameters} \
 	--enable-static_link \
-	--disable-readline \
-%if %{with cluster}
-	--with-cluster=internal \
-%else
-	--without-cluster \
-%endif
-	--with-pool=none
+	--disable-readline
+
 sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
 %make_build
 cd -
@@ -302,13 +260,6 @@ cd shared
 	--enable-dbus-service \
 	--enable-notify-dbus \
 %endif
-%if %{with cluster}
-	--with-clvmd=cman,openais,corosync \
-	--enable-cmirrord \
-%else
-	--without-cluster \
-	--with-pool=none \
-%endif
 %if %{with dmeventd}
 	--enable-dmeventd \
 	--with-dmeventd-path=/sbin/dmeventd \
@@ -316,7 +267,7 @@ cd shared
 	--enable-udev_sync \
 	--enable-udev_rules \
 	--enable-udev-systemd-background-jobs \
-	--with-udevdir=%{_udevdir} \
+	--with-udevdir=%{_udevrulesdir} \
 	--with-systemdsystemunitdir=%{_unitdir}
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
@@ -332,12 +283,7 @@ install -d %{buildroot}/etc/lvm/backup
 install -d %{buildroot}/etc/lvm/cache
 touch %{buildroot}/etc/lvm/cache/.cache
 
-install -d %{buildroot}/run/lock/lvm
-
-%if %{with cluster}
-install shared/scripts/clvmd_init_red_hat %{buildroot}%{_initrddir}/clvmd
-install shared/scripts/cmirrord_init_red_hat %{buildroot}%{_initrddir}/cmirrord
-%endif
+install -d %{buildroot}%{_rundir}/lock/lvm
 
 install static/tools/lvm.static -D %{buildroot}/sbin/lvm.static
 install static/libdm/dm-tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
@@ -350,9 +296,6 @@ ln %{buildroot}/sbin/dmsetup.static %{buildroot}/sbin/dmsetup-static
 
 #hack permissions of libs
 chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
-%if %{with cluster}
-chmod u+w  %{buildroot}/sbin/*
-%endif
 
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
@@ -374,12 +317,6 @@ EOF
 mkdir -p %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d
 cp %{S:2} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
 cp %{S:3} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
-
-
-%if %{with cluster}
-%post -n clvmd
-/sbin/clvmd -S || echo "Failed to restart clvmd daemon. Please, try manual restart."
-%endif
 
 %if %{with dmeventd}
 %post -n dmsetup
@@ -444,16 +381,16 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_unitdir}/lvm2-lvmpolld.socket
 %{_systemdgeneratordir}/lvm2-activation-generator
 %{_tmpfilesdir}/%{name}.conf
-%{_mandir}/man5/*
-%{_mandir}/man7/lvmthin.7*
-%{_mandir}/man7/lvmcache.7*
-%{_mandir}/man7/lvmvdo.7*
-%{_mandir}/man7/lvmsystemid.7*
-%{_mandir}/man7/lvmraid.7.*
-%{_mandir}/man7/lvmreport.7.*
-%{_mandir}/man8/*
-%{_udevdir}/11-dm-lvm.rules
-%{_udevdir}/69-dm-lvm-metad.rules
+%doc %{_mandir}/man5/*
+%doc %{_mandir}/man7/lvmthin.7*
+%doc %{_mandir}/man7/lvmcache.7*
+%doc %{_mandir}/man7/lvmvdo.7*
+%doc %{_mandir}/man7/lvmsystemid.7*
+%doc %{_mandir}/man7/lvmraid.7.*
+%doc %{_mandir}/man7/lvmreport.7.*
+%doc %{_mandir}/man8/*
+%{_udevrulesdir}/11-dm-lvm.rules
+%{_udevrulesdir}/69-dm-lvm-metad.rules
 %{_prefix}/lib/dracut/dracut.conf.d/60-dracut-distro-lvm.conf
 
 %files -n %{cmdlibname}
@@ -477,16 +414,6 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_includedir}/lvm2cmd.h
 %{_libdir}/liblvm2cmd.so
 
-%if %{with cluster}
-%files -n clvmd
-/sbin/clvmd
-%attr(644,root,root) %{_mandir}/man8/clvmd.8*
-
-%files -n cmirror
-/sbin/cmirrord
-%attr(644,root,root) %{_mandir}/man8/cmirrord.8*
-%endif
-
 %files -n dmsetup
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
 /sbin/dmsetup
@@ -499,9 +426,9 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_presetdir}/86-device-mapper.preset
 %{_unitdir}/dm-event.service
 %{_unitdir}/dm-event.socket
-%{_udevdir}/10-dm.rules
-%{_udevdir}/13-dm-disk.rules
-%{_udevdir}/95-dm-notify.rules
+%{_udevrulesdir}/10-dm.rules
+%{_udevrulesdir}/13-dm-disk.rules
+%{_udevrulesdir}/95-dm-notify.rules
 %{_prefix}/lib/dracut/dracut.conf.d/70-dracut-distro-dm.conf
 
 %files -n %{dmlibname}
