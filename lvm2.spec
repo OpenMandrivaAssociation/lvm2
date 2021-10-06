@@ -39,7 +39,6 @@ Source3:	70-dracut-distro-dm.conf
 
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
-Patch21:	lvm2-2.02.171-static-libm.patch
 
 # Furgalware
 Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/stop-the-flood-by-default.patch
@@ -64,8 +63,6 @@ Requires:	%{cmdlibname} = %{lvmversion}-%{release}
 Requires:	%{dm_req} >= %{dmversion}
 Conflicts:	lvm
 Conflicts:	lvm1
-# Workaround for weird bash failure in configure script
-BuildRequires:	mksh
 
 %description
 LVM includes all of the support for handling read/write operations on
@@ -204,6 +201,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 
 %prep
 %autosetup -p1 -n LVM2.%{lvmversion}
+
 %config_update
 autoreconf -fiv
 autoconf

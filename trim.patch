@@ -1,6 +1,6 @@
-diff -Naur LVM2.2.03.03/libdaemon/server/daemon-server.c LVM2.2.03.03.tpg/libdaemon/server/daemon-server.c
---- LVM2.2.03.03/libdaemon/server/daemon-server.c	2019-06-07 15:26:46.000000000 +0000
-+++ LVM2.2.03.03.tpg/libdaemon/server/daemon-server.c	2019-06-10 15:56:23.197066409 +0000
+diff -Naur LVM2.2.03.13/libdaemon/server/daemon-server.c LVM2.2.03.13.tpg/libdaemon/server/daemon-server.c
+--- LVM2.2.03.13/libdaemon/server/daemon-server.c	2021-08-11 15:37:43.000000000 +0000
++++ LVM2.2.03.13.tpg/libdaemon/server/daemon-server.c	2021-10-06 21:13:07.050513376 +0000
 @@ -28,6 +28,7 @@
  #include <sys/un.h>
  #include <unistd.h>
@@ -9,9 +9,9 @@ diff -Naur LVM2.2.03.03/libdaemon/server/daemon-server.c LVM2.2.03.03.tpg/libdae
  
  #include <syslog.h> /* FIXME. For the global closelog(). */
  
-@@ -650,6 +651,7 @@
+@@ -666,6 +667,7 @@
  
- 	while (!failed) {
+ 	while (!failed && !_shutdown_requested) {
  		_reset_timeout(s);
 +		malloc_trim(0);
  		FD_ZERO(&in);
