@@ -255,7 +255,7 @@ export PYTHON_EXEC_PREFIX=%{py_prefix}
 %make_build
 
 %install
-%make_install install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
+%make_install install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration PYTHON_PREFIX=%{py_prefix} PYTHON_EXEC_PREFIX=%{py_prefix}
 
 install -m644 %{S:1} -D %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
