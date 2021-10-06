@@ -36,9 +36,6 @@ Source1:	%{name}-tmpfiles.conf
 # Dracut config
 Source2:	60-dracut-distro-lvm.conf
 Source3:	70-dracut-distro-dm.conf
-Patch0:		lvm2-2.03.01-static-compile.patch
-# Fedora
-Patch10:	LVM2.2.02.120-link-against-libpthread-and-libuuid.patch
 
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
@@ -53,16 +50,12 @@ BuildRequires:	sed
 BuildRequires:	readline-devel
 BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
-BuildRequires:	glibc-static-devel
 BuildRequires:	intltool
 BuildRequires:	autoconf-archive
 BuildRequires:	pkgconfig(systemd)
 BuildRequires:	systemd-rpm-macros
 BuildRequires:	thin-provisioning-tools
 BuildRequires:	libaio-devel
-%ifarch %{riscv}
-BuildRequires:	lib64atomic-static-devel
-%endif
 BuildRequires:	%mklibname aio -d -s
 %if %{with dmeventd}
 # install plugins as well
@@ -230,22 +223,10 @@ datedm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_D
 %endif
 %define common_configure_parameters --with-default-dm-run-dir=%{_rundir} --with-default-run-dir=%{_rundir}/lvm --with-default-pid-dir=%{_rundir} --with-default-locking-dir=%{_rundir}/lock/lvm --with-user= --with-group= --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking
 export MODPROBE_CMD=/sbin/modprobe
-export CONFIGURE_TOP="$PWD"
 export LDFLAGS="%{optflags} -flto"
 
-mkdir -p static
-cd static
-%configure %{common_configure_parameters} \
-	--enable-static_link \
-	--disable-readline
-
-sed -e 's/\ -static/ -static -Wl,--no-export-dynamic/' -i tools/Makefile
-%make_build
-cd -
-
-mkdir -p shared
-cd shared
-%configure %{common_configure_parameters} \
+%configure \
+	%{common_configure_parameters} \
 	--sbindir=/sbin \
 	--disable-static_link \
 	--enable-readline \
@@ -272,10 +253,9 @@ cd shared
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
 %make_build
-cd -
 
 %install
-%make_install -C shared install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
+%make_install install_system_dirs install_systemd_units install_systemd_generators install_tmpfiles_configuration
 
 install -m644 %{S:1} -D %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -d %{buildroot}/etc/lvm/archive
@@ -285,22 +265,15 @@ touch %{buildroot}/etc/lvm/cache/.cache
 
 install -d %{buildroot}%{_rundir}/lock/lvm
 
-install static/tools/lvm.static -D %{buildroot}/sbin/lvm.static
-install static/libdm/dm-tools/dmsetup.static -D %{buildroot}/sbin/dmsetup.static
-
 #install -d %{buildroot}/%{_libdir}/
 #compatibility links
 ln %{buildroot}/sbin/lvm %{buildroot}/sbin/lvm2
-ln %{buildroot}/sbin/lvm.static %{buildroot}/sbin/lvm2-static
-ln %{buildroot}/sbin/dmsetup.static %{buildroot}/sbin/dmsetup-static
 
 #hack permissions of libs
 chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
 
 #hack trick strip_and_check_elf_files
 export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
-
-rm -f %{buildroot}/sbin/dmeventd.static
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-lvm2.preset << EOF
@@ -340,10 +313,8 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 /sbin/lvdisplay
 /sbin/lvextend
 /sbin/lvm
-/sbin/lvm.static
 /sbin/lvmpolld
 /sbin/lvm2
-/sbin/lvm2-static
 /sbin/lvmconfig
 /sbin/lvmdiskscan
 /sbin/lvmdump
@@ -418,8 +389,6 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
 /sbin/dmsetup
 /sbin/dmstats
-/sbin/dmsetup.static
-/sbin/dmsetup-static
 %if %{with dmeventd}
 /sbin/dmeventd
 %endif
