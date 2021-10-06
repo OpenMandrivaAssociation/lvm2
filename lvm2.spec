@@ -222,6 +222,8 @@ datedm=$(awk -F '[.() ]*' '{printf "%s.%s.%s:%s\n", $1,$2,$3,$(NF-1)}' VERSION_D
 %define common_configure_parameters --with-default-dm-run-dir=%{_rundir} --with-default-run-dir=%{_rundir}/lvm --with-default-pid-dir=%{_rundir} --with-default-locking-dir=%{_rundir}/lock/lvm --with-user= --with-group= --disable-selinux --with-device-uid=0 --with-device-gid=6 --with-device-mode=0660 --enable-dependency-tracking
 export MODPROBE_CMD=/sbin/modprobe
 export LDFLAGS="%{optflags} -flto"
+export PYTHON_PREFIX=%{py_prefix}
+export PYTHON_EXEC_PREFIX=%{py_prefix}
 
 %configure \
 	%{common_configure_parameters} \
