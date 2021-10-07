@@ -316,6 +316,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 /sbin/lvmpolld
 /sbin/lvm2
 /sbin/lvmconfig
+/sbin/lvmdevices
 /sbin/lvmdiskscan
 /sbin/lvmdump
 /sbin/lvmsadc
@@ -327,6 +328,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 /sbin/lvs
 /sbin/lvscan
 /sbin/pv*
+/sbin/vdoimport
 /sbin/vg*
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
