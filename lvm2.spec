@@ -2,8 +2,8 @@
 %bcond_without crosscompile
 %bcond_without lvmdbusd
 
-%define lvmversion 2.03.13
-%define dmversion 1.02.179
+%define lvmversion 2.03.15
+%define dmversion 1.02.183
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
 %define appmajor 2.2
@@ -227,14 +227,12 @@ export PYTHON_EXEC_PREFIX=%{py_prefix}
 
 %configure \
 	%{common_configure_parameters} \
-	--sbindir=/sbin \
 	--disable-static_link \
 	--enable-readline \
 	--enable-fsadm \
 	--enable-blkid_wiping \
 	--enable-pkgconfig \
 	--with-usrlibdir=%{_libdir} \
-	--libdir=/%{_lib} \
 	--enable-cmdlib \
 	--enable-lvmpolld \
 %if %{with lvmdbusd}
@@ -243,7 +241,7 @@ export PYTHON_EXEC_PREFIX=%{py_prefix}
 %endif
 %if %{with dmeventd}
 	--enable-dmeventd \
-	--with-dmeventd-path=/sbin/dmeventd \
+	--with-dmeventd-path=%{_sbindir}/dmeventd \
 %endif
 	--enable-udev_sync \
 	--enable-udev_rules \
@@ -265,15 +263,14 @@ touch %{buildroot}/etc/lvm/cache/.cache
 
 install -d %{buildroot}%{_rundir}/lock/lvm
 
-#install -d %{buildroot}/%{_libdir}/
 #compatibility links
-ln %{buildroot}/sbin/lvm %{buildroot}/sbin/lvm2
+ln %{buildroot}%{_sbindir}/lvm %{buildroot}%{_sbindir}/lvm2
 
 #hack permissions of libs
-chmod u+w %{buildroot}/%{_lib}/*.so.* %{buildroot}/sbin/*
+chmod u+w %{buildroot}/%{_libdir}/*.so.* %{buildroot}%{_sbindir}/*
 
 #hack trick strip_and_check_elf_files
-export LD_LIBRARY_PATH=%{buildroot}/%{_lib}:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=%{buildroot}/%{_sbindir}:${LD_LIBRARY_PATH}
 
 install -d %{buildroot}%{_presetdir}
 cat > %{buildroot}%{_presetdir}/86-lvm2.preset << EOF
@@ -294,9 +291,8 @@ cp %{S:3} %{buildroot}%{_prefix}/lib/dracut/dracut.conf.d/
 %if %{with dmeventd}
 %post -n dmsetup
 if [ -e %{_rundir}/dmeventd.pid ]; then
-    /sbin/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."	
+    %{_sbindir}/dmeventd -R || echo "Failed to restart dmeventd daemon. Please, try manual restart."	
 fi
-
 %endif
 
 %triggerpostun -- %{name} < 2.03.11-3
@@ -305,31 +301,31 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 
 %files
 %doc INSTALL README VERSION WHATS_NEW
-/sbin/blkdeactivate
-/sbin/fsadm
-/sbin/lvchange
-/sbin/lvconvert
-/sbin/lvcreate
-/sbin/lvdisplay
-/sbin/lvextend
-/sbin/lvm
-/sbin/lvmpolld
-/sbin/lvm2
-/sbin/lvmconfig
-/sbin/lvmdevices
-/sbin/lvmdiskscan
-/sbin/lvmdump
-/sbin/lvmsadc
-/sbin/lvmsar
-/sbin/lvreduce
-/sbin/lvremove
-/sbin/lvrename
-/sbin/lvresize
-/sbin/lvs
-/sbin/lvscan
-/sbin/pv*
-/sbin/vdoimport
-/sbin/vg*
+%{_sbindir}/blkdeactivate
+%{_sbindir}/fsadm
+%{_sbindir}/lvchange
+%{_sbindir}/lvconvert
+%{_sbindir}/lvcreate
+%{_sbindir}/lvdisplay
+%{_sbindir}/lvextend
+%{_sbindir}/lvm
+%{_sbindir}/lvmpolld
+%{_sbindir}/lvm2
+%{_sbindir}/lvmconfig
+%{_sbindir}/lvmdevices
+%{_sbindir}/lvmdiskscan
+%{_sbindir}/lvmdump
+%{_sbindir}/lvmsadc
+%{_sbindir}/lvmsar
+%{_sbindir}/lvreduce
+%{_sbindir}/lvremove
+%{_sbindir}/lvrename
+%{_sbindir}/lvresize
+%{_sbindir}/lvs
+%{_sbindir}/lvscan
+%{_sbindir}/pv*
+%{_sbindir}/vdoimport
+%{_sbindir}/vg*
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
 %{_sysconfdir}/lvm/lvmlocal.conf
@@ -367,21 +363,21 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_prefix}/lib/dracut/dracut.conf.d/60-dracut-distro-lvm.conf
 
 %files -n %{cmdlibname}
-/%{_lib}/liblvm2cmd.so.%{cmdmajor}
+%{_libdir}/liblvm2cmd.so.%{cmdmajor}
 %if %{with dmeventd}
-%dir /%{_lib}/device-mapper
-/%{_lib}/device-mapper/libdevmapper-event-lvm2mirror.so
-/%{_lib}/device-mapper/libdevmapper-event-lvm2raid.so
-/%{_lib}/device-mapper/libdevmapper-event-lvm2snapshot.so
-/%{_lib}/device-mapper/libdevmapper-event-lvm2thin.so
-/%{_lib}/libdevmapper-event-lvm2.so.%{cmdmajor}
-/%{_lib}/libdevmapper-event-lvm2mirror.so
-/%{_lib}/libdevmapper-event-lvm2raid.so
-/%{_lib}/libdevmapper-event-lvm2snapshot.so
-/%{_lib}/libdevmapper-event-lvm2thin.so
+%dir%{_libdir}/device-mapper
+%{_libdir}/device-mapper/libdevmapper-event-lvm2mirror.so
+%{_libdir}/device-mapper/libdevmapper-event-lvm2raid.so
+%{_libdir}/device-mapper/libdevmapper-event-lvm2snapshot.so
+%{_libdir}/device-mapper/libdevmapper-event-lvm2thin.so
+%{_libdir}/libdevmapper-event-lvm2.so.%{cmdmajor}
+%{_libdir}/libdevmapper-event-lvm2mirror.so
+%{_libdir}/libdevmapper-event-lvm2raid.so
+%{_libdir}/libdevmapper-event-lvm2snapshot.so
+%{_libdir}/libdevmapper-event-lvm2thin.so
 %endif
-/%{_lib}/libdevmapper-event-lvm2vdo.so
-/%{_lib}/device-mapper/libdevmapper-event-lvm2vdo.so
+%{_libdir}/libdevmapper-event-lvm2vdo.so
+%{_libdir}/device-mapper/libdevmapper-event-lvm2vdo.so
 
 %files -n %{cmddevname}
 %{_includedir}/lvm2cmd.h
@@ -389,10 +385,10 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 
 %files -n dmsetup
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
-/sbin/dmsetup
-/sbin/dmstats
+%{_sbindir}/dmsetup
+%{_sbindir}/dmstats
 %if %{with dmeventd}
-/sbin/dmeventd
+%{_sbindir}/dmeventd
 %endif
 %{_presetdir}/86-device-mapper.preset
 %{_unitdir}/dm-event.service
@@ -403,7 +399,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_prefix}/lib/dracut/dracut.conf.d/70-dracut-distro-dm.conf
 
 %files -n %{dmlibname}
-/%{_lib}/libdevmapper.so.%{dmmajor}*
+%{_libdir}/libdevmapper.so.%{dmmajor}*
 
 %files -n %{dmdevname}
 %{_libdir}/libdevmapper.so
@@ -412,7 +408,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 
 %if %{with dmeventd}
 %files -n %{event_libname}
-/%{_lib}/libdevmapper-event.so.*
+%{_libdir}/libdevmapper-event.so.*
 
 %files -n %{event_devname}
 %{_includedir}/libdevmapper-event.h
@@ -427,7 +423,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %if %{with lvmdbusd}
 %files dbusd
 %defattr(555,root,root,-)
-/sbin/lvmdbusd
+%{_sbindir}/lvmdbusd
 %defattr(444,root,root,-)
 %{_sysconfdir}/dbus-1/system.d/com.redhat.lvmdbus1.conf
 %{_datadir}/dbus-1/system-services/com.redhat.lvmdbus1.service
