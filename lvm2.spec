@@ -328,7 +328,6 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_sbindir}/lvs
 %{_sbindir}/lvscan
 %{_sbindir}/pv*
-%{_sbindir}/vdoimport
 %{_sbindir}/vg*
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
@@ -352,7 +351,6 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_unitdir}/lvm2-monitor.service
 %{_unitdir}/lvm2-lvmpolld.service
 %{_unitdir}/lvm2-lvmpolld.socket
-%{_systemdgeneratordir}/lvm2-activation-generator
 %{_tmpfilesdir}/%{name}.conf
 %doc %{_mandir}/man5/*
 %doc %{_mandir}/man7/lvmthin.7*
@@ -363,7 +361,6 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %doc %{_mandir}/man7/lvmreport.7.*
 %doc %{_mandir}/man8/*
 %{_udevrulesdir}/11-dm-lvm.rules
-%{_udevrulesdir}/69-dm-lvm-metad.rules
 %{_prefix}/lib/dracut/dracut.conf.d/60-dracut-distro-lvm.conf
 
 %files -n %{cmdlibname}
