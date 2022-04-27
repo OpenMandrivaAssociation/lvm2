@@ -429,6 +429,5 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_sysconfdir}/dbus-1/system.d/com.redhat.lvmdbus1.conf
 %{_datadir}/dbus-1/system-services/com.redhat.lvmdbus1.service
 %{_unitdir}/lvm2-lvmdbusd.service
-%{_unitdir}/lvm2-pvscan@.service
 %{python_sitelib}/lvmdbusd/*
 %endif
