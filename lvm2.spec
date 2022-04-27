@@ -247,7 +247,11 @@ export PYTHON_EXEC_PREFIX=%{py_prefix}
 	--enable-udev_rules \
 	--enable-udev-systemd-background-jobs \
 	--with-udevdir=%{_udevrulesdir} \
-	--with-systemdsystemunitdir=%{_unitdir}
+	--with-systemdsystemunitdir=%{_unitdir} \
+	--with-writecache=internal \
+	--with-vdo=internal \
+	--with-vdo-format=%{_bindir}/vdoformat \
+	--with-integrity=internal
 # 20090926 no translations yet:	--enable-nls
 # end of configure options
 %make_build
