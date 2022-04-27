@@ -366,7 +366,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %files -n %{cmdlibname}
 %{_libdir}/liblvm2cmd.so.%{cmdmajor}
 %if %{with dmeventd}
-%dir%{_libdir}/device-mapper
+%dir %{_libdir}/device-mapper
 %{_libdir}/device-mapper/libdevmapper-event-lvm2mirror.so
 %{_libdir}/device-mapper/libdevmapper-event-lvm2raid.so
 %{_libdir}/device-mapper/libdevmapper-event-lvm2snapshot.so
