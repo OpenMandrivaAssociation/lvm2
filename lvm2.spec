@@ -96,7 +96,6 @@ lvm devices without invoking a separate program.
 
 %package -n dmsetup
 Summary:	Device mapper setup tool
-Version:	
 Group:		System/Kernel and hardware
 Provides:	device-mapper = %{version}-%{release}
 %if %{with dmeventd}
