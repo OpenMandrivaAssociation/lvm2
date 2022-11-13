@@ -330,6 +330,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_sbindir}/lvscan
 %{_sbindir}/pv*
 %{_sbindir}/vg*
+%{_libexecdir}/lvresize_fs_helper
 %dir %{_sysconfdir}/lvm
 %dir %{_sysconfdir}/lvm/profile
 %{_sysconfdir}/lvm/lvmlocal.conf
