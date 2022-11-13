@@ -2,7 +2,7 @@
 %bcond_without crosscompile
 %bcond_without lvmdbusd
 
-%define lvmversion 2.03.16
+%define lvmversion 2.03.17
 %define dmversion 1.02.187
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
