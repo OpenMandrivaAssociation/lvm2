@@ -2,10 +2,8 @@
 %bcond_without crosscompile
 %bcond_without lvmdbusd
 
-%define lvmversion 2.03.17
-%define dmversion 1.02.187
 %define dmmajor 1.02
-%define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
+%define cmdmajor %(echo %{version} |cut -d. -f1-2)
 %define appmajor 2.2
 
 %define dmlibname %mklibname devmapper %{dmmajor}
@@ -31,7 +29,7 @@ Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
-Source0:	https://sourceware.org/ftp/lvm2/releases/LVM2.%{lvmversion}.tgz
+Source0:	https://sourceware.org/ftp/lvm2/releases/LVM2.%{version}.tgz
 Source1:	%{name}-tmpfiles.conf
 # Dracut config
 Source2:	60-dracut-distro-lvm.conf
@@ -45,7 +43,7 @@ Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/
 Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/fix-service-files.patch
 
 BuildRequires:	sed
-#BuildConflicts:	device-mapper-devel < %{dmversion}
+#BuildConflicts:	device-mapper-devel < %{version}
 BuildRequires:	pkgconfig(readline)
 BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
@@ -58,9 +56,9 @@ BuildRequires:	libaio-devel
 BuildRequires:	%mklibname aio -d -s
 %if %{with dmeventd}
 # install plugins as well
-Requires:	%{cmdlibname} = %{lvmversion}-%{release}
+Requires:	%{cmdlibname} = %{version}-%{release}
 %endif
-Requires:	%{dm_req} >= %{dmversion}
+Requires:	%{dm_req} >= %{version}
 Conflicts:	lvm
 Conflicts:	lvm1
 
@@ -75,7 +73,7 @@ in volume groups.
 %package -n %{cmdlibname}
 Summary:	LVM2 command line library
 Group:		System/Kernel and hardware
-Requires:	%{dm_req} >= %{dmversion}
+Requires:	%{dm_req} >= %{version}
 Obsoletes:	%{oldcmdlibname} < %{EVRD}
 # Avoid devel deps on library due to autoreq picking these plugins up as devel libs
 %global __requires_exclude devel\\(libdevmapper
@@ -87,10 +85,10 @@ lvm devices without invoking a separate program.
 %package -n %{cmddevname}
 Summary:	Development files for LVM2 command line library
 Group:		System/Kernel and hardware
-Requires:	%{cmdlibname} = %{lvmversion}-%{release}
-Requires:	%{dm_req_d} = %{dmversion}-%{release}
-Provides:	liblvm2cmd-devel = %{lvmversion}-%{release}
-Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{lvmversion}-%{release}
+Requires:	%{cmdlibname} = %{version}-%{release}
+Requires:	%{dm_req_d} = %{version}-%{release}
+Provides:	liblvm2cmd-devel = %{version}-%{release}
+Obsoletes:	%{mklibname lvm2cmd %cmdmajor -d} < %{version}-%{release}
 
 %description -n %{cmddevname}
 The lvm2 command line library allows building programs that manage
@@ -98,12 +96,13 @@ lvm devices without invoking a separate program.
 
 %package -n dmsetup
 Summary:	Device mapper setup tool
+Version:	
 Group:		System/Kernel and hardware
-Provides:	device-mapper = %{dmversion}-%{release}
+Provides:	device-mapper = %{version}-%{release}
 %if %{with dmeventd}
-Provides:	dmeventd = %{dmversion}-%{release}
+Provides:	dmeventd = %{version}-%{release}
 %endif
-Requires:	%{dm_req} = %{dmversion}-%{release}
+Requires:	%{dm_req} = %{version}-%{release}
 BuildRequires:	pkgconfig(udev) >= 195
 Requires:	systemd
 Requires:	util-linux
@@ -128,11 +127,11 @@ programs which use device-mapper.
 %package -n %{dmdevname}
 Summary:	Device mapper development library
 Group:		Development/C
-Provides:	device-mapper-devel = %{dmversion}-%{release}
-Provides:	libdevmapper-devel = %{dmversion}-%{release}
-Requires:	%{dmlibname} = %{dmversion}-%{release}
+Provides:	device-mapper-devel = %{version}-%{release}
+Provides:	libdevmapper-devel = %{version}-%{release}
+Requires:	%{dmlibname} = %{version}-%{release}
 Requires:	pkgconfig
-Conflicts:	device-mapper-devel < %{dmversion}-%{release}
+Conflicts:	device-mapper-devel < %{version}-%{release}
 Obsoletes:	%{mklibname devmapper %dmmajor -d}
 
 %description -n %{dmdevname}
@@ -147,9 +146,9 @@ for building programs which use device-mapper.
 %package -n %{event_libname}
 Summary:	Device mapper event library
 Group:		System/Kernel and hardware
-Provides:	device-mapper-event = %{dmversion}-%{release}
-Provides:	libdevmapper-event = %{dmversion}-%{release}
-Requires:	%{dmlibname} >= %{dmversion}
+Provides:	device-mapper-event = %{version}-%{release}
+Provides:	libdevmapper-event = %{version}-%{release}
+Requires:	%{dmlibname} >= %{version}
 
 %description -n %{event_libname}
 The device-mapper-event library allows monitoring of active mapped devices.
@@ -160,10 +159,10 @@ programs which use device-mapper-event.
 %package -n %{event_devname}
 Summary:	Device mapper event development library
 Group:		Development/C
-Provides:	device-mapper-event-devel = %{dmversion}-%{release}
-Requires:	%{event_libname} = %{dmversion}-%{release}
-Requires:	%{dmdevname} = %{dmversion}-%{release}
-Conflicts:	device-mapper-event-devel < %{dmversion}-%{release}
+Provides:	device-mapper-event-devel = %{version}-%{release}
+Requires:	%{event_libname} = %{version}-%{release}
+Requires:	%{dmdevname} = %{version}-%{release}
+Conflicts:	device-mapper-event-devel < %{version}-%{release}
 Obsoletes:	%{mklibname devmapper-event %dmmajor -d}
 
 %description -n %{event_devname}
@@ -195,7 +194,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 %endif
 
 %prep
-%autosetup -p1 -n LVM2.%{lvmversion}
+%autosetup -p1 -n LVM2.%{version}
 
 %config_update
 autoreconf -fiv
