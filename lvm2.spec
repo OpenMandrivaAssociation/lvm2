@@ -46,7 +46,7 @@ Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/
 
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{dmversion}
-BuildRequires:	readline-devel
+BuildRequires:	pkgconfig(readline)
 BuildRequires:	pkgconfig(blkid)
 BuildRequires:	pkgconfig(ncurses)
 BuildRequires:	intltool
@@ -98,7 +98,6 @@ lvm devices without invoking a separate program.
 
 %package -n dmsetup
 Summary:	Device mapper setup tool
-Version:	2.03.16
 Group:		System/Kernel and hardware
 Provides:	device-mapper = %{dmversion}-%{release}
 %if %{with dmeventd}
@@ -116,7 +115,6 @@ each sector (512 bytes) in the logical device.
 
 %package -n %{dmlibname}
 Summary:	Device mapper library
-Version:	2.03.16
 Group:		System/Kernel and hardware
 
 %description -n %{dmlibname}
@@ -129,7 +127,6 @@ programs which use device-mapper.
 
 %package -n %{dmdevname}
 Summary:	Device mapper development library
-Version:	2.03.16
 Group:		Development/C
 Provides:	device-mapper-devel = %{dmversion}-%{release}
 Provides:	libdevmapper-devel = %{dmversion}-%{release}
@@ -149,7 +146,6 @@ for building programs which use device-mapper.
 %if %{with dmeventd}
 %package -n %{event_libname}
 Summary:	Device mapper event library
-Version:	2.03.16
 Group:		System/Kernel and hardware
 Provides:	device-mapper-event = %{dmversion}-%{release}
 Provides:	libdevmapper-event = %{dmversion}-%{release}
@@ -163,7 +159,6 @@ programs which use device-mapper-event.
 
 %package -n %{event_devname}
 Summary:	Device mapper event development library
-Version:	2.03.16
 Group:		Development/C
 Provides:	device-mapper-event-devel = %{dmversion}-%{release}
 Requires:	%{event_libname} = %{dmversion}-%{release}
