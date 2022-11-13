@@ -3,7 +3,7 @@
 %bcond_without lvmdbusd
 
 %define lvmversion 2.03.16
-%define dmversion 1.02.183
+%define dmversion 1.02.187
 %define dmmajor 1.02
 %define cmdmajor %(echo %{lvmversion} |cut -d. -f1-2)
 %define appmajor 2.2
@@ -26,7 +26,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.16
+Version:	2.03.17
 Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
