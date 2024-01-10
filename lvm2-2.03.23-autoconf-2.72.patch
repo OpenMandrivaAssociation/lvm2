@@ -1,0 +1,22 @@
+diff -up LVM2.2.03.23/configure.ac.omv~ LVM2.2.03.23/configure.ac
+--- LVM2.2.03.23/configure.ac.omv~	2024-01-10 19:52:53.837650119 +0000
++++ LVM2.2.03.23/configure.ac	2024-01-10 19:53:35.537693699 +0000
+@@ -1814,6 +1814,9 @@ AC_ARG_VAR([AIO_LIBS], [linker flags for
+ AC_ARG_VAR([READLINE_CFLAGS], [C compiler flags for readline])
+ AC_ARG_VAR([READLINE_LIBS], [linker flags for readline])
+ 
++GREP=$(which grep)
++EGREP="$GREP -E"
++
+ ################################################################################
+ AC_SUBST(AWK)
+ AC_SUBST(BLKDEACTIVATE)
+@@ -1873,6 +1876,8 @@ AC_SUBST(DM_LIB_PATCHLEVEL)
+ AC_SUBST(ELDFLAGS)
+ AC_SUBST(FSADM)
+ AC_SUBST(FSADM_PATH)
++AC_SUBST(GREP)
++AC_SUBST(EGREP)
+ AC_SUBST(INTEGRITY)
+ AC_SUBST(INTL)
+ AC_SUBST(JOBS)

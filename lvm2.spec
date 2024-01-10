@@ -38,7 +38,9 @@ Source3:	70-dracut-distro-dm.conf
 # (tpg) patch from ClearLinux
 Patch20:	trim.patch
 
-# Furgalware
+Patch25:	lvm2-2.03.23-autoconf-2.72.patch
+
+# Frugalware
 Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/stop-the-flood-by-default.patch
 Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/fix-service-files.patch
 
