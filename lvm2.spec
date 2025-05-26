@@ -24,7 +24,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.31
+Version:	2.03.32
 Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
