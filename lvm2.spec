@@ -44,6 +44,10 @@ Patch25:	lvm2-2.03.23-autoconf-2.72.patch
 Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/stop-the-flood-by-default.patch
 Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/fix-service-files.patch
 
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	sed
 #BuildConflicts:	device-mapper-devel < %{version}
 BuildRequires:	pkgconfig(readline)
