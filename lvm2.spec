@@ -24,8 +24,8 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.32
-Release:	2
+Version:	2.03.38
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -45,7 +45,6 @@ Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/
 Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/fix-service-files.patch
 
 BuildRequires:	automake
-BuildRequires:	libtool-base
 BuildRequires:	slibtool
 BuildRequires:	make
 BuildRequires:	sed
@@ -313,6 +312,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_sbindir}/lvextend
 %{_sbindir}/lvm
 %{_sbindir}/lvm_import_vdo
+%{_sbindir}/lvmpersist
 %{_sbindir}/lvmpolld
 %{_sbindir}/lvm2
 %{_sbindir}/lvmconfig
