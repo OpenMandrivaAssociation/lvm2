@@ -24,7 +24,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.38
+Version:	2.03.39
 Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
@@ -356,6 +356,9 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %{_unitdir}/lvm-devices-import.service
 %{_tmpfilesdir}/%{name}.conf
 %doc %{_mandir}/man5/*
+%doc %{_mandir}/man7/lvm-args.7*
+%doc %{_mandir}/man7/lvm-categories.7*
+%doc %{_mandir}/man7/lvm-index.7*
 %doc %{_mandir}/man7/lvmautoactivation.7*
 %doc %{_mandir}/man7/lvmthin.7*
 %doc %{_mandir}/man7/lvmcache.7*
