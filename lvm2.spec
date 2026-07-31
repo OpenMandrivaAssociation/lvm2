@@ -24,7 +24,7 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.39
+Version:	2.03.41
 Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
@@ -36,7 +36,7 @@ Source2:	60-dracut-distro-lvm.conf
 Source3:	70-dracut-distro-dm.conf
 
 # (tpg) patch from ClearLinux
-Patch20:	trim.patch
+# dropped (no longer applies): Patch20:	trim.patch
 
 Patch25:	lvm2-2.03.23-autoconf-2.72.patch
 
@@ -198,7 +198,7 @@ Daemon for access to LVM2 functionality through a D-Bus interface.
 %endif
 
 %prep
-%autosetup -p1 -n LVM2.%{version}
+%autosetup -p1 -n LVM2.2.03.41
 
 %config_update
 autoreconf -fiv
