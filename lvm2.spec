@@ -59,6 +59,7 @@ BuildRequires:	systemd-rpm-macros
 BuildRequires:	thin-provisioning-tools
 BuildRequires:	libaio-devel
 BuildRequires:	%mklibname aio -d -s
+BuildRequires:	pkgconfig(libnvme)
 %if %{with dmeventd}
 # install plugins as well
 Requires:	%{cmdlibname} = %{version}-%{release}
@@ -396,6 +397,7 @@ sed -i -e 's,use_lvmetad[[:space:]]*=.*,use_lvmetad = 0,' %{_sysconfdir}/lvm/*.c
 %doc INSTALL README VERSION_DM WHATS_NEW_DM
 %{_sbindir}/dmsetup
 %{_sbindir}/dmstats
+%{_sbindir}/dmvdostats
 %if %{with dmeventd}
 %{_sbindir}/dmeventd
 %endif
