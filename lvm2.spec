@@ -1,5 +1,4 @@
 %bcond_without dmeventd
-%bcond_without crosscompile
 %bcond_without lvmdbusd
 
 %define dmmajor 1.02
@@ -187,11 +186,13 @@ License:	GPLv2
 Group:		System/Base
 Requires:	lvm2 >= %{version}-%{release}
 BuildRequires:	pkgconfig(python3)
-BuildRequires:	pyudev
 BuildRequires:	pkgconfig(dbus-python)
+%if ! %{cross_compiling}
+BuildRequires:	python%{pyver}dist(pyudev)
+%endif
 Requires:	dbus
 Requires:	python-dbus
-Requires:	pyudev
+Requires:	python%{pyver}dist(pyudev)
 Requires:	python-gobject3
 
 %description dbusd
@@ -206,7 +207,7 @@ autoreconf -fiv
 autoconf
 
 %build
-%if %{with crosscompile}
+%if %{cross_compiling}
 export ac_cv_func_malloc_0_nonnull=yes
 export ac_cv_func_realloc_0_nonnull=yes
 %endif
@@ -223,6 +224,12 @@ export MODPROBE_CMD=/sbin/modprobe
 export LDFLAGS="%{optflags} -flto"
 export PYTHON_PREFIX=%{py_prefix}
 export PYTHON_EXEC_PREFIX=%{py_prefix}
+%if %{cross_compiling}
+# AX_PYTHON_MODULE runs the build-host interpreter. pyudev is noarch —
+# import it from the sysroot so we do not need host pyudev. Do not put
+# target sitearch on PYTHONPATH (python-dbus is a native extension).
+export PYTHONPATH="%{_prefix}/%{_target_platform}%{python_sitelib}${PYTHONPATH:+:$PYTHONPATH}"
+%endif
 
 %configure \
 	%{common_configure_parameters} \
