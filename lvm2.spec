@@ -24,7 +24,7 @@
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
 Version:	2.03.41
-Release:	1
+Release:	2
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -229,6 +229,46 @@ export PYTHON_EXEC_PREFIX=%{py_prefix}
 # import it from the sysroot so we do not need host pyudev. Do not put
 # target sitearch on PYTHONPATH (python-dbus is a native extension).
 export PYTHONPATH="%{_prefix}/%{_target_platform}%{python_sitelib}${PYTHONPATH:+:$PYTHONPATH}"
+%endif
+
+%if %{cross_compiling}
+# Host valgrind.pc is on PKG_CONFIG_PATH. Use target valgrind when it
+# is in the sysroot; otherwise hide the host module so configure does
+# not set HAVE_VALGRIND with a sysrooted -I that does not exist.
+_sysroot="%{_prefix}/%{_target_platform}"
+_has_tgt_valgrind=
+for _d in \
+	"$_sysroot/sys-root%{_libdir}/pkgconfig" \
+	"$_sysroot%{_libdir}/pkgconfig" \
+	"$_sysroot/sys-root/usr/share/pkgconfig" \
+	"$_sysroot/usr/share/pkgconfig"; do
+	if [ -f "$_d/valgrind.pc" ]; then
+		_has_tgt_valgrind=1
+		break
+	fi
+done
+if [ -z "$_has_tgt_valgrind" ]; then
+	for _h in \
+		"$_sysroot/usr/include/valgrind/valgrind.h" \
+		"$_sysroot/sys-root/usr/include/valgrind/valgrind.h"; do
+		if [ -f "$_h" ]; then
+			_has_tgt_valgrind=1
+			break
+		fi
+	done
+fi
+if [ -z "$_has_tgt_valgrind" ]; then
+_pcw="${RPM_BUILD_DIR}/.no-valgrind-pkg-config"
+cat > "$_pcw" <<'EOF'
+#!/bin/sh
+for _a in "$@"; do
+	[ "$_a" = valgrind ] && exit 1
+done
+exec pkg-config "$@"
+EOF
+chmod +x "$_pcw"
+export PKG_CONFIG="$_pcw"
+fi
 %endif
 
 %configure \
