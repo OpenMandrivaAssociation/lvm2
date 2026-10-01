@@ -23,8 +23,8 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.41
-Release:	2
+Version:	2.03.43
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -40,8 +40,9 @@ Source3:	70-dracut-distro-dm.conf
 Patch25:	lvm2-2.03.23-autoconf-2.72.patch
 
 # Frugalware
-Patch30:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/stop-the-flood-by-default.patch
-Patch31:	https://raw.githubusercontent.com/frugalware/frugalware-current/master/source/base/lvm2/fix-service-files.patch
+# Upstream Frugalware dropped the flood patch; keep the local copy.
+Patch30:	stop-the-flood-by-default.patch
+Patch31:	fix-service-files.patch
 
 BuildRequires:	automake
 BuildRequires:	slibtool

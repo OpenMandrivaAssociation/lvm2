@@ -1,10 +1,10 @@
-diff -up LVM2.2.03.25/man/lvm.8_main.3~ LVM2.2.03.25/man/lvm.8_main
---- LVM2.2.03.25/man/lvm.8_main.3~	2024-07-12 12:42:39.000000000 +0200
-+++ LVM2.2.03.25/man/lvm.8_main	2024-07-12 20:59:09.493536221 +0200
+diff -up LVM2.2.03.43/man/lvm.8_main.orig LVM2.2.03.43/man/lvm.8_main
+--- LVM2.2.03.43/man/lvm.8_main.orig
++++ LVM2.2.03.43/man/lvm.8_main
 @@ -37,8 +37,8 @@ that command.
  On invocation, \fBlvm\fP requires that only the standard file descriptors
- stdin, stdout and stderr are available.  If others are found, they
- get closed and messages are issued warning about the leak.
+ stdin, stdout and stderr are available.  If others are found, they are
+ closed and a warning about the leak is issued.
 -This warning can be suppressed by setting the environment variable
 -.BR LVM_SUPPRESS_FD_WARNINGS .
 +By default warnings are suppressed and can be enabled by setting the environment variable
@@ -12,10 +12,10 @@ diff -up LVM2.2.03.25/man/lvm.8_main.3~ LVM2.2.03.25/man/lvm.8_main
  .P
  Where commands take VG or LV names as arguments, the full path name is
  optional.  An LV called "lvol0" in a VG called "vg0" can be specified
-diff -up LVM2.2.03.25/tools/lvmcmdline.c.3~ LVM2.2.03.25/tools/lvmcmdline.c
---- LVM2.2.03.25/tools/lvmcmdline.c.3~	2024-07-12 20:59:09.493536221 +0200
-+++ LVM2.2.03.25/tools/lvmcmdline.c	2024-07-12 20:59:53.726044574 +0200
-@@ -3567,7 +3567,7 @@ int lvm2_main(int argc, char **argv)
+diff -up LVM2.2.03.43/tools/lvmcmdline.c.orig LVM2.2.03.43/tools/lvmcmdline.c
+--- LVM2.2.03.43/tools/lvmcmdline.c.orig
++++ LVM2.2.03.43/tools/lvmcmdline.c
+@@ -3592,7 +3592,7 @@ int lvm2_main(int argc, char **argv)
  	if (!_get_custom_fds(&custom_fds))
  		return EINIT_FAILED;
  
