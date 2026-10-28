@@ -23,8 +23,8 @@
 
 Summary:	Logical Volume Manager administration tools
 Name:		lvm2
-Version:	2.03.43
-Release:	2
+Version:	2.03.44
+Release:	1
 License:	GPLv2 and LGPL2.1
 Group:		System/Kernel and hardware
 Url:		https://sourceware.org/lvm2/
@@ -58,6 +58,7 @@ BuildRequires:	pkgconfig(systemd)
 BuildRequires:	systemd-rpm-macros
 BuildRequires:	thin-provisioning-tools
 BuildRequires:	libaio-devel
+BuildRequires:	pkgconfig(liburing)
 BuildRequires:	%mklibname aio -d -s
 BuildRequires:	pkgconfig(libnvme)
 %if %{with dmeventd}
